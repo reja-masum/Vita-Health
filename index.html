@@ -727,51 +727,37 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- ── SUB-PAGE: Patient Calculation ── -->
   <div id="daily-view-calc" style="display:none;">
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Unfit Patient Deductions</div>
-      <div style="font-size:12px;color:var(--ts);margin-bottom:14px;">Each unfit patient reduces income. Set the deduction amount per unfit patient below.</div>
-      <div class="dform unfit-dform">
-        <div class="ff"><label>Unfit Patients Count</label><input type="number" id="v-unfit-pts" value="0" min="0" oninput="savePerPatientInputs();recalc()"></div>
-        <div class="ff"><label>Deduction per Patient (৳)</label><input type="number" id="v-unfit-deduction" value="7000" oninput="savePerPatientInputs();recalc()"></div>
-        <div class="ff"><label>Total Deduction</label><div style="font-family:var(--mono);font-size:17px;font-weight:700;color:var(--pink);padding:8px 0;" id="calc-unfit-total">৳0</div></div>
-      </div>
-    </div>
-    <div class="card">
       <div class="ctitle"><span class="dot"></span>Other Center Patient Revenue</div>
-      <!-- Group A: Rate 4000 -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <span style="font-size:12px;color:var(--ts);white-space:nowrap;">Viewing:</span>
+        <select class="sel" id="calc-year-filter" onchange="onCalcFilterChange()"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select>
+        <select class="sel" id="calc-month-filter" onchange="onCalcFilterChange()"></select>
+      </div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:14px;">Patient counts below are pulled automatically from Others Center Patients — Medipath entries go to the Medipath group, every other center (Kent, Sadiq, Ready-Health, etc.) goes to the Kent group. No manual entry or apply needed.</div>
+      <!-- Group A: Kent (catch-all for all non-Medipath centers) -->
       <div style="margin-bottom:14px;padding:13px;background:rgba(0,229,160,.04);border:1px solid rgba(0,229,160,.18);border-radius:var(--rs);">
-        <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:10px;">Kent — ৳4,000 / Patient</div>
+        <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:10px;">Kent — ৳4,000 / Patient <span style="font-weight:400;color:var(--tm);">(all other centers)</span></div>
         <div class="oc-group-grid">
-          <div class="ff"><label>Month</label>
-            <select id="oc-a-month" style="font-family:var(--font);font-size:13px;background:var(--bg-card2);border:1px solid var(--border-bright);border-radius:var(--rs);padding:8px 10px;color:var(--tp);outline:none;" onchange="savePerPatientInputs()">
-              <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
-            </select>
-          </div>
-          <div class="ff"><label>Patients Count</label><input type="number" id="oc-a-count" value="0" min="0" style="font-size:15px;" oninput="updateOcGroupTotal()"></div>
-          <div class="ff"><label>Rate Per Patient (৳)</label><input type="number" id="oc-a-rate" value="4000" min="0" style="font-size:15px;" oninput="updateOcGroupTotal()"></div>
+          <div class="ff"><label>Patients Count</label><div style="display:flex;align-items:center;gap:6px;"><input type="number" id="oc-a-count" value="0" readonly style="font-size:15px;cursor:default;opacity:.85;"><span class="auto-badge" style="display:inline;">AUTO</span></div></div>
+          <div class="ff"><label>Rate Per Patient (৳)</label><input type="number" id="oc-a-rate" value="4000" min="0" style="font-size:15px;" oninput="savePerPatientInputs();updateOcGroupTotal()"></div>
         </div>
         <div style="margin-top:8px;font-size:12px;color:var(--green);">Total: <span style="font-family:var(--mono);font-weight:700;" id="oc-a-total">৳0</span></div>
       </div>
-      <!-- Group B: Rate 3000 -->
+      <!-- Group B: Medipath -->
       <div style="margin-bottom:14px;padding:13px;background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.18);border-radius:var(--rs);">
         <div style="font-size:12px;font-weight:600;color:var(--cyan);margin-bottom:10px;">Medipath — ৳3,000 / Patient</div>
         <div class="oc-group-grid">
-          <div class="ff"><label>Month</label>
-            <select id="oc-b-month" style="font-family:var(--font);font-size:13px;background:var(--bg-card2);border:1px solid var(--border-bright);border-radius:var(--rs);padding:8px 10px;color:var(--tp);outline:none;" onchange="savePerPatientInputs()">
-              <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
-            </select>
-          </div>
-          <div class="ff"><label>Patients Count</label><input type="number" id="oc-b-count" value="0" min="0" style="font-size:15px;" oninput="updateOcGroupTotal()"></div>
-          <div class="ff"><label>Rate Per Patient (৳)</label><input type="number" id="oc-b-rate" value="3000" min="0" style="font-size:15px;" oninput="updateOcGroupTotal()"></div>
+          <div class="ff"><label>Patients Count</label><div style="display:flex;align-items:center;gap:6px;"><input type="number" id="oc-b-count" value="0" readonly style="font-size:15px;cursor:default;opacity:.85;"><span class="auto-badge" style="display:inline;">AUTO</span></div></div>
+          <div class="ff"><label>Rate Per Patient (৳)</label><input type="number" id="oc-b-rate" value="3000" min="0" style="font-size:15px;" oninput="savePerPatientInputs();updateOcGroupTotal()"></div>
         </div>
         <div style="margin-top:8px;font-size:12px;color:var(--cyan);">Total: <span style="font-family:var(--mono);font-weight:700;" id="oc-b-total">৳0</span></div>
       </div>
       <!-- Combined total -->
-      <div class="combined-total-row" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg-card2);border-radius:var(--rs);border:1px solid var(--border);margin-bottom:12px;">
+      <div class="combined-total-row" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg-card2);border-radius:var(--rs);border:1px solid var(--border);">
         <span style="font-size:13px;color:var(--ts);font-weight:600;">Combined Other Center Revenue</span>
         <span style="font-family:var(--mono);font-size:21px;font-weight:700;color:var(--green);" id="calc-other-total">৳0</span>
       </div>
-      <button class="abtn bsave" style="margin-top:4px;" onclick="applyCalcToMonth()">&#128427; Apply to This Month</button>
-      <div style="font-size:11px;color:var(--tm);margin-top:6px;" id="calc-apply-status"></div>
+      <div style="font-size:11px;color:var(--tm);margin-top:8px;">Automatically applied to this month's Dashboard figures — no action needed.</div>
     </div>
   </div>
 
@@ -1858,12 +1844,18 @@ function toggleSB(){const sb=g('sidebar'),ov=g('mob-overlay');sb.classList.toggl
 // BUILD SELECTS
 function buildMonthSels(){
   const cur=new Date().getMonth();
-  ['selMonth','d-month-filter','fin-month','agency-month-sel'].forEach(id=>{const el=g(id);if(!el)return;el.innerHTML='';MN_EN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;if(i===cur)o.selected=true;el.appendChild(o);});});
+  ['selMonth','d-month-filter','fin-month','agency-month-sel','calc-month-filter'].forEach(id=>{const el=g(id);if(!el)return;el.innerHTML='';MN_EN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;if(i===cur)o.selected=true;el.appendChild(o);});});
   g('fin-month').addEventListener('change',onFinanceYearMonthChange);g('fin-year').addEventListener('change',onFinanceYearMonthChange);g('d-month-filter').addEventListener('change',renderDailyTable);
   const _now=new Date(),_yr=_now.getFullYear(),_mo=String(_now.getMonth()+1).padStart(2,'0'),_dy=String(_now.getDate()).padStart(2,'0');const today=`${_yr}-${_mo}-${_dy}`;g('di-date').value=today;g('de-date').value=today;
 }
-function onFinanceYearMonthChange(){g('selYear').value=g('fin-year').value;g('selMonth').value=g('fin-month').value;loadMonthData();g('yr-label').textContent=yk();updateYearSummary();updateCenterChart();}
+function onFinanceYearMonthChange(){g('selYear').value=g('fin-year').value;g('selMonth').value=g('fin-month').value;if(g('calc-year-filter'))g('calc-year-filter').value=g('fin-year').value;if(g('calc-month-filter'))g('calc-month-filter').value=g('fin-month').value;loadMonthData();g('yr-label').textContent=yk();updateYearSummary();updateCenterChart();}
 function onYearMonthChange(){loadMonthData();g('yr-label').textContent=yk();updateYearSummary();updateCenterChart();}
+// Patient Calculation page's own year/month filter — controls the same global month, kept in sync everywhere
+function onCalcFilterChange(){
+  g('fin-year').value=g('calc-year-filter').value;
+  g('fin-month').value=g('calc-month-filter').value;
+  onFinanceYearMonthChange();
+}
 
 // OTHER EXPENSES
 let otherExps=[];
@@ -1891,20 +1883,22 @@ function getAllPatients(){return[...loadArr(SK10).map(p=>({...p,_source:'vita_sh
 
 // AUTO COUNT FROM SHEETS
 let _calcSyncTimer=null;
+// Counts Others Center patients for a given year/month, split into Medipath vs everything else (Kent bucket)
+function computeOthersCenterCounts(yr,mi){
+  const list=loadArr(SK11).filter(r=>String(r._year)===String(yr)&&Number(r._month)===Number(mi));
+  let medipathCount=0,kentCount=0;
+  list.forEach(r=>{
+    const c=(r._center||'').toLowerCase().trim();
+    if(c==='medipath')medipathCount++;else kentCount++;
+  });
+  return{kentCount,medipathCount};
+}
 function savePerPatientInputs(){
   const k=dataKey(yk(),ym());
   const d=loadCalc();
   d[k]={
-    unfitPts:+g('v-unfit-pts').value||0,
-    unfitDeduction:+g('v-unfit-deduction').value||0,
-    otherPts:+g('v-other-pts').value||0,
-    otherRate:+g('v-other-rate').value||0,
-    ocACount:+(g('oc-a-count')?g('oc-a-count').value:0)||0,
     ocARate:+(g('oc-a-rate')?g('oc-a-rate').value:4000)||4000,
-    ocAMonth:g('oc-a-month')?+g('oc-a-month').value:new Date().getMonth(),
-    ocBCount:+(g('oc-b-count')?g('oc-b-count').value:0)||0,
-    ocBRate:+(g('oc-b-rate')?g('oc-b-rate').value:3000)||3000,
-    ocBMonth:g('oc-b-month')?+g('oc-b-month').value:new Date().getMonth()
+    ocBRate:+(g('oc-b-rate')?g('oc-b-rate').value:3000)||3000
   };
   saveCalc(d);
   if(_calcSyncTimer)clearTimeout(_calcSyncTimer);
@@ -1912,23 +1906,16 @@ function savePerPatientInputs(){
 }
 function loadPerPatientInputs(){
   const k=dataKey(yk(),ym());const _calc=loadCalc();const d=_calc[k]||null;
-  if(g('v-unfit-pts'))g('v-unfit-pts').value=d?d.unfitPts||0:0;
-  if(g('v-unfit-deduction'))g('v-unfit-deduction').value=d&&d.unfitDeduction!=null?d.unfitDeduction:7000;
-  if(g('v-other-pts'))g('v-other-pts').value=d?d.otherPts||0:0;
-  if(g('v-other-rate'))g('v-other-rate').value=d&&d.otherRate!=null?d.otherRate:4000;
-  // OC Group A (Kent)
-  if(g('oc-a-count'))g('oc-a-count').value=d&&d.ocACount!=null?d.ocACount:0;
+  if(g('calc-year-filter'))g('calc-year-filter').value=yk();
+  if(g('calc-month-filter'))g('calc-month-filter').value=ym();
+  const counts=computeOthersCenterCounts(yk(),ym());
+  // OC Group A (Kent — catch-all for all non-Medipath centers)
+  if(g('oc-a-count'))g('oc-a-count').value=counts.kentCount;
   if(g('oc-a-rate'))g('oc-a-rate').value=d&&d.ocARate!=null?d.ocARate:4000;
-  if(g('oc-a-month')&&d&&d.ocAMonth!=null)g('oc-a-month').value=d.ocAMonth;
   // OC Group B (Medipath)
-  if(g('oc-b-count'))g('oc-b-count').value=d&&d.ocBCount!=null?d.ocBCount:0;
+  if(g('oc-b-count'))g('oc-b-count').value=counts.medipathCount;
   if(g('oc-b-rate'))g('oc-b-rate').value=d&&d.ocBRate!=null?d.ocBRate:3000;
-  if(g('oc-b-month')&&d&&d.ocBMonth!=null)g('oc-b-month').value=d.ocBMonth;
-  // Recalculate OC group totals + unfit total display
   if(typeof updateOcGroupTotal==='function')updateOcGroupTotal();
-  const _uPts=+((g('v-unfit-pts')||{}).value)||0;
-  const _uDed=+((g('v-unfit-deduction')||{}).value)||7000;
-  if(g('calc-unfit-total'))g('calc-unfit-total').textContent=fmtExact(_uPts*_uDed);
 }
 
 // RECALC
@@ -1954,28 +1941,16 @@ function getDailyTrackerMonthTotals(){
 function recalc(){
   const dt=getDailyTrackerMonthTotals();
   g('patients').value=dt.patients;
-  // Always load from settings so Dashboard reflects Patient Calc data even when that page is hidden
+  // Other Center revenue — always computed live from actual Others Center patient records, no manual entry needed
   const _pp=loadCalc()[dataKey(yk(),ym())]||null;
-  // Compute ocTotal directly from OC group data — never use rounded blended rate
-  let _ocTotal=0,_totalPts=0;
-  if(_pp){
-    if(g('v-unfit-pts')&&!+g('v-unfit-pts').value&&_pp.unfitPts)g('v-unfit-pts').value=_pp.unfitPts;
-    if(g('v-unfit-deduction')&&+g('v-unfit-deduction').value===7000&&_pp.unfitDeduction!=null)g('v-unfit-deduction').value=_pp.unfitDeduction;
-    const aCount=_pp.ocACount||0,aRate=_pp.ocARate||4000;
-    const bCount=_pp.ocBCount||0,bRate=_pp.ocBRate||3000;
-    _totalPts=aCount+bCount;_ocTotal=aCount*aRate+bCount*bRate;
-    if(g('v-other-pts'))g('v-other-pts').value=_totalPts;
-    // Store exact ocTotal in v-other-rate as a sentinel: use -1 to signal "use _ocTotal directly"
-    // Actually: store blended rate only for display; use _ocTotal for all math
-    if(g('v-other-rate'))g('v-other-rate').value=_totalPts>0?(_ocTotal/_totalPts):0;
-  }
-  const otherPts=+g('v-other-pts').value||0;
-  // Use _ocTotal directly if computed from OC groups; otherwise fall back to pts*rate
-  const otherInc=_ocTotal>0?_ocTotal:(otherPts*(+g('v-other-rate').value||0));
-  const unfitPts=+g('v-unfit-pts').value||0,unfitDed=+g('v-unfit-deduction').value||7000;
+  const _counts=computeOthersCenterCounts(yk(),ym());
+  const aCount=_counts.kentCount,aRate=(_pp&&_pp.ocARate!=null)?_pp.ocARate:4000;
+  const bCount=_counts.medipathCount,bRate=(_pp&&_pp.ocBRate!=null)?_pp.ocBRate:3000;
+  const _totalPts=aCount+bCount,_ocTotal=aCount*aRate+bCount*bRate;
+  const otherPts=_totalPts;
+  const otherInc=_ocTotal;
   const otherExpTotal=otherExps.reduce((a,e)=>a+e.amount,0);
-  const unfitDedT=unfitPts*unfitDed;
-  const vitaInc=dt.income-unfitDedT;
+  const vitaInc=dt.income;
   const income=vitaInc+otherInc,expense=dt.expense+otherExpTotal,profit=income-expense;
   const margin=income>0?Math.round(profit/income*100):0;
   g('m-income').textContent=fmtExact(income);g('m-expense').textContent=fmtExact(expense);if(g('m-expense-sub'))g('m-expense-sub').textContent='Variable';g('m-profit').textContent=fmtExact(profit);
@@ -1983,7 +1958,7 @@ function recalc(){
   g('m-vita').textContent=fmtExact(vitaInc);g('m-vita-sub').textContent=dt.patients+' patients via Daily Tracker';
   g('m-other').textContent=fmtExact(otherInc);g('m-other-sub').textContent=otherPts+' pts';
   g('s-month').textContent=monthLabel(yk(),ym());g('s-patients').textContent=dt.patients.toLocaleString();
-  if(g('s-other-pts'))g('s-other-pts').textContent=(dt.otherPts||otherPts||0).toLocaleString();
+  if(g('s-other-pts'))g('s-other-pts').textContent=(otherPts||0).toLocaleString();
   g('s-income').textContent=fmtExact(income);g('s-expense').textContent=fmtExact(expense);g('s-profit').textContent=fmtExact(profit);
   g('s-margin').textContent=margin+'%';g('s-other').textContent=fmtExact(otherInc);
   if(g('s-vita-inc'))g('s-vita-inc').textContent=fmtExact(vitaInc);
@@ -1992,6 +1967,7 @@ function recalc(){
   else{badge.className='pbadge lbadge';badge.textContent='Loss';sub.textContent='At a loss';sub.style.color='var(--pink)';sp.style.color='var(--pink)';}
   saveSettings(getSettings());
   renderDueReminders();
+  if(g('oc-a-count')||g('oc-b-count'))updateOcGroupTotal();
 }
 
 // MONTH DATA
@@ -1999,17 +1975,17 @@ function dataKey(yr,mi){return yr+'_'+MK[mi];}
 function loadMonthData(){loadPerPatientInputs();recalc();}
 function saveCurrentMonth(){
   const dt=getDailyTrackerMonthTotals();
-  const otherPts=+g('v-other-pts').value||0,otherRateRaw=+g('v-other-rate').value||0;
-  const unfitPts=+g('v-unfit-pts').value||0,unfitDeduction=+g('v-unfit-deduction').value||7000;
-  const otherExpTotal=otherExps.reduce((a,e)=>a+e.amount,0);
-  // Recompute exact ocTotal from saved calc data to avoid rounded-rate precision loss
   const _pp2=loadCalc()[dataKey(yk(),ym())]||null;
-  const otherIncome=_pp2?( (_pp2.ocACount||0)*(_pp2.ocARate||4000)+(_pp2.ocBCount||0)*(_pp2.ocBRate||3000) ):(otherPts*otherRateRaw);
-  const income=dt.income+otherIncome-unfitPts*unfitDeduction,expense=dt.expense+otherExpTotal,profit=income-expense;
+  const _counts=computeOthersCenterCounts(yk(),ym());
+  const aRate=(_pp2&&_pp2.ocARate!=null)?_pp2.ocARate:4000,bRate=(_pp2&&_pp2.ocBRate!=null)?_pp2.ocBRate:3000;
+  const otherPts=_counts.kentCount+_counts.medipathCount;
+  const otherIncome=_counts.kentCount*aRate+_counts.medipathCount*bRate;
+  const income=dt.income+otherIncome,expense=dt.expense+otherExpTotal_safe(),profit=income-expense;
   const margin=income>0?Math.round(profit/income*100):0;
   const all=load(SK);all[dataKey(yk(),ym())]={patients:dt.patients,otherPts,income,expense,profit,margin,otherIncome,dailyExpense:dt.expense,saved:new Date().toISOString()};
   save(SK,all);toast(monthLabel(yk(),ym())+' saved');updateYearSummary();pushToSheet();
 }
+function otherExpTotal_safe(){return otherExps.reduce((a,e)=>a+e.amount,0);}
 function deleteMonth(yr,mi){if(!confirm('Delete '+monthLabel(yr,mi)+'?'))return;const all=load(SK);delete all[dataKey(yr,mi)];save(SK,all);toast('Deleted');renderHistory();updateYearSummary();pushToSheet();}
 function exportCSV(){const yr=yk(),all=load(SK);const rows=[['Month','Year','Patients','OtherPts','Income','Expense','Net Profit','Margin','Other Center Income']];MK.forEach((k,i)=>{const d=all[yr+'_'+k];if(d)rows.push([MN_EN[i],yr,d.patients,d.otherPts||0,d.income,d.expense,d.profit,d.margin+'%',d.otherIncome||0]);});dlCSV(rows,'vitahealth_finance_'+yr+'.csv');toast('CSV exported');}
 
@@ -2352,7 +2328,7 @@ function exportOthersCSV(){
 async function syncOthersNow(){
   toast('Pulling from Others Center Sheet...');
   const ok=await othersPull();
-  if(ok){renderOthersPatients();toast('Others Center data updated!');}
+  if(ok){renderOthersPatients();recalc();if(g('oc-a-count')||g('oc-b-count'))loadPerPatientInputs();toast('Others Center data updated!');}
   else{toast('Others sync failed — check URL in Settings');}
 }
 
@@ -2984,7 +2960,7 @@ function startAutoSync(){
   autoSyncTimer=setInterval(async()=>{
     if(hasDailyUrl){await syncPull();loadOtherExps();recalc();updateCenterChart();}
     if(hasVitaUrl)await vitaPull();
-    if(hasOthersUrl)await othersPull();
+    if(hasOthersUrl){await othersPull();recalc();if(g('oc-a-count')||g('oc-b-count'))loadPerPatientInputs();}
     if(g('page-daily')&&g('page-daily').classList.contains('active')){renderDailyTable();renderCommissionLog();}
     if(g('page-patients')&&g('page-patients').classList.contains('active'))renderVitaPatients();
     if(g('page-others')&&g('page-others').classList.contains('active'))renderOthersPatients();
@@ -3798,30 +3774,23 @@ function syncCalcFromTracker(){
 }
 
 function renderCalcPage(){
-  const curMi=new Date().getMonth();
-  const curYr=new Date().getFullYear().toString();
-  if(g('ct-month-sel')&&!g('ct-month-sel')._init){g('ct-month-sel').value=curMi;g('ct-month-sel')._init=true;}
-  if(g('ct-year-sel')&&!g('ct-year-sel')._init){g('ct-year-sel').value=curYr;g('ct-year-sel')._init=true;}
-  if(g('oc-a-month')&&!g('oc-a-month')._init){g('oc-a-month').value=curMi;g('oc-a-month')._init=true;}
-  if(g('oc-b-month')&&!g('oc-b-month')._init){g('oc-b-month').value=curMi;g('oc-b-month')._init=true;}
-  // Pull from sheet first so data is fresh after login/reload
+  // Pull from sheets first so data is fresh after login/reload
   const s=getSettings();
   const hasUrl=s.scriptUrl||((s.dailyUrls&&s.dailyUrls.length)?s.dailyUrls.find(e=>e.url):null);
-  if(hasUrl){
-    syncPull().then(()=>{
+  const hasOthersUrl=(s.othersUrls&&s.othersUrls.length)||s.othersScriptUrl;
+  const jobs=[];
+  if(hasUrl)jobs.push(syncPull());
+  if(hasOthersUrl)jobs.push(othersPull());
+  if(jobs.length){
+    Promise.all(jobs).then(()=>{
       loadPerPatientInputs();
       syncCalcFromTracker();
-      const unfitPts=parseInt((g('v-unfit-pts')||{}).value)||0;
-      const unfitDed=parseFloat((g('v-unfit-deduction')||{}).value)||0;
-      if(g('calc-unfit-total'))g('calc-unfit-total').textContent=fmtExact(unfitPts*unfitDed);
       updateOcGroupTotal();
+      recalc();
     });
   } else {
     loadPerPatientInputs();
     syncCalcFromTracker();
-    const unfitPts=parseInt((g('v-unfit-pts')||{}).value)||0;
-    const unfitDed=parseFloat((g('v-unfit-deduction')||{}).value)||0;
-    if(g('calc-unfit-total'))g('calc-unfit-total').textContent=fmtExact(unfitPts*unfitDed);
     updateOcGroupTotal();
   }
 }
@@ -3835,33 +3804,6 @@ function updateOcGroupTotal(){
   if(g('oc-a-total'))g('oc-a-total').textContent=fmtExact(aTotal);
   if(g('oc-b-total'))g('oc-b-total').textContent=fmtExact(bTotal);
   if(g('calc-other-total'))g('calc-other-total').textContent=fmtExact(combined);
-  // update hidden fields used by recalc (total virtual pts & blended)
-  const totalPts=aCount+bCount;
-  if(g('v-other-pts'))g('v-other-pts').value=totalPts;
-  if(g('v-other-rate'))g('v-other-rate').value=totalPts>0?Math.round(combined/totalPts):0;
-}
-
-function applyCalcToMonth(){
-  const unfitPts=parseInt((g('v-unfit-pts')||{}).value)||0;
-  const unfitDed=parseFloat((g('v-unfit-deduction')||{}).value)||0;
-  const aCount=parseInt((g('oc-a-count')||{}).value)||0;
-  const aRate=parseFloat((g('oc-a-rate')||{}).value)||4000;
-  const bCount=parseInt((g('oc-b-count')||{}).value)||0;
-  const bRate=parseFloat((g('oc-b-rate')||{}).value)||3000;
-  const ocTotal=aCount*aRate+bCount*bRate;
-  const totalPts=aCount+bCount;
-  // save updated hidden fields
-  if(g('v-other-pts'))g('v-other-pts').value=totalPts;
-  if(g('v-other-rate'))g('v-other-rate').value=totalPts>0?Math.round(ocTotal/totalPts):0;
-  savePerPatientInputs();
-  const _s2=getSettings();
-  _s2.ocGroupA={count:aCount,rate:aRate};
-  _s2.ocGroupB={count:bCount,rate:bRate};
-  saveSettings(_s2);
-  recalc();
-  const el=g('calc-apply-status');
-  if(el){el.style.color='var(--green)';el.textContent='✓ Applied — Kent: '+aCount+' pts × ৳'+aRate+' + Medipath: '+bCount+' pts × ৳'+bRate+' = '+fmtExact(ocTotal)+' | Unfit deductions: '+fmtExact(unfitPts*unfitDed);}
-  toast('Calculation applied to this month');
 }
 
 // ═══════════════════════════ AGENCY PATIENT SHARE CARD ═══════════════════════════
