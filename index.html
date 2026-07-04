@@ -1144,7 +1144,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         </div>
         <div class="tw">
           <table class="dt">
-            <thead><tr><th>#</th><th>Month</th><th>Staff Name</th><th>Designation</th><th style="text-align:right;">Base</th><th style="text-align:right;">Bonus/Deduct</th><th style="text-align:right;">Net Pay</th><th>Salary Slip</th><th></th></tr></thead>
+            <thead><tr><th>#</th><th>Month</th><th>Staff Name</th><th>Designation</th><th style="text-align:right;">Base</th><th style="text-align:right;">Bonus/Deduct</th><th style="text-align:right;">Net Pay</th><th style="text-align:center;">Paid</th><th>Salary Slip</th><th></th></tr></thead>
             <tbody id="salTbody"></tbody>
           </table>
         </div>
@@ -1231,7 +1231,11 @@ function doPost(e){
       delete payload.attendance; // handled separately
     }
 
-    // ── SALARY: merge by ID (never clearContents) ──────────────
+    // ── SALARY: delete removed records first, then merge by ID ──
+    if(payload.salary_deleted&&Array.isArray(payload.salary_deleted)&&payload.salary_deleted.length>0){
+      deleteRowsById(ss,'salary',payload.salary_deleted);
+      delete payload.salary_deleted;
+    }
     if(payload.salary&&Array.isArray(payload.salary)&&payload.salary.length>1){
       mergeSheetById(ss,'salary',payload.salary);
       delete payload.salary;
@@ -1345,6 +1349,27 @@ function mergeSheetById(ss, sheetName, rows){
   }
 
   styleHeader(sheet,colCount);
+}
+
+// ── DELETE ROWS BY ID ───────────────────────────────────────────────────────
+// Removes rows whose ID (column 0) matches one of the given ids.
+// Used so client-side deletions (e.g. Salary Tracker) actually remove the
+// row from the Sheet, instead of leaving it there to be resurrected later.
+function deleteRowsById(ss, sheetName, ids){
+  var sheet=ss.getSheetByName(sheetName);
+  if(!sheet)return;
+  var lr=sheet.getLastRow(), lc=sheet.getLastColumn();
+  if(lr<2)return;
+  var idSet={};
+  ids.forEach(function(id){idSet[String(id).trim()]=true;});
+  var data=sheet.getRange(1,1,lr,lc).getValues();
+  // Delete bottom-to-top so row indices stay valid as rows are removed.
+  for(var i=data.length-1;i>=1;i--){
+    var rid=String(data[i][0]||'').trim();
+    if(rid&&idSet[rid]){
+      sheet.deleteRow(i+1); // +1: sheet rows are 1-indexed, data[0] is header
+    }
+  }
 }
 
 // Force columns named "date" or "month" to plain-text (@) number format
@@ -1519,7 +1544,7 @@ const MN_EN=['January','February','March','April','May','June','July','August','
 const CENTERS=['Vita','Kent','Sadiq','Ready-Health','MediPath'];
 const CENTER_COLORS={'Vita':'rgba(0,212,255,.8)','Kent':'rgba(247,37,133,.8)','Sadiq':'rgba(123,47,255,.8)','Ready-Health':'rgba(0,229,160,.8)','MediPath':'rgba(255,107,53,.8)','Other Center':'rgba(245,158,11,.8)'};
 const SK='vh_data',SK2='vh_settings_v2',SK3='vh_patients',SK4='vh_daily',SK5='vh_other_exp',SK8='vh_notepad',SK9='vh_commission',SK10='vh_vita_patients',SK11='vh_others_patients';
-const SK_USERS='vh_users_v2', SK_ATT='vh_attendance_v2', SK_SAL='vh_salary_v2', SK_CALC='vh_calc_v1';
+const SK_USERS='vh_users_v2', SK_ATT='vh_attendance_v2', SK_SAL='vh_salary_v2', SK_CALC='vh_calc_v1', SK_SAL_DEL='vh_salary_deleted_v1';
 const INCOME_RATE=8500;
 const RECOVERY_KEY='VITA-RECOVER-2024';
 // Office location: Praasad Palton Square, 3/11 Naya Paltan, Dhaka 1000
@@ -2731,7 +2756,9 @@ async function syncPull(){
               sRl=sgi('designation','role'),
               sBs=sgi('base_salary','base'),
               sBn=sgi('bonus_deduction','bonus'),
-              sNt=sgi('net_pay','net');
+              sNt=sgi('net_pay','net'),
+              sPd=sgi('paid'),
+              sPdDt=sgi('paid_date','paiddate');
         const dataRows=hasHeader?salRaw.slice(1):salRaw;
         const sheetSal=dataRows
           .filter(r=>r[sMo>=0?sMo:1]!==undefined&&r[sMo>=0?sMo:1]!==''&&r[sNm>=0?sNm:2]!==undefined&&r[sNm>=0?sNm:2]!=='')
@@ -2743,14 +2770,20 @@ async function syncPull(){
             role:sRl>=0?String(r[sRl]||''):'',
             base:sBs>=0?+r[sBs]||0:0,
             bonus:sBn>=0?+r[sBn]||0:0,
-            net:sNt>=0?+r[sNt]||0:0
+            net:sNt>=0?+r[sNt]||0:0,
+            paid:sPd>=0?/^(yes|true|1)$/i.test(String(r[sPd]||'').trim()):false,
+            paidDate:sPdDt>=0?String(r[sPdDt]||''):''
           }))
           .filter(r=>r.id); // only keep records with valid id
-        if(sheetSal.length>0){
+        const salDeletedIds=loadSalaryDeleted();
+        // Never resurrect records the user deleted locally, even if the sheet
+        // still has them (e.g. the delete push hasn't reached the server yet).
+        const sheetSalFiltered=sheetSal.filter(r=>!salDeletedIds.includes(r.id));
+        if(sheetSalFiltered.length>0||salDeletedIds.length>0){
           const localSal=loadSalary();
           const salMerged=new Map();
           // Sheet data wins
-          sheetSal.forEach(r=>salMerged.set(r.id,r));
+          sheetSalFiltered.forEach(r=>salMerged.set(r.id,r));
           // Keep local-only records (id not in sheet yet)
           localSal.forEach(r=>{if(r.id&&!salMerged.has(r.id))salMerged.set(r.id,r);});
           localStorage.setItem(SK_SAL,JSON.stringify(Array.from(salMerged.values())));
@@ -2854,10 +2887,19 @@ async function pushSalaryToSheet(){
   const url=s.scriptUrl||((s.dailyUrls&&s.dailyUrls.length)?s.dailyUrls.find(e=>e.url)?.url:'');
   if(!url)return;
   const rows=loadSalary();
-  if(!rows.length)return; // never push empty — protects against accidental wipe
-  const payload={salary:serializeSalaryForSheet()};
+  const delIds=loadSalaryDeleted();
+  if(!rows.length&&!delIds.length)return; // nothing to sync — protects against accidental wipe
+  const payload={};
+  if(rows.length)payload.salary=serializeSalaryForSheet();
+  if(delIds.length)payload.salary_deleted=delIds;
   try{
-    await fetch(url,{method:'POST',body:JSON.stringify(payload),headers:{'Content-Type':'text/plain'}});
+    const resp=await fetch(url,{method:'POST',body:JSON.stringify(payload),headers:{'Content-Type':'text/plain'}});
+    const result=await resp.json().catch(()=>null);
+    // Once the server confirms, clear the tombstones we just sent so they
+    // don't keep getting resent forever.
+    if(result&&result.status==='ok'&&delIds.length){
+      saveSalaryDeleted(loadSalaryDeleted().filter(id=>!delIds.includes(id)));
+    }
   }catch(e){console.warn('Salary push failed:',e);}
 }
 
@@ -3399,6 +3441,8 @@ function renderAttSummary(mf){
 
 // ═══════════════════════════ SALARY TRACKER ═══════════════════════════
 function loadSalary(){try{return JSON.parse(localStorage.getItem(SK_SAL))||[];}catch{return[];}}
+function loadSalaryDeleted(){try{return JSON.parse(localStorage.getItem(SK_SAL_DEL))||[];}catch{return[];}}
+function saveSalaryDeleted(a){localStorage.setItem(SK_SAL_DEL,JSON.stringify(a));}
 function loadCalc(){try{return JSON.parse(localStorage.getItem(SK_CALC))||{};}catch{return{};}}
 function saveCalc(d){localStorage.setItem(SK_CALC,JSON.stringify(d));}
 function saveSalaryData(a){localStorage.setItem(SK_SAL,JSON.stringify(a));}
@@ -3414,14 +3458,36 @@ function addSalary(){
   const net=base+bonus;
   const all=loadSalary();
   const ei=all.findIndex(r=>r.month===month&&r.name===name);
-  if(ei>=0){if(!confirm('Record for '+name+' ('+month+') already exists. Overwrite?'))return;all.splice(ei,1);}
-  all.push({id:'sal_'+Date.now(),month,name,role,base,bonus,net});
+  let paid=false,paidDate='';
+  if(ei>=0){
+    if(!confirm('Record for '+name+' ('+month+') already exists. Overwrite?'))return;
+    paid=all[ei].paid||false;paidDate=all[ei].paidDate||'';
+    all.splice(ei,1);
+  }
+  all.push({id:'sal_'+Date.now(),month,name,role,base,bonus,net,paid,paidDate});
   saveSalaryData(all);
   g('sal-name').value='';g('sal-base').value='';g('sal-bonus').value='';
   renderSalary();toast('Salary saved');pushSalaryToSheet();
 }
 
-function deleteSalary(id){saveSalaryData(loadSalary().filter(r=>r.id!==id));renderSalary();toast('Deleted');pushSalaryToSheet();}
+function deleteSalary(id){
+  saveSalaryData(loadSalary().filter(r=>r.id!==id));
+  const del=loadSalaryDeleted();
+  if(!del.includes(id)){del.push(id);saveSalaryDeleted(del);}
+  renderSalary();toast('Deleted');pushSalaryToSheet();
+}
+
+function toggleSalaryPaid(id){
+  const all=loadSalary();
+  const rec=all.find(r=>r.id===id);
+  if(!rec)return;
+  rec.paid=!rec.paid;
+  rec.paidDate=rec.paid?new Date().toISOString().split('T')[0]:'';
+  saveSalaryData(all);
+  renderSalary();
+  toast(rec.paid?'Marked as paid':'Marked as unpaid');
+  pushSalaryToSheet();
+}
 
 function renderSalary(){
   const tbody=g('salTbody');if(!tbody)return;
@@ -3430,8 +3496,12 @@ function renderSalary(){
   if(mf)rows=rows.filter(r=>r.month===mf);
   const total=rows.reduce((a,r)=>a+(r.net||0),0);
   const st=g('sal-total');if(st)st.textContent=fmtExact(total);
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--tm);">No salary records yet.</td></tr>';return;}
-  tbody.innerHTML=rows.map((r,i)=>`<tr>
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--tm);">No salary records yet.</td></tr>';return;}
+  tbody.innerHTML=rows.map((r,i)=>{
+    const paidCell=r.paid
+      ?`<button onclick="toggleSalaryPaid('${r.id}')" class="sb sa" style="border:none;cursor:pointer;font-family:inherit;" title="${r.paidDate?('Paid on '+r.paidDate+' — click to mark unpaid'):'Click to mark unpaid'}">&#10003; Paid</button>`
+      :`<button onclick="toggleSalaryPaid('${r.id}')" class="paid-btn" title="Mark as Paid">Mark Paid</button>`;
+    return `<tr>
     <td style="color:var(--tm);">${i+1}</td>
     <td style="font-size:12px;">${r.month}</td>
     <td style="font-weight:500;">${escapeHtml(r.name)}</td>
@@ -3439,14 +3509,16 @@ function renderSalary(){
     <td style="font-family:var(--mono);text-align:right;color:var(--cyan);">${fmtExact(r.base||0)}</td>
     <td style="font-family:var(--mono);text-align:right;color:${(r.bonus||0)>=0?'var(--green)':'var(--pink)'};">${(r.bonus||0)>=0?'+':''}${fmtExact(r.bonus||0)}</td>
     <td style="font-family:var(--mono);text-align:right;font-weight:600;">${fmtExact(r.net||0)}</td>
+    <td style="text-align:center;">${paidCell}</td>
     <td><button class="sal-pdf-btn" onclick="generateSalaryPDF(${JSON.stringify(r).replace(/"/g,'&quot;')})">📄 Slip PDF</button></td>
     <td style="text-align:right;"><button onclick="deleteSalary('${r.id}')" class="rm-btn">✕</button></td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
 }
 
 function exportSalaryCSV(){
-  const rows=[['Month','Staff Name','Role','Base Salary','Bonus/Deduction','Net Pay']];
-  loadSalary().forEach(r=>rows.push([r.month,r.name,r.role||'',r.base,r.bonus,r.net]));
+  const rows=[['Month','Staff Name','Role','Base Salary','Bonus/Deduction','Net Pay','Paid','Paid Date']];
+  loadSalary().forEach(r=>rows.push([r.month,r.name,r.role||'',r.base,r.bonus,r.net,r.paid?'Yes':'No',r.paidDate||'']));
   dlCSV(rows,'salary_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
 }
 
@@ -3454,6 +3526,16 @@ function exportSalaryCSV(){
 function generateSalaryPDF(rec){
   const [yr,mo]=rec.month.split('-');
   const monthName=MN_EN[parseInt(mo)-1]||rec.month;
+  // Break down Base Salary into standard components for the payslip only —
+  // the stored record still keeps a single `base` figure; this split is
+  // purely cosmetic/informational on the printed slip.
+  const baseAmt=rec.base||0;
+  const compBasic=Math.round(baseAmt*0.60);
+  const compHouseRent=Math.round(baseAmt*0.25);
+  const compMedical=Math.round(baseAmt*0.10);
+  let compTransport=Math.round(baseAmt*0.05);
+  // Guard against rounding drift so the components always sum to exactly baseAmt
+  compTransport=baseAmt-compBasic-compHouseRent-compMedical;
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
 <title>Salary Slip - ${escapeHtml(rec.name)} - ${monthName} ${yr}</title>
 <style>
@@ -3472,6 +3554,7 @@ function generateSalaryPDF(rec){
   .sal-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
   .sal-table th{background:#1a1a2e;color:#00d4ff;padding:8px 12px;font-size:12px;text-align:left;}
   .sal-table td{padding:9px 12px;border-bottom:1px solid #eee;font-size:12px;}
+  .sal-table tr.subtotal td{border-top:1px solid #ddd;font-weight:600;background:#fafafa;}
   .sal-table tr:last-child td{border-bottom:none;font-weight:700;font-size:15px;background:#f0fffe;}
   .footer{text-align:center;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:14px;margin-top:10px;}
   .sig-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;}
@@ -3498,7 +3581,11 @@ function generateSalaryPDF(rec){
 <table class="sal-table">
   <thead><tr><th>Earnings / Deductions</th><th>Description</th><th style="text-align:right;">Amount (BDT)</th></tr></thead>
   <tbody>
-    <tr><td>Basic Salary</td><td>Monthly base salary</td><td style="text-align:right;">${fmtExact(rec.base||0)}</td></tr>
+    <tr><td>Basic Salary</td><td></td><td style="text-align:right;">${fmtExact(compBasic)}</td></tr>
+    <tr><td>House Rent Allowance</td><td></td><td style="text-align:right;">${fmtExact(compHouseRent)}</td></tr>
+    <tr><td>Medical Allowance</td><td></td><td style="text-align:right;">${fmtExact(compMedical)}</td></tr>
+    <tr><td>Transport Allowance</td><td></td><td style="text-align:right;">${fmtExact(compTransport)}</td></tr>
+    <tr class="subtotal"><td colspan="2">Gross / Base Salary</td><td style="text-align:right;">${fmtExact(baseAmt)}</td></tr>
     <tr><td style="color:${(rec.bonus||0)>=0?'green':'red'}">${(rec.bonus||0)>=0?'Bonus':'Deduction'}</td><td>${(rec.bonus||0)>=0?'Performance bonus / allowance':'Deduction / adjustment'}</td><td style="text-align:right;color:${(rec.bonus||0)>=0?'green':'red'}">${(rec.bonus||0)>=0?'+':''}${fmtExact(rec.bonus||0)}</td></tr>
     <tr style="font-weight:700;"><td colspan="2">NET PAY</td><td style="text-align:right;font-size:16px;color:#1a1a2e;">${fmtExact(rec.net||0)}</td></tr>
   </tbody>
@@ -3938,11 +4025,12 @@ function serializeAttendanceForSheet(){
 }
 function serializeSalaryForSheet(){
   const rows=loadSalary();
-  // Columns match app: Month/Year, Staff Name, Designation, Base Salary, Bonus/Deduction, Net Pay
-  return [['id','month','name','designation','base_salary','bonus_deduction','net_pay'],
+  // Columns match app: Month/Year, Staff Name, Designation, Base Salary, Bonus/Deduction, Net Pay, Paid, Paid Date
+  return [['id','month','name','designation','base_salary','bonus_deduction','net_pay','paid','paid_date'],
     ...rows.map(r=>[
       r.id||'', r.month||'', r.name||'',
-      r.role||'', r.base||0, r.bonus||0, r.net||0
+      r.role||'', r.base||0, r.bonus||0, r.net||0,
+      r.paid?'Yes':'No', r.paidDate||''
     ])];
 }
 
