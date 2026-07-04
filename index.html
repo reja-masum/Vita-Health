@@ -176,7 +176,6 @@ body{font-family:var(--font);background:var(--bg-deep);color:var(--tp);min-heigh
   .agency-form-grid{grid-template-columns:1fr 1fr!important;}
   .oc-group-grid{grid-template-columns:1fr 1fr!important;}
   .add-user-grid{grid-template-columns:1fr 1fr!important;}
-  .unfit-dform{grid-template-columns:1fr 1fr!important;}
   .settings-grid{grid-template-columns:1fr!important;}
   .ops-tabs{flex-wrap:wrap;}
   .daily-subnav{flex-wrap:wrap;gap:4px;}
@@ -406,7 +405,6 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   .agency-form-grid{grid-template-columns:1fr 1fr;}
   .oc-group-grid{grid-template-columns:1fr 1fr;}
   .add-user-grid{grid-template-columns:1fr 1fr;}
-  .unfit-dform{grid-template-columns:1fr 1fr!important;}
   .settings-grid{grid-template-columns:1fr;}
   .ops-tabs{flex-wrap:wrap;}
   .daily-subnav{flex-wrap:wrap;gap:4px;}
@@ -425,7 +423,6 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   .agency-form-grid{grid-template-columns:1fr 1fr;}
   .oc-group-grid{grid-template-columns:1fr 1fr;}
   .add-user-grid{grid-template-columns:1fr 1fr;}
-  .unfit-dform{grid-template-columns:1fr 1fr!important;}
   .combined-total-row{flex-direction:column;align-items:flex-start;gap:4px;}
   .settings-grid{grid-template-columns:1fr;}
   .ygrid{grid-template-columns:1fr 1fr;}
@@ -442,7 +439,6 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   .agency-form-grid{grid-template-columns:1fr;}
   .oc-group-grid{grid-template-columns:1fr;}
   .add-user-grid{grid-template-columns:1fr;}
-  .unfit-dform{grid-template-columns:1fr!important;}
   .dform{grid-template-columns:1fr!important;}
   .dt-form.dt-form-inc{grid-template-columns:1fr;}
   .daily-summary-grid.cols-4{grid-template-columns:1fr 1fr;}
@@ -1584,7 +1580,7 @@ function ipSameSubnet(ip1,ip2){
 
 async function checkOfficeWifi(){
   const s=getSettings();
-  if(!s.wifiAttEnabled)return{ok:true,msg:'Check-in enabled'};
+  if(s.wifiAttEnabled===false)return{ok:true,msg:'Check-in enabled'};
   const officeIp=(s.officePublicIp||OFFICE_PUBLIC_IP).trim();
   if(!officeIp)return{ok:true,msg:'Office IP not set'};
   const myIp=await fetchPublicIp();
@@ -1596,15 +1592,17 @@ async function checkOfficeWifi(){
 function saveWifiSettings(){
   const s=getSettings();
   s.officePublicIp=(g('set-office-wifi-ip')||{}).value||'';
-  s.wifiAttEnabled=g('wifiAttToggle')&&g('wifiAttToggle').classList.contains('on');
   saveSettings(s);
   showToast('WiFi settings saved');
 }
 
 function toggleWifiAtt(){
   const t=g('wifiAttToggle');if(!t)return;
-  t.classList.toggle('on');
-  const s=getSettings();s.wifiAttEnabled=t.classList.contains('on');saveSettings(s);
+  const s=getSettings();
+  const currentlyOn=(s.wifiAttEnabled!==false); // undefined/true = on (default)
+  s.wifiAttEnabled=!currentlyOn;
+  saveSettings(s);
+  t.className=!currentlyOn?'toggle on':'toggle';
 }
 
 async function testWifiConnection(){
@@ -1621,7 +1619,7 @@ function loadWifiSettingsUI(){
   const s=getSettings();
   if(g('set-office-wifi-ip'))g('set-office-wifi-ip').value=s.officePublicIp||OFFICE_PUBLIC_IP;
   const t=g('wifiAttToggle');
-  if(t){t.classList.toggle('on',s.wifiAttEnabled!==false);}
+  if(t){t.className=(s.wifiAttEnabled!==false)?'toggle on':'toggle';}
 }
 let centerInst=null,yearInst=null,autoSyncTimer=null,incomeManualAmt=false;
 let _clockTimer=null;
@@ -1823,6 +1821,23 @@ const g=id=>document.getElementById(id);
 const fmtExact=n=>'৳'+Math.round(n).toLocaleString();
 // parseSheetDate defined below near syncPull — do not duplicate here
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// Fetches JSON with one automatic retry — Google Apps Script Web Apps sometimes cold-start
+// slowly or hiccup transiently, causing a single fetch attempt to fail even though the
+// script itself is fine. Retrying once after a short delay avoids reporting a false failure.
+async function fetchJsonWithRetry(url,retries=1,delayMs=1200){
+  let lastErr=null;
+  for(let attempt=0;attempt<=retries;attempt++){
+    try{
+      const resp=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now());
+      if(!resp.ok)throw new Error('HTTP '+resp.status);
+      return await resp.json();
+    }catch(e){
+      lastErr=e;
+      if(attempt<retries)await new Promise(r=>setTimeout(r,delayMs));
+    }
+  }
+  throw lastErr;
+}
 function toast(msg){const t=g('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',2500);}
 function yk(){return g('fin-year').value;}function ym(){return +g('fin-month').value;}
 function monthLabel(yr,mi){return MN_EN[mi]+' '+yr;}
@@ -1848,8 +1863,8 @@ function buildMonthSels(){
   g('fin-month').addEventListener('change',onFinanceYearMonthChange);g('fin-year').addEventListener('change',onFinanceYearMonthChange);g('d-month-filter').addEventListener('change',renderDailyTable);
   const _now=new Date(),_yr=_now.getFullYear(),_mo=String(_now.getMonth()+1).padStart(2,'0'),_dy=String(_now.getDate()).padStart(2,'0');const today=`${_yr}-${_mo}-${_dy}`;g('di-date').value=today;g('de-date').value=today;
 }
-function onFinanceYearMonthChange(){g('selYear').value=g('fin-year').value;g('selMonth').value=g('fin-month').value;if(g('calc-year-filter'))g('calc-year-filter').value=g('fin-year').value;if(g('calc-month-filter'))g('calc-month-filter').value=g('fin-month').value;loadMonthData();g('yr-label').textContent=yk();updateYearSummary();updateCenterChart();}
-function onYearMonthChange(){loadMonthData();g('yr-label').textContent=yk();updateYearSummary();updateCenterChart();}
+function onFinanceYearMonthChange(){g('selYear').value=g('fin-year').value;g('selMonth').value=g('fin-month').value;if(g('calc-year-filter'))g('calc-year-filter').value=g('fin-year').value;if(g('calc-month-filter'))g('calc-month-filter').value=g('fin-month').value;loadMonthData();g('yr-label').textContent=yk();updateYearSummary();}
+function onYearMonthChange(){loadMonthData();g('yr-label').textContent=yk();updateYearSummary();}
 // Patient Calculation page's own year/month filter — controls the same global month, kept in sync everywhere
 function onCalcFilterChange(){
   g('fin-year').value=g('calc-year-filter').value;
@@ -1862,21 +1877,6 @@ let otherExps=[];
 function loadOtherExps(){otherExps=loadArr(SK5);}
 
 // DUE
-
-// CENTER CHART (card removed from dashboard; kept defensively for safety, no-ops if elements absent)
-function updateCenterChart(){
-  if(!g('centerChart'))return;
-  const all=getAllPatients();const yr=g('fin-year').value;
-  const counts={};CENTERS.forEach(c=>counts[c]=0);let total=0;
-  all.filter(r=>r._year===yr).forEach(r=>{const from=(r.from||'').trim();if(CENTERS.includes(from))counts[from]++;else if(from){counts['Other Center']=(counts['Other Center']||0)+1;}total++;});
-  const active=Object.entries(counts).filter(([,v])=>v>0);
-  let labels=active.map(([k])=>k),data=active.map(([,v])=>v),bg=labels.map(l=>CENTER_COLORS[l]||'rgba(255,255,255,.3)');
-  g('center-total').textContent=total;
-  g('center-legend').innerHTML=labels.length?labels.map(l=>`<div class="li"><div class="ld" style="background:${CENTER_COLORS[l]}"></div>${l}<span>${counts[l]}</span></div>`).join(''):'<div class="li" style="color:var(--tm);">No patients yet</div>';
-  if(!labels.length){labels=['No Data'];data=[1];bg=['rgba(255,255,255,.05)'];}
-  if(centerInst){centerInst.data.labels=labels;centerInst.data.datasets[0].data=data;centerInst.data.datasets[0].backgroundColor=bg;centerInst.update('none');}
-  else{centerInst=new Chart(g('centerChart'),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:bg,borderColor:'#131929',borderWidth:3,hoverOffset:4}]},options:{cutout:'72%',plugins:{legend:{display:false}},animation:{duration:400}}});}
-}
 
 // ALL PATIENTS MERGE
 function getAllPatients(){return[...loadArr(SK10).map(p=>({...p,_source:'vita_sheet'})),...loadArr(SK11).map(p=>({...p,_source:'other_sheet'})),...loadArr(SK3).map(p=>({...p,_source:'manual'}))];}
@@ -2648,155 +2648,174 @@ async function syncPull(){
   const s=getSettings();
   const dailyUrls=s.dailyUrls||(s.scriptUrl?[{year:'',url:s.scriptUrl}]:[]);
   if(!dailyUrls.length)return false;
-  try{setSyncStatus('busy');
+  setSyncStatus('busy');
+  let anySuccess=false;
   for(const entry of dailyUrls){
     if(!entry.url)continue;
-    const resp=await fetch(entry.url+'?t='+Date.now());const data=await resp.json();
-    if(data.finance&&data.finance.length>1){const all={};for(let i=1;i<data.finance.length;i++){const r=data.finance[i];if(!r[0])continue;all[r[0]]={patients:+r[1]||0,otherPts:+r[2]||0,income:+r[3]||0,expense:+r[4]||0,profit:+r[5]||0,margin:+r[6]||0,otherIncome:+r[7]||0,dailyExpense:+r[8]||0,saved:r[9]||''};}save(SK,all);}
-    if(data.daily&&data.daily.length>1){
-      const merged=new Map();
-      for(let i=1;i<data.daily.length;i++){const r=data.daily[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);const parsedDate=parseSheetDate(r[2]||'');const dp=parsedDate.split('-');merged.set(id,{id,type:r[1]||'expense',date:parsedDate,patients:+r[3]||0,amount:+r[4]||0,status:r[5]||'',note:r[6]||'',year:dp[0]||String(r[7]||''),month:dp[1]?parseInt(dp[1],10)-1:+r[8]||0});}
-      loadArr(SK4).forEach(r=>{const id=String(r.id);if(!merged.has(id))merged.set(id,{...r,id,year:String(r.year||'')});});
-      save(SK4,Array.from(merged.values()));
+    let data;
+    try{
+      data=await fetchJsonWithRetry(entry.url);
+    }catch(e){
+      console.log('Daily Tracker fetch failed for',entry.url,':',e);
+      continue; // try next URL if multiple configured; don't abort the whole sync
     }
-    if(data.other_exp&&data.other_exp.length>1){const exps=[];for(let i=1;i<data.other_exp.length;i++){const r=data.other_exp[i];exps.push({id:+r[0]||0,label:r[1]||'',amount:+r[2]||0});}save(SK5,exps);}
-    if(data.commission&&data.commission.length>1){
-      const cmerged=new Map();
-      for(let i=1;i<data.commission.length;i++){
-        const r=data.commission[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);
-        // Support both old (5-col) and new (8-col) formats
-        const is8=r.length>=8;
-        const is5=r.length>=5&&!is8;
-        // Normalize date: Sheets sometimes returns an Excel serial number (e.g. 46196)
-        // instead of a string when a cell was manually typed without explicit date format.
-        cmerged.set(id,{
-          id,
-          date:parseSheetDate(r[1]),
-          agency:String(r[2]||''),
-          contactName:is8?String(r[3]||''):'',
-          mobile:is8?String(r[4]||''):'',
-          address:is8?String(r[5]||''):'',
-          note:is8?String(r[6]||''):(is5?String(r[3]||''):String(r[2]||'')),
-          amount:is8?(+r[7]||0):(is5?+r[4]||0:+r[3]||0)
-        });
-      }
-      // Keep local-only records (not in sheet)
-      loadArr(SK9).forEach(r=>{const id=String(r.id);if(!cmerged.has(id))cmerged.set(id,{...r,id,date:parseSheetDate(r.date)});});
-      save(SK9,Array.from(cmerged.values()));
-    }
-    // ── CALC DATA: restore Patient Calculation from Sheet ──
-    // Apps Script returns sheet names as-is; try multiple key variants
-    const calcRaw=data.calc_data||data['calc_data']||data.Calc_data||data['Calc Data']||null;
-    if(calcRaw&&calcRaw.length>1){
-      const calcData=loadCalc();
-      for(let i=1;i<calcRaw.length;i++){
-        const r=calcRaw[i];if(!r||!r[0])continue;
-        calcData[String(r[0])]={
-          unfitPts:+r[1]||0,
-          unfitDeduction:(r[2]!==undefined&&r[2]!==''&&r[2]!==null)?+r[2]:7000,
-          otherPts:+r[3]||0,
-          otherRate:+r[4]||0,
-          ocACount:+r[5]||0,
-          ocARate:(r[6]!==undefined&&r[6]!==''&&r[6]!==null)?+r[6]:4000,
-          ocAMonth:(r[7]!==undefined&&r[7]!==''&&r[7]!==null)?+r[7]:new Date().getMonth(),
-          ocBCount:+r[8]||0,
-          ocBRate:(r[9]!==undefined&&r[9]!==''&&r[9]!==null)?+r[9]:3000,
-          ocBMonth:(r[10]!==undefined&&r[10]!==''&&r[10]!==null)?+r[10]:new Date().getMonth()
-        };
-      }
-      saveCalc(calcData);
-      pushCalcToSheet();
-    }
-    // ── SALARY: restore from Sheet ──
-    const salRaw=data.salary||data.Salary||null;
-    if(salRaw&&salRaw.length>1){
-      // Detect if first row is header or data
-      const firstCell=String(salRaw[0][0]||'').toLowerCase().trim();
-      const hasHeader=firstCell==='id'||firstCell==='month'||firstCell==='name';
-      const salHdr=hasHeader?salRaw[0].map(h=>String(h||'').toLowerCase().trim()):['id','month','name','designation','base_salary','bonus_deduction','net_pay'];
-      const sgi=(...keys)=>{for(const k of keys){const i=salHdr.indexOf(k);if(i>=0)return i;}return -1;};
-      // Support both old column names (role/base/bonus/net) and new (designation/base_salary/bonus_deduction/net_pay)
-      const sId=sgi('id'),sMo=sgi('month'),sNm=sgi('name'),
-            sRl=sgi('designation','role'),
-            sBs=sgi('base_salary','base'),
-            sBn=sgi('bonus_deduction','bonus'),
-            sNt=sgi('net_pay','net');
-      const dataRows=hasHeader?salRaw.slice(1):salRaw;
-      const sheetSal=dataRows
-        .filter(r=>r[sMo>=0?sMo:1]!==undefined&&r[sMo>=0?sMo:1]!==''&&r[sNm>=0?sNm:2]!==undefined&&r[sNm>=0?sNm:2]!=='')
-        .map(r=>({
-          id:sId>=0&&r[sId]?String(r[sId]):'',
-          // Sheets auto-converts "2026-06" to a date "2026-06-01" — normalize back to YYYY-MM
-          month:normalizeMonthField(r[sMo>=0?sMo:1]),
-          name:String(r[sNm>=0?sNm:2]||''),
-          role:sRl>=0?String(r[sRl]||''):'',
-          base:sBs>=0?+r[sBs]||0:0,
-          bonus:sBn>=0?+r[sBn]||0:0,
-          net:sNt>=0?+r[sNt]||0:0
-        }))
-        .filter(r=>r.id); // only keep records with valid id
-      if(sheetSal.length>0){
-        const localSal=loadSalary();
-        const salMerged=new Map();
-        // Sheet data wins
-        sheetSal.forEach(r=>salMerged.set(r.id,r));
-        // Keep local-only records (id not in sheet yet)
-        localSal.forEach(r=>{if(r.id&&!salMerged.has(r.id))salMerged.set(r.id,r);});
-        localStorage.setItem(SK_SAL,JSON.stringify(Array.from(salMerged.values())));
-        // Immediately re-push merged salary back to sheet to keep it consistent
-        pushSalaryToSheet();
-      }
-    }
-    // ── ATTENDANCE: restore from Sheet ──
-    if(data.attendance&&data.attendance.length>1){
-      const hdr=data.attendance[0].map(h=>String(h||'').toLowerCase().trim());
-      const gi=(k)=>hdr.indexOf(k);
-      const iId=gi('id'),iUser=gi('username'),iName=gi('name'),iDate=gi('date'),
-            iIn=gi('checkin'),iOut=gi('checkout'),iLate=gi('late'),iStatus=gi('status'),
-            iMonth=gi('month'),iYear=gi('year'),iMName=gi('monthname'),iLoc=gi('location');
-      if(iId>=0&&iUser>=0){
-        const sheetRecs=data.attendance.slice(1).filter(r=>r[iId]&&r[iUser]).map(r=>({
-          id:String(r[iId]),
-          username:String(r[iUser]||'').trim(),
-          name:String(iName>=0?r[iName]||'':r[iUser]||'').trim(),
-          date:parseAttDate(iDate>=0?r[iDate]||'':''),
-          checkIn:parseAttTime(iIn>=0?r[iIn]||'':''),
-          checkOut:parseAttTime(iOut>=0?r[iOut]||'':''),
-          late:iLate>=0&&(r[iLate]===true||String(r[iLate]).toLowerCase()==='true'||String(r[iLate]).toLowerCase()==='yes'||r[iLate]===1),
-          status:iStatus>=0?String(r[iStatus]||'Present'):'Present',
-          month:iMonth>=0?+r[iMonth]||0:0,
-          year:iYear>=0?String(r[iYear]||''):'',
-          monthName:iMName>=0?String(r[iMName]||''):'',
-          location:iLoc>=0?String(r[iLoc]||''):'',
-          wifiVerified:true
-        }));
-        // Merge: sheet wins for existing IDs, keep local-only records
-        const localRecs=loadAttendance();
+    anySuccess=true;
+    try{
+      if(data.finance&&data.finance.length>1){const all={};for(let i=1;i<data.finance.length;i++){const r=data.finance[i];if(!r[0])continue;all[r[0]]={patients:+r[1]||0,otherPts:+r[2]||0,income:+r[3]||0,expense:+r[4]||0,profit:+r[5]||0,margin:+r[6]||0,otherIncome:+r[7]||0,dailyExpense:+r[8]||0,saved:r[9]||''};}save(SK,all);}
+    }catch(e){console.log('Finance section parse failed:',e);}
+    try{
+      if(data.daily&&data.daily.length>1){
         const merged=new Map();
-        sheetRecs.forEach(r=>merged.set(r.id,r));
-        localRecs.forEach(r=>{if(!merged.has(r.id))merged.set(r.id,r);});
-        localStorage.setItem(SK_ATT,JSON.stringify(Array.from(merged.values())));
+        for(let i=1;i<data.daily.length;i++){const r=data.daily[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);const parsedDate=parseSheetDate(r[2]||'');const dp=parsedDate.split('-');merged.set(id,{id,type:r[1]||'expense',date:parsedDate,patients:+r[3]||0,amount:+r[4]||0,status:r[5]||'',note:r[6]||'',year:dp[0]||String(r[7]||''),month:dp[1]?parseInt(dp[1],10)-1:+r[8]||0});}
+        loadArr(SK4).forEach(r=>{const id=String(r.id);if(!merged.has(id))merged.set(id,{...r,id,year:String(r.year||'')});});
+        save(SK4,Array.from(merged.values()));
       }
-    }
-    // ── USERS: restore from Sheet if localStorage was cleared ──
-    if(data['users']||data['Users']){
-      const raw=data['users']||data['Users'];
-      if(raw&&raw.length>1){
-        const headers=raw[0].map(h=>String(h).toLowerCase().trim());
-        const idxU=headers.indexOf('username'),idxP=headers.indexOf('password'),
-              idxR=headers.indexOf('role'),idxN=headers.indexOf('name');
-        if(idxU>=0&&idxP>=0){
-          const restored=raw.slice(1).filter(r=>r[idxU]&&String(r[idxU]).trim()).map(r=>({
-            username:String(r[idxU]).trim(),password:String(r[idxP]).trim(),
-            role:String(r[idxR]||'staff').trim().toLowerCase(),name:String(r[idxN]||r[idxU]).trim()
-          }));
-          if(restored.length)localStorage.setItem(SK_USERS,JSON.stringify(restored));
+    }catch(e){console.log('Daily section parse failed:',e);}
+    try{
+      if(data.other_exp&&data.other_exp.length>1){const exps=[];for(let i=1;i<data.other_exp.length;i++){const r=data.other_exp[i];exps.push({id:+r[0]||0,label:r[1]||'',amount:+r[2]||0});}save(SK5,exps);}
+    }catch(e){console.log('Other expense section parse failed:',e);}
+    try{
+      if(data.commission&&data.commission.length>1){
+        const cmerged=new Map();
+        for(let i=1;i<data.commission.length;i++){
+          const r=data.commission[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);
+          // Support both old (5-col) and new (8-col) formats
+          const is8=r.length>=8;
+          const is5=r.length>=5&&!is8;
+          // Normalize date: Sheets sometimes returns an Excel serial number (e.g. 46196)
+          // instead of a string when a cell was manually typed without explicit date format.
+          cmerged.set(id,{
+            id,
+            date:parseSheetDate(r[1]),
+            agency:String(r[2]||''),
+            contactName:is8?String(r[3]||''):'',
+            mobile:is8?String(r[4]||''):'',
+            address:is8?String(r[5]||''):'',
+            note:is8?String(r[6]||''):(is5?String(r[3]||''):String(r[2]||'')),
+            amount:is8?(+r[7]||0):(is5?+r[4]||0:+r[3]||0)
+          });
+        }
+        // Keep local-only records (not in sheet)
+        loadArr(SK9).forEach(r=>{const id=String(r.id);if(!cmerged.has(id))cmerged.set(id,{...r,id,date:parseSheetDate(r.date)});});
+        save(SK9,Array.from(cmerged.values()));
+      }
+    }catch(e){console.log('Commission section parse failed:',e);}
+    try{
+      // ── CALC DATA: restore Patient Calculation from Sheet ──
+      // Apps Script returns sheet names as-is; try multiple key variants
+      const calcRaw=data.calc_data||data['calc_data']||data.Calc_data||data['Calc Data']||null;
+      if(calcRaw&&calcRaw.length>1){
+        const calcData=loadCalc();
+        for(let i=1;i<calcRaw.length;i++){
+          const r=calcRaw[i];if(!r||!r[0])continue;
+          calcData[String(r[0])]={
+            ocARate:(r[6]!==undefined&&r[6]!==''&&r[6]!==null)?+r[6]:4000,
+            ocBRate:(r[9]!==undefined&&r[9]!==''&&r[9]!==null)?+r[9]:3000
+          };
+        }
+        saveCalc(calcData);
+        pushCalcToSheet();
+      }
+    }catch(e){console.log('Calc data section parse failed:',e);}
+    try{
+      // ── SALARY: restore from Sheet ──
+      const salRaw=data.salary||data.Salary||null;
+      if(salRaw&&salRaw.length>1){
+        // Detect if first row is header or data
+        const firstCell=String(salRaw[0][0]||'').toLowerCase().trim();
+        const hasHeader=firstCell==='id'||firstCell==='month'||firstCell==='name';
+        const salHdr=hasHeader?salRaw[0].map(h=>String(h||'').toLowerCase().trim()):['id','month','name','designation','base_salary','bonus_deduction','net_pay'];
+        const sgi=(...keys)=>{for(const k of keys){const i=salHdr.indexOf(k);if(i>=0)return i;}return -1;};
+        // Support both old column names (role/base/bonus/net) and new (designation/base_salary/bonus_deduction/net_pay)
+        const sId=sgi('id'),sMo=sgi('month'),sNm=sgi('name'),
+              sRl=sgi('designation','role'),
+              sBs=sgi('base_salary','base'),
+              sBn=sgi('bonus_deduction','bonus'),
+              sNt=sgi('net_pay','net');
+        const dataRows=hasHeader?salRaw.slice(1):salRaw;
+        const sheetSal=dataRows
+          .filter(r=>r[sMo>=0?sMo:1]!==undefined&&r[sMo>=0?sMo:1]!==''&&r[sNm>=0?sNm:2]!==undefined&&r[sNm>=0?sNm:2]!=='')
+          .map(r=>({
+            id:sId>=0&&r[sId]?String(r[sId]):'',
+            // Sheets auto-converts "2026-06" to a date "2026-06-01" — normalize back to YYYY-MM
+            month:normalizeMonthField(r[sMo>=0?sMo:1]),
+            name:String(r[sNm>=0?sNm:2]||''),
+            role:sRl>=0?String(r[sRl]||''):'',
+            base:sBs>=0?+r[sBs]||0:0,
+            bonus:sBn>=0?+r[sBn]||0:0,
+            net:sNt>=0?+r[sNt]||0:0
+          }))
+          .filter(r=>r.id); // only keep records with valid id
+        if(sheetSal.length>0){
+          const localSal=loadSalary();
+          const salMerged=new Map();
+          // Sheet data wins
+          sheetSal.forEach(r=>salMerged.set(r.id,r));
+          // Keep local-only records (id not in sheet yet)
+          localSal.forEach(r=>{if(r.id&&!salMerged.has(r.id))salMerged.set(r.id,r);});
+          localStorage.setItem(SK_SAL,JSON.stringify(Array.from(salMerged.values())));
+          // Immediately re-push merged salary back to sheet to keep it consistent
+          pushSalaryToSheet();
         }
       }
-    }
+    }catch(e){console.log('Salary section parse failed:',e);}
+    try{
+      // ── ATTENDANCE: restore from Sheet ──
+      if(data.attendance&&data.attendance.length>1){
+        const hdr=data.attendance[0].map(h=>String(h||'').toLowerCase().trim());
+        const gi=(k)=>hdr.indexOf(k);
+        const iId=gi('id'),iUser=gi('username'),iName=gi('name'),iDate=gi('date'),
+              iIn=gi('checkin'),iOut=gi('checkout'),iLate=gi('late'),iStatus=gi('status'),
+              iMonth=gi('month'),iYear=gi('year'),iMName=gi('monthname'),iLoc=gi('location');
+        if(iId>=0&&iUser>=0){
+          const sheetRecs=data.attendance.slice(1).filter(r=>r[iId]&&r[iUser]).map(r=>({
+            id:String(r[iId]),
+            username:String(r[iUser]||'').trim(),
+            name:String(iName>=0?r[iName]||'':r[iUser]||'').trim(),
+            date:parseAttDate(iDate>=0?r[iDate]||'':''),
+            checkIn:parseAttTime(iIn>=0?r[iIn]||'':''),
+            checkOut:parseAttTime(iOut>=0?r[iOut]||'':''),
+            late:iLate>=0&&(r[iLate]===true||String(r[iLate]).toLowerCase()==='true'||String(r[iLate]).toLowerCase()==='yes'||r[iLate]===1),
+            status:iStatus>=0?String(r[iStatus]||'Present'):'Present',
+            month:iMonth>=0?+r[iMonth]||0:0,
+            year:iYear>=0?String(r[iYear]||''):'',
+            monthName:iMName>=0?String(r[iMName]||''):'',
+            location:iLoc>=0?String(r[iLoc]||''):'',
+            wifiVerified:true
+          }));
+          // Merge: sheet wins for existing IDs, keep local-only records
+          const localRecs=loadAttendance();
+          const merged=new Map();
+          sheetRecs.forEach(r=>merged.set(r.id,r));
+          localRecs.forEach(r=>{if(!merged.has(r.id))merged.set(r.id,r);});
+          localStorage.setItem(SK_ATT,JSON.stringify(Array.from(merged.values())));
+        }
+      }
+    }catch(e){console.log('Attendance section parse failed:',e);}
+    try{
+      // ── USERS: restore from Sheet if localStorage was cleared ──
+      if(data['users']||data['Users']){
+        const raw=data['users']||data['Users'];
+        if(raw&&raw.length>1){
+          const headers=raw[0].map(h=>String(h).toLowerCase().trim());
+          const idxU=headers.indexOf('username'),idxP=headers.indexOf('password'),
+                idxR=headers.indexOf('role'),idxN=headers.indexOf('name');
+          if(idxU>=0&&idxP>=0){
+            const restored=raw.slice(1).filter(r=>r[idxU]&&String(r[idxU]).trim()).map(r=>({
+              username:String(r[idxU]).trim(),password:String(r[idxP]).trim(),
+              role:String(r[idxR]||'staff').trim().toLowerCase(),name:String(r[idxN]||r[idxU]).trim()
+            }));
+            if(restored.length)localStorage.setItem(SK_USERS,JSON.stringify(restored));
+          }
+        }
+      }
+    }catch(e){console.log('Users section parse failed:',e);}
   }
+  if(anySuccess){
     s.lastSync=new Date().toLocaleTimeString();saveSettings(s);setSyncStatus('ok');return true;
-  }catch(e){setSyncStatus('error');console.log('Pull failed:',e);return false;}
+  }
+  setSyncStatus('error');
+  return false;
 }
 
 // serializeForPush defined below with full column support
@@ -2851,11 +2870,13 @@ async function vitaPull(){
   let anySuccess=false;
   for(const entry of vitaUrls){
     if(!entry.url)continue;
+    let data;
     try{
-      const resp=await fetch(entry.url+'?t='+Date.now());
-      const data=await resp.json();
-      anySuccess=true;
-      MONTHS.forEach((m,mi)=>{
+      data=await fetchJsonWithRetry(entry.url);
+    }catch(e){console.log('Vita fetch failed for year',entry.year,':',e);continue;}
+    anySuccess=true;
+    MONTHS.forEach((m,mi)=>{
+      try{
         if(!data[m]||data[m].length<2)return;
         const hdr=data[m][0].map(h=>String(h||'').toLowerCase().trim());
         const ci=(...keys)=>{for(const k of keys){const i=hdr.findIndex(h=>h.includes(k));if(i>=0)return i;}return -1;};
@@ -2880,8 +2901,8 @@ async function vitaPull(){
             from:'Vita Center',source:'vita_sheet',sheetYear:entry.year||yr
           });
         });
-      });
-    }catch(e){console.log('Vita pull failed for year',entry.year,':',e);}
+      }catch(e){console.log('Vita month parse failed:',m,e);}
+    });
   }
   if(anySuccess)save(SK10,all);
   return anySuccess;
@@ -2895,10 +2916,13 @@ async function othersPull(){
   const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   for(const entry of othersUrls){
     if(!entry.url)continue;
+    let data;
     try{
-      const resp=await fetch(entry.url+'?t='+Date.now());
-      const data=await resp.json();anySuccess=true;
-      Object.entries(data).forEach(([centerName,sheetData])=>{
+      data=await fetchJsonWithRetry(entry.url);
+    }catch(e){console.log('Others fetch failed for year',entry.year,':',e);continue;}
+    anySuccess=true;
+    Object.entries(data).forEach(([centerName,sheetData])=>{
+      try{
         if(!sheetData||sheetData.length<2)return;
         // Use header row for column mapping
         const hdr=sheetData[0].map(h=>String(h||'').toLowerCase().trim());
@@ -2919,12 +2943,13 @@ async function othersPull(){
             status:iStatus>=0?r[iStatus]||'':'',comment:iComment>=0?r[iComment]||'':'',source:'others_sheet'
           });
         });
-      });
-    }catch(e){console.log('Others pull failed for year',entry.year,':',e);}
+      }catch(e){console.log('Others center parse failed:',centerName,e);}
+    });
   }
   if(anySuccess)save(SK11,all);
   return anySuccess;
 }
+
 
 async function manualSync(){
   const s=getSettings();
@@ -2940,7 +2965,7 @@ async function manualSync(){
   const results=await Promise.all(promises);
   const anyOk=results.some(Boolean);
   if(anyOk){
-    loadOtherExps();loadMonthData();updateYearSummary();updateCenterChart();
+    loadOtherExps();loadMonthData();updateYearSummary();
     if(g('page-daily').classList.contains('active')){renderDailyTable();renderCommissionLog();}
     if(g('page-patients').classList.contains('active'))renderVitaPatients();
     if(g('page-others').classList.contains('active'))renderOthersPatients();
@@ -2958,7 +2983,7 @@ function startAutoSync(){
   const hasOthersUrl=(s.othersUrls&&s.othersUrls.length)||s.othersScriptUrl;
   if(!s.autoSync||(!hasDailyUrl&&!hasVitaUrl&&!hasOthersUrl))return;
   autoSyncTimer=setInterval(async()=>{
-    if(hasDailyUrl){await syncPull();loadOtherExps();recalc();updateCenterChart();}
+    if(hasDailyUrl){await syncPull();loadOtherExps();recalc();}
     if(hasVitaUrl)await vitaPull();
     if(hasOthersUrl){await othersPull();recalc();if(g('oc-a-count')||g('oc-b-count'))loadPerPatientInputs();}
     if(g('page-daily')&&g('page-daily').classList.contains('active')){renderDailyTable();renderCommissionLog();}
@@ -4007,7 +4032,7 @@ function bootstrapBuiltinUrls(){
     changed=true;
   }
   if(s.wifiAttEnabled===undefined){
-    s.wifiAttEnabled=true; // default ON — office WiFi check enforced unless admin disables it
+    s.wifiAttEnabled=true; // default ON, same as Auto Sync — admin can still turn off if truly needed
     changed=true;
   }
   if(changed)saveSettings(s);
@@ -4048,11 +4073,11 @@ function initApp(){
           hasVita?vitaPull():Promise.resolve(),
           hasOthers?othersPull():Promise.resolve()
         ]).then(()=>{
-          loadOtherExps();loadMonthData();updateYearSummary();updateCenterChart();renderCommissionLog();renderAgencyCard();
+          loadOtherExps();loadMonthData();updateYearSummary();renderCommissionLog();renderAgencyCard();
           startAutoSync();
         });
       } else {
-        loadOtherExps();loadMonthData();updateYearSummary();updateCenterChart();renderAgencyCard();
+        loadOtherExps();loadMonthData();updateYearSummary();renderAgencyCard();
       }
     }
     setSyncStatus(s.scriptUrl?'ok':'none');
