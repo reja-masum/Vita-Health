@@ -676,9 +676,10 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         <div class="ff"><label>Patients</label><input type="number" id="di-patients" value="1" min="0" oninput="calcIncomeAmount()"></div>
         <div class="ff"><label>Amount (৳)</label><input type="number" id="di-amount" value="8500" min="0" oninput="onIncomeAmountEdited()"></div>
         <div class="ff"><label>Payment Status</label>
-          <select id="di-status">
+          <select id="di-status" onchange="onIncomeStatusChange()">
             <option value="paid">Paid</option>
             <option value="due">Due (not paid yet)</option>
+            <option value="free">Free (no charge)</option>
           </select>
         </div>
         <div class="ff"><label>Note (optional)</label><input type="text" id="di-note" placeholder="Reference, patient name, etc."></div>
@@ -707,7 +708,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         <select class="sel" id="d-year-filter" onchange="renderDailyTable()"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select>
         <select class="sel" id="d-month-filter" onchange="renderDailyTable()"></select>
         <div style="position:relative;display:flex;align-items:center;"><input type="date" id="d-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderDailyTable()"><button onclick="clearDateFilterDaily()" id="d-date-clear" style="display:none;position:absolute;right:6px;background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;">&#10005;</button></div>
-        <select class="sel" id="d-type-filter" onchange="renderDailyTable()"><option value="">All Types</option><option value="income">Income Only</option><option value="expense">Expense Only</option><option value="due">Due Only</option></select>
+        <select class="sel" id="d-type-filter" onchange="renderDailyTable()"><option value="">All Types</option><option value="income">Income Only</option><option value="expense">Expense Only</option><option value="due">Due Only</option><option value="free">Free Only</option></select>
         <button class="abtn bexp" onclick="exportDailyCSV()">Export</button>
       </div>
       <div class="tw">
@@ -1957,11 +1958,12 @@ function getDailyTrackerMonthTotals(){
   const monthRows=loadArr(SK4).filter(r=>r.year===yr&&r.month===mi);
   const incomeRows=monthRows.filter(r=>r.type==='income'),expenseRows=monthRows.filter(r=>r.type==='expense');
   const patients=incomeRows.reduce((a,r)=>a+(r.patients||0),0);
-  const income=incomeRows.filter(r=>r.status!=='due').reduce((a,r)=>a+(r.amount||0),0);
+  const income=incomeRows.filter(r=>r.status==='paid'||!r.status).reduce((a,r)=>a+(r.amount||0),0);
   const due=incomeRows.filter(r=>r.status==='due').reduce((a,r)=>a+(r.amount||0),0);
   const duePts=incomeRows.filter(r=>r.status==='due').reduce((a,r)=>a+(r.patients||0),0);
+  const freePts=incomeRows.filter(r=>r.status==='free').reduce((a,r)=>a+(r.patients||0),0);
   const expense=expenseRows.reduce((a,r)=>a+(r.amount||0),0);
-  return{patients,income,due,duePts,expense};
+  return{patients,income,due,duePts,freePts,expense};
 }
 function recalc(){
   const dt=getDailyTrackerMonthTotals();
@@ -2137,14 +2139,18 @@ function addIncomeEntry(){
   const date=g('di-date').value;if(!date){toast('Select a date');return;}
   const pts=parseInt(g('di-patients').value)||0;
   const amount=parseFloat(g('di-amount').value)||0;
-  if(amount<=0){toast('Enter a valid amount');return;}
-  addLock=true;setTimeout(()=>{addLock=false;},700);
   const status=g('di-status').value,note=g('di-note').value.trim();
+  if(amount<=0&&status!=='free'){toast('Enter a valid amount');return;}
+  addLock=true;setTimeout(()=>{addLock=false;},700);
   const _dp=date.split('-');const yr=_dp[0],mi=parseInt(_dp[1],10)-1,all=loadArr(SK4);
   all.push({id:genId('inc'),type:'income',date,patients:pts,amount,status,note,year:yr,month:mi});
-  save(SK4,all);toast(status==='due'?'Due income added':'Income added');
+  save(SK4,all);toast(status==='due'?'Due income added':status==='free'?'Free entry added':'Income added');
   g('di-patients').value=1;g('di-amount').value=INCOME_RATE;g('di-status').value='paid';g('di-note').value='';incomeManualAmt=false;
   renderDailyTable();recalc();pushToSheet();
+}
+function onIncomeStatusChange(){
+  // Free visits are typically no-charge — zero the amount out by default (still editable)
+  if(g('di-status').value==='free'){g('di-amount').value=0;incomeManualAmt=true;}
 }
 function addExpenseEntry(){
   if(addLock)return;
@@ -2180,7 +2186,7 @@ function renderDailyTable(){
 
   const all=loadArr(SK4);
   const monthRows=all.filter(r=>r.year===yr&&r.month===mi);
-  const mInc=monthRows.filter(r=>r.type==='income'&&r.status!=='due').reduce((a,r)=>a+(r.amount||0),0);
+  const mInc=monthRows.filter(r=>r.type==='income'&&(r.status==='paid'||!r.status)).reduce((a,r)=>a+(r.amount||0),0);
   const mDue=monthRows.filter(r=>r.type==='income'&&r.status==='due').reduce((a,r)=>a+(r.amount||0),0);
   const mExp=monthRows.filter(r=>r.type==='expense').reduce((a,r)=>a+(r.amount||0),0);
   const mNet=mInc-mExp;
@@ -2191,16 +2197,17 @@ function renderDailyTable(){
   if(kw){rows=all.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.date||'').includes(kw));}
   else{rows=monthRows;if(dateF)rows=rows.filter(r=>r.date===dateF);}
   if(tf==='due')rows=rows.filter(r=>r.type==='income'&&r.status==='due');
+  else if(tf==='free')rows=rows.filter(r=>r.type==='income'&&r.status==='free');
   else if(tf)rows=rows.filter(r=>r.type===tf);
   rows=rows.slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
 
   const tbody=g('dailyTbody');
   if(!rows.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--tm);">No records found.</td></tr>';return;}
   tbody.innerHTML=rows.map(r=>{
-    const isIncome=r.type==='income',isDue=isIncome&&r.status==='due';
+    const isIncome=r.type==='income',isDue=isIncome&&r.status==='due',isFree=isIncome&&r.status==='free';
     const typeBadge=isIncome?'<span class="sb sa">Income</span>':'<span class="sb sp">Expense</span>';
-    const statusBadge=isIncome?(isDue?'<span class="sb so-badge">Due</span>':'<span class="sb sa">Paid</span>'):'<span style="color:var(--tm);">-</span>';
-    const amtColor=isIncome?(isDue?'var(--yellow)':'var(--green)'):'var(--pink)';
+    const statusBadge=isIncome?(isDue?'<span class="sb so-badge">Due</span>':isFree?'<span class="sb sd">Free</span>':'<span class="sb sa">Paid</span>'):'<span style="color:var(--tm);">-</span>';
+    const amtColor=isIncome?(isDue?'var(--yellow)':isFree?'var(--cyan)':'var(--green)'):'var(--pink)';
     const amtSign=isIncome?'+':'-';
     const markPaidBtn=isDue?`<button onclick="markEntryPaid('${r.id}')" class="paid-btn" title="Mark as Paid">&#10003; Paid</button>`:'';
     return`<tr><td style="font-weight:500;">${r.date}</td><td>${typeBadge}</td><td style="font-family:var(--mono);color:var(--cyan);">${isIncome?(r.patients||0):'-'}</td><td style="font-family:var(--mono);text-align:right;color:${amtColor};font-weight:500;">${amtSign}${fmtExact(r.amount)}</td><td>${statusBadge}</td><td style="color:var(--ts);font-size:12px;max-width:240px;">${r.note?escapeHtml(r.note):'-'}</td><td style="text-align:right;white-space:nowrap;">${markPaidBtn}<button onclick="deleteDailyEntry('${r.id}')" class="rm-btn">&#10005;</button></td></tr>`;
@@ -3423,20 +3430,54 @@ function renderAttSummary(mf){
   const byStaff={};
   rows.forEach(r=>{
     const k=r.name||r.username;
-    if(!byStaff[k])byStaff[k]={present:0,late:0,absent:0};
-    if(r.status==='Present')byStaff[k].present++;
+    if(!byStaff[k])byStaff[k]={present:0,late:0,absent:0,presentDates:new Set()};
+    if(r.status==='Present'){byStaff[k].present++;byStaff[k].presentDates.add(r.date);}
     if(r.late)byStaff[k].late++;
   });
+  // Also list staff who have ZERO records this period, so a fully-missed
+  // month shows up as Absent instead of not appearing at all.
+  if(mf){
+    loadUsers().filter(u=>u.role!=='admin').forEach(u=>{
+      const k=u.name||u.username;
+      if(!byStaff[k])byStaff[k]={present:0,late:0,absent:0,presentDates:new Set()};
+    });
+  }
   if(!Object.keys(byStaff).length){el.innerHTML='<div style="color:var(--tm);font-size:12px;">No data for this period.</div>';return;}
+
+  // Absent = working days elapsed in the selected month (excluding Friday,
+  // the weekly holiday) minus days actually marked Present. This needs a
+  // concrete date range, so it only applies when one specific month is
+  // selected — "All Time" spans many months and can't be resolved to a range.
+  let workingDaysSoFar=null;
+  if(mf){
+    const [yStr,mStr]=mf.split('-');
+    const y=parseInt(yStr,10), m=parseInt(mStr,10)-1;
+    const today=new Date();today.setHours(0,0,0,0);
+    const monthStart=new Date(y,m,1);
+    const monthEnd=new Date(y,m+1,0);
+    const isCurrentMonth=(y===today.getFullYear()&&m===today.getMonth());
+    const lastDay=isCurrentMonth?(monthEnd>today?today:monthEnd):monthEnd;
+    workingDaysSoFar=0;
+    if(monthStart<=lastDay){
+      for(let d=new Date(monthStart);d<=lastDay;d.setDate(d.getDate()+1)){
+        if(d.getDay()!==5)workingDaysSoFar++; // exclude Friday
+      }
+    }
+  }
+  Object.values(byStaff).forEach(c=>{
+    c.absent=workingDaysSoFar!=null?Math.max(0,workingDaysSoFar-c.presentDates.size):0;
+  });
+
   el.innerHTML=Object.entries(byStaff).map(([name,c])=>`
     <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--rs);padding:12px;">
       <div style="font-size:12px;font-weight:600;color:var(--tp);margin-bottom:8px;">${escapeHtml(name)}</div>
       <div style="font-size:12px;display:flex;flex-direction:column;gap:4px;">
         <div style="display:flex;justify-content:space-between;"><span style="color:var(--green);">Present</span><span style="font-family:var(--mono);">${c.present}</span></div>
         <div style="display:flex;justify-content:space-between;"><span style="color:var(--yellow);">Late</span><span style="font-family:var(--mono);">${c.late}</span></div>
-        <div style="display:flex;justify-content:space-between;"><span style="color:var(--ts);">Absent</span><span style="font-family:var(--mono);">${c.absent}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--ts);">Absent</span><span style="font-family:var(--mono);">${workingDaysSoFar!=null?c.absent:'—'}</span></div>
       </div>
-    </div>`).join('');
+    </div>`).join('')
+    +(mf?'':'<div style="grid-column:1/-1;font-size:11px;color:var(--tm);margin-top:2px;">Select a specific month above to see Absent-day counts.</div>');
 }
 
 // ═══════════════════════════ SALARY TRACKER ═══════════════════════════
