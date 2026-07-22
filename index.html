@@ -2486,7 +2486,7 @@ function renderDailyTable(){
     const amtColor=isIncome?(isDue?'var(--yellow)':isFree?'var(--cyan)':'var(--green)'):'var(--pink)';
     const amtSign=isIncome?'+':'-';
     const markPaidBtn=isDue?`<button onclick="markEntryPaid('${r.id}')" class="paid-btn" title="Mark as Paid">&#10003; Paid</button>`:'';
-    return`<tr><td style="font-weight:500;">${r.date}</td><td>${typeBadge}</td><td style="font-family:var(--mono);color:var(--cyan);">${isIncome?(r.patients||0):'-'}</td><td style="font-family:var(--mono);text-align:right;color:${amtColor};font-weight:500;">${amtSign}${fmtExact(r.amount)}</td><td>${statusBadge}</td><td style="color:var(--ts);font-size:12px;max-width:240px;">${r.note?escapeHtml(r.note):'-'}</td><td style="text-align:right;white-space:nowrap;">${markPaidBtn}<button onclick="deleteDailyEntry('${r.id}')" class="rm-btn">&#10005;</button></td></tr>`;
+    return`<tr><td style="font-weight:500;white-space:nowrap;">${r.date}</td><td>${typeBadge}</td><td style="font-family:var(--mono);color:var(--cyan);">${isIncome?(r.patients||0):'-'}</td><td style="font-family:var(--mono);text-align:right;color:${amtColor};font-weight:500;">${amtSign}${fmtExact(r.amount)}</td><td>${statusBadge}</td><td style="color:var(--ts);font-size:12px;max-width:240px;">${r.note?escapeHtml(r.note):'-'}</td><td style="text-align:right;white-space:nowrap;">${markPaidBtn}<button onclick="deleteDailyEntry('${r.id}')" class="rm-btn">&#10005;</button></td></tr>`;
   }).join('');
 }
 function exportDailyCSV(){
@@ -2523,7 +2523,7 @@ function generateDailyTrackerPDF(){
   const incomeRows=rows.filter(r=>r.type==='income'),expenseRows=rows.filter(r=>r.type==='expense');
   const income=incomeRows.filter(r=>r.status==='paid'||!r.status).reduce((a,r)=>a+(r.amount||0),0);
   const due=incomeRows.filter(r=>r.status==='due').reduce((a,r)=>a+(r.amount||0),0);
-  const free=incomeRows.filter(r=>r.status==='free').length;
+  const dueCount=incomeRows.filter(r=>r.status==='due').length;
   const expense=expenseRows.reduce((a,r)=>a+(r.amount||0),0);
   const patients=incomeRows.reduce((a,r)=>a+(r.patients||0),0);
   const net=income-expense;
@@ -2534,7 +2534,7 @@ function generateDailyTrackerPDF(){
       <div class="sumcard"><div class="sl">Net Profit</div><div class="sv" style="color:${net>=0?'#0a8f4a':'#c0246b'};">${fmtExact(net)}</div></div>
       <div class="sumcard"><div class="sl">Pending Due</div><div class="sv" style="color:#b8860b;">${fmtExact(due)}</div></div>
       <div class="sumcard"><div class="sl">Total Patients</div><div class="sv" style="color:#0891b2;">${patients}</div></div>
-      <div class="sumcard"><div class="sl">Free Visits</div><div class="sv" style="color:#0891b2;">${free}</div></div>
+      <div class="sumcard"><div class="sl">Due Patient</div><div class="sv" style="color:#b8860b;">${dueCount}</div></div>
     </div>`;
   const dailyRows=rows.map(r=>`<tr>
     <td>${r.date}</td>
@@ -2689,10 +2689,22 @@ function generateVitaPatientsPDF(){
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   const statusCounts={};
   rows.forEach(r=>{const st=(r.status||'-').trim()||'-';statusCounts[st]=(statusCounts[st]||0)+1;});
+  const agencyCounts={};
+  totalRows.forEach(r=>{const ag=(r.agency||'-').trim()||'-';agencyCounts[ag]=(agencyCounts[ag]||0)+1;});
+  const slipsCounts={};
+  totalRows.forEach(r=>{const sp=(r.slips||'-').trim()||'-';slipsCounts[sp]=(slipsCounts[sp]||0)+1;});
   const summaryCards=`
     <div class="sumgrid">
       <div class="sumcard"><div class="sl">Total Patients</div><div class="sv" style="color:#0891b2;">${totalRows.length}</div></div>
       ${Object.entries(statusCounts).map(([st,cnt])=>`<div class="sumcard"><div class="sl">${escapeHtml(st)}</div><div class="sv" style="color:${sc(st)};">${cnt}</div></div>`).join('')}
+    </div>
+    <div class="sec-title">Agency-wise</div>
+    <div class="sumgrid">
+      ${Object.entries(agencyCounts).map(([ag,cnt])=>`<div class="sumcard"><div class="sl">${escapeHtml(ag)}</div><div class="sv" style="color:#7b2fff;">${cnt}</div></div>`).join('')}
+    </div>
+    <div class="sec-title">Slips-wise</div>
+    <div class="sumgrid">
+      ${Object.entries(slipsCounts).map(([sp,cnt])=>`<div class="sumcard"><div class="sl">${escapeHtml(sp)}</div><div class="sv" style="color:#0a8f4a;">${cnt}</div></div>`).join('')}
     </div>`;
   const bodyRows=rows.map((r,i)=>`<tr>
     <td>${i+1}</td>
@@ -2700,31 +2712,36 @@ function generateVitaPatientsPDF(){
     <td>${r.reg||'-'}</td>
     <td>${escapeHtml(r.name)||'-'}</td>
     <td>${r.passport||'-'}</td>
-    <td>${escapeHtml(r.country)||'-'}</td>
-    <td>${r.mobile||'-'}</td>
     <td style="color:${sc(r.status)};font-weight:700;">${r.status||'-'}</td>
     <td>${escapeHtml(r.agency)||'-'}</td>
+    <td>${escapeHtml(r.problem)||'-'}</td>
     <td>${escapeHtml(r.remarks)||'-'}</td>
+    <td>${escapeHtml(r.slips)||'-'}</td>
   </tr>`).join('');
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Vita Center Patients Report — ${label}</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  @page{size:A4 landscape;margin:12mm 15mm;}
-  body{font-family:Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:20px;}
+  @page{size:A4;margin:12mm 15mm;}
+  html,body{width:100%;}
+  body{font-family:Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:0;}
   .header{text-align:center;border-bottom:3px solid #00d4ff;padding-bottom:14px;margin-bottom:18px;}
   .logo{font-size:16px;font-weight:900;letter-spacing:2px;}
   .logo span{color:#00d4ff;}
   .title{background:#1a1a2e;color:#00d4ff;text-align:center;padding:7px;font-size:14px;font-weight:700;margin-bottom:6px;border-radius:4px;}
   .filterline{text-align:center;font-size:11px;color:#666;margin-bottom:16px;}
-  .sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:18px;}
+  .sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-bottom:10px;}
   .sumcard{background:#f8f9fa;border-left:3px solid #00d4ff;border-radius:4px;padding:8px 10px;}
   .sl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;}
   .sv{font-size:16px;font-weight:700;margin-top:2px;}
-  table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+  .sec-title{font-size:13px;font-weight:700;margin:12px 0 8px;color:#1a1a2e;border-left:3px solid #00d4ff;padding-left:8px;}
+  table{width:100%;table-layout:fixed;border-collapse:collapse;margin-bottom:10px;}
   th{background:#1a1a2e;color:#00d4ff;padding:6px 8px;font-size:11px;text-align:left;}
-  td{padding:6px 8px;border-bottom:1px solid #eee;font-size:11px;}
+  td{padding:6px 8px;border-bottom:1px solid #eee;font-size:11px;word-break:break-word;overflow-wrap:break-word;}
+  td:nth-child(1),td:nth-child(2){white-space:nowrap;overflow:visible;text-overflow:clip;}
+  thead{display:table-header-group;}
+  tr{page-break-inside:avoid;break-inside:avoid;}
   .footer{text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px;margin-top:14px;}
-  @media print{body{padding:0;}}
+  @media print{body{padding:0;}.header,.title,.filterline,.sumgrid{page-break-inside:avoid;}}
 </style></head><body>
 <div class="header">
   <div class="logo">VITA-<span>HEALTH</span> MEDICAL CENTER</div>
@@ -2733,7 +2750,7 @@ function generateVitaPatientsPDF(){
 <div class="title">VITA CENTER PATIENTS REPORT</div>
 <div class="filterline">Filters applied — ${escapeHtml(label)}</div>
 ${summaryCards}
-<table><thead><tr><th>#</th><th>Date</th><th>Reg No.</th><th>Name</th><th>Passport No.</th><th>Country</th><th>Mobile</th><th>Status</th><th>Agency</th><th>Remarks</th></tr></thead><tbody>${bodyRows}</tbody></table>
+<table><thead><tr><th style="width:3%;">#</th><th style="width:9%;">Date</th><th style="width:10%;">Reg No.</th><th style="width:14%;">Name</th><th style="width:11%;">Passport No.</th><th style="width:9%;">Status</th><th style="width:10%;">Agency</th><th style="width:12%;">Problem</th><th style="width:12%;">Remarks</th><th style="width:10%;">Slips</th></tr></thead><tbody>${bodyRows}</tbody></table>
 <div class="footer">Computer-generated report. Generated on ${new Date().toLocaleDateString('en-BD',{day:'2-digit',month:'long',year:'numeric'})}</div>
 </body></html>`;
   const w=window.open('','_blank');
@@ -2826,12 +2843,12 @@ function generateOthersPatientsPDF(){
   if(cf)totalRows=totalRows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
   if(df)totalRows=totalRows.filter(r=>r.date===df);
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
-  const statusCounts={};
-  rows.forEach(r=>{const st=(r.status||'-').trim()||'-';statusCounts[st]=(statusCounts[st]||0)+1;});
+  const centerCounts={};
+  totalRows.forEach(r=>{const ct=(r._center||'-').trim()||'-';centerCounts[ct]=(centerCounts[ct]||0)+1;});
   const summaryCards=`
     <div class="sumgrid">
       <div class="sumcard"><div class="sl">Total Patients</div><div class="sv" style="color:#0891b2;">${totalRows.length}</div></div>
-      ${Object.entries(statusCounts).map(([st,cnt])=>`<div class="sumcard"><div class="sl">${escapeHtml(st)}</div><div class="sv" style="color:${sc(st)};">${cnt}</div></div>`).join('')}
+      ${Object.entries(centerCounts).map(([ct,cnt])=>`<div class="sumcard"><div class="sl">${escapeHtml(ct)}</div><div class="sv" style="color:#7b2fff;">${cnt}</div></div>`).join('')}
     </div>`;
   const bodyRows=rows.map((r,i)=>`<tr>
     <td>${i+1}</td>
@@ -2846,8 +2863,9 @@ function generateOthersPatientsPDF(){
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Others Center Patients Report — ${label}</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  @page{size:A4 landscape;margin:12mm 15mm;}
-  body{font-family:Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:20px;}
+  @page{size:A4;margin:12mm 15mm;}
+  html,body{width:100%;}
+  body{font-family:Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:0;}
   .header{text-align:center;border-bottom:3px solid #00d4ff;padding-bottom:14px;margin-bottom:18px;}
   .logo{font-size:16px;font-weight:900;letter-spacing:2px;}
   .logo span{color:#00d4ff;}
@@ -2857,11 +2875,14 @@ function generateOthersPatientsPDF(){
   .sumcard{background:#f8f9fa;border-left:3px solid #00d4ff;border-radius:4px;padding:8px 10px;}
   .sl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;}
   .sv{font-size:16px;font-weight:700;margin-top:2px;}
-  table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+  table{width:100%;table-layout:fixed;border-collapse:collapse;margin-bottom:10px;}
   th{background:#1a1a2e;color:#00d4ff;padding:6px 8px;font-size:11px;text-align:left;}
-  td{padding:6px 8px;border-bottom:1px solid #eee;font-size:11px;}
+  td{padding:6px 8px;border-bottom:1px solid #eee;font-size:11px;word-break:break-word;overflow-wrap:break-word;}
+  td:nth-child(1),td:nth-child(2){white-space:nowrap;overflow:visible;text-overflow:clip;}
+  thead{display:table-header-group;}
+  tr{page-break-inside:avoid;break-inside:avoid;}
   .footer{text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px;margin-top:14px;}
-  @media print{body{padding:0;}}
+  @media print{body{padding:0;}.header,.title,.filterline,.sumgrid{page-break-inside:avoid;}}
 </style></head><body>
 <div class="header">
   <div class="logo">VITA-<span>HEALTH</span> MEDICAL CENTER</div>
@@ -2870,7 +2891,7 @@ function generateOthersPatientsPDF(){
 <div class="title">OTHERS CENTER PATIENTS REPORT</div>
 <div class="filterline">Filters applied — ${escapeHtml(label)}</div>
 ${summaryCards}
-<table><thead><tr><th>#</th><th>Date</th><th>Reg No.</th><th>Name</th><th>Passport No.</th><th>Status</th><th>Center</th><th>Comment</th></tr></thead><tbody>${bodyRows}</tbody></table>
+<table><thead><tr><th style="width:4%;">#</th><th style="width:12%;">Date</th><th style="width:13%;">Reg No.</th><th style="width:18%;">Name</th><th style="width:14%;">Passport No.</th><th style="width:11%;">Status</th><th style="width:13%;">Center</th><th style="width:15%;">Comment</th></tr></thead><tbody>${bodyRows}</tbody></table>
 <div class="footer">Computer-generated report. Generated on ${new Date().toLocaleDateString('en-BD',{day:'2-digit',month:'long',year:'numeric'})}</div>
 </body></html>`;
   const w=window.open('','_blank');
@@ -3973,7 +3994,8 @@ function renderAttLog(){
 function renderAttSummary(mf){
   const el=g('att-summary-grid'), lbl=g('att-sum-label');if(!el)return;
   if(lbl)lbl.textContent=mf||'All Time';
-  let rows=loadAttendance();
+  const staffNames=new Set(loadUsers().filter(u=>u.role==='staff').map(u=>u.name||u.username));
+  let rows=loadAttendance().filter(r=>staffNames.has(r.name||r.username));
   if(mf)rows=rows.filter(r=>r.date&&r.date.startsWith(mf));
   const byStaff={};
   rows.forEach(r=>{
@@ -3986,7 +4008,7 @@ function renderAttSummary(mf){
   // Also list staff who have ZERO records this period, so a fully-missed
   // month shows up as Absent instead of not appearing at all.
   if(mf){
-    loadUsers().filter(u=>u.role!=='admin').forEach(u=>{
+    loadUsers().filter(u=>u.role==='staff').forEach(u=>{
       const k=u.name||u.username;
       if(!byStaff[k])byStaff[k]={present:0,late:0,leave:0,absent:0,presentDates:new Set(),leaveDates:new Set()};
     });
@@ -4057,7 +4079,8 @@ function markLeaveDay(){
 function generateAttendancePDF(){
   const mf=(g('att-month-filter')||{}).value||'';
   const label=mf?monthLabel(mf.split('-')[0],parseInt(mf.split('-')[1],10)-1):'All Time';
-  let rows=loadAttendance().slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const staffNames=new Set(loadUsers().filter(u=>u.role==='staff').map(u=>u.name||u.username));
+  let rows=loadAttendance().filter(r=>staffNames.has(r.name||r.username)).slice().sort((a,b)=>a.date.localeCompare(b.date));
   if(mf)rows=rows.filter(r=>r.date&&r.date.startsWith(mf));
   const byStaff={};
   rows.forEach(r=>{
