@@ -2523,7 +2523,7 @@ function generateDailyTrackerPDF(){
   const incomeRows=rows.filter(r=>r.type==='income'),expenseRows=rows.filter(r=>r.type==='expense');
   const income=incomeRows.filter(r=>r.status==='paid'||!r.status).reduce((a,r)=>a+(r.amount||0),0);
   const due=incomeRows.filter(r=>r.status==='due').reduce((a,r)=>a+(r.amount||0),0);
-  const dueCount=incomeRows.filter(r=>r.status==='due').length;
+  const dueCount=incomeRows.filter(r=>r.status==='due').reduce((a,r)=>a+(r.patients||0),0);
   const expense=expenseRows.reduce((a,r)=>a+(r.amount||0),0);
   const patients=incomeRows.reduce((a,r)=>a+(r.patients||0),0);
   const net=income-expense;
@@ -2532,9 +2532,9 @@ function generateDailyTrackerPDF(){
       <div class="sumcard"><div class="sl">Total Income (Collected)</div><div class="sv" style="color:#0a8f4a;">${fmtExact(income)}</div></div>
       <div class="sumcard"><div class="sl">Total Expense</div><div class="sv" style="color:#c0246b;">${fmtExact(expense)}</div></div>
       <div class="sumcard"><div class="sl">Net Profit</div><div class="sv" style="color:${net>=0?'#0a8f4a':'#c0246b'};">${fmtExact(net)}</div></div>
-      <div class="sumcard"><div class="sl">Pending Due</div><div class="sv" style="color:#b8860b;">${fmtExact(due)}</div></div>
+      <div class="sumcard"><div class="sl">Pending Due</div><div class="sv" style="color:#f59e0b;">${fmtExact(due)}</div></div>
       <div class="sumcard"><div class="sl">Total Patients</div><div class="sv" style="color:#0891b2;">${patients}</div></div>
-      <div class="sumcard"><div class="sl">Due Patient</div><div class="sv" style="color:#b8860b;">${dueCount}</div></div>
+      <div class="sumcard"><div class="sl">Due Patient</div><div class="sv" style="color:#f59e0b;">${dueCount}</div></div>
     </div>`;
   const dailyRows=rows.map(r=>`<tr>
     <td>${r.date}</td>
