@@ -3277,7 +3277,13 @@ async function syncPull(){
       if(data.daily&&data.daily.length>1){
         const merged=new Map();
         for(let i=1;i<data.daily.length;i++){const r=data.daily[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);const parsedDate=parseSheetDate(r[2]||'');const dp=parsedDate.split('-');merged.set(id,{id,type:r[1]||'expense',date:parsedDate,patients:+r[3]||0,amount:+r[4]||0,status:r[5]||'',note:r[6]||'',year:dp[0]||String(r[7]||''),month:dp[1]?parseInt(dp[1],10)-1:+r[8]||0});}
-        loadArr(SK4).forEach(r=>{const id=String(r.id);if(!merged.has(id))merged.set(id,{...r,id,year:String(r.year||'')});});
+        // The Sheet is the source of truth: a local record missing from the Sheet means it
+        // was deleted on another device, so it should NOT be kept around here. The one
+        // exception is if THIS device has a push still pending/failed (queued for retry) —
+        // in that case its not-yet-synced local changes are preserved for one more cycle.
+        if(pushInFlight.main||loadRetryQueue().includes('main')){
+          loadArr(SK4).forEach(r=>{const id=String(r.id);if(!merged.has(id))merged.set(id,{...r,id,year:String(r.year||'')});});
+        }
         save(SK4,Array.from(merged.values()));
       }
     }catch(e){console.log('Daily section parse failed:',e);}
@@ -3305,8 +3311,11 @@ async function syncPull(){
             amount:is8?(+r[7]||0):(is5?+r[4]||0:+r[3]||0)
           });
         }
-        // Keep local-only records (not in sheet)
-        loadArr(SK9).forEach(r=>{const id=String(r.id);if(!cmerged.has(id))cmerged.set(id,{...r,id,date:parseSheetDate(r.date)});});
+        // Sheet is source of truth (see Daily block above for rationale); only keep
+        // local-only commission entries if a push is still pending for this device.
+        if(pushInFlight.main||loadRetryQueue().includes('main')){
+          loadArr(SK9).forEach(r=>{const id=String(r.id);if(!cmerged.has(id))cmerged.set(id,{...r,id,date:parseSheetDate(r.date)});});
+        }
         save(SK9,Array.from(cmerged.values()));
       }
     }catch(e){console.log('Commission section parse failed:',e);}
@@ -3369,8 +3378,12 @@ async function syncPull(){
           const salMerged=new Map();
           // Sheet data wins
           sheetSalFiltered.forEach(r=>salMerged.set(r.id,r));
-          // Keep local-only records (id not in sheet yet)
-          localSal.forEach(r=>{if(r.id&&!salMerged.has(r.id))salMerged.set(r.id,r);});
+          // Sheet is source of truth — a local record missing from the sheet was
+          // deleted (here or on another device). Only keep local-only records if
+          // this device still has an unconfirmed salary push queued.
+          if(pushInFlight.salary||loadRetryQueue().includes('salary')){
+            localSal.forEach(r=>{if(r.id&&!salMerged.has(r.id))salMerged.set(r.id,r);});
+          }
           localStorage.setItem(SK_SAL,JSON.stringify(Array.from(salMerged.values())));
           // Immediately re-push merged salary back to sheet to keep it consistent
           pushSalaryToSheet();
@@ -3395,7 +3408,11 @@ async function syncPull(){
           }));
           const advMerged=new Map();
           sheetAdv.forEach(r=>advMerged.set(r.id,r));
-          loadSalaryAdvances().forEach(r=>{if(r.id&&!advMerged.has(r.id))advMerged.set(r.id,r);});
+          // Sheet is source of truth (deleted advances shouldn't reappear on other
+          // devices); only keep local-only entries if a push is still pending here.
+          if(pushInFlight.main||loadRetryQueue().includes('main')){
+            loadSalaryAdvances().forEach(r=>{if(r.id&&!advMerged.has(r.id))advMerged.set(r.id,r);});
+          }
           saveSalaryAdvances(Array.from(advMerged.values()));
           if(g('page-operations')&&g('page-operations').classList.contains('active')){renderSalaryAdvances();checkSalaryAdvanceHint();}
         }
@@ -3485,17 +3502,19 @@ async function syncPull(){
 
 // serializeForPush defined below with full column support
 
+let pushInFlight={main:false,salary:false};
 async function pushToSheet(){
   const s=getSettings();
   const url=s.scriptUrl||((s.dailyUrls&&s.dailyUrls.length)?s.dailyUrls.find(e=>e.url)?.url:'');
   if(!url)return true; // nothing configured — not a sync failure to retry
+  pushInFlight.main=true;
   try{
     setSyncStatus('busy');
     const resp=await fetch(url,{method:'POST',body:JSON.stringify(serializeForPush()),headers:{'Content-Type':'text/plain'}});
     const result=await resp.json();
-    if(result.status==='ok'){setSyncStatus('ok');clearRetryKind('main');return true;}
-    setSyncStatus('error');queueRetry('main');return false;
-  }catch(e){setSyncStatus('error');queueRetry('main');return false;}
+    if(result.status==='ok'){setSyncStatus('ok');clearRetryKind('main');pushInFlight.main=false;return true;}
+    setSyncStatus('error');queueRetry('main');pushInFlight.main=false;return false;
+  }catch(e){setSyncStatus('error');queueRetry('main');pushInFlight.main=false;return false;}
 }
 
 async function pushCalcToSheet(){
@@ -3525,6 +3544,7 @@ async function pushSalaryToSheet(){
   const payload={};
   if(rows.length)payload.salary=serializeSalaryForSheet();
   if(delIds.length)payload.salary_deleted=delIds;
+  pushInFlight.salary=true;
   try{
     const resp=await fetch(url,{method:'POST',body:JSON.stringify(payload),headers:{'Content-Type':'text/plain'}});
     const result=await resp.json().catch(()=>null);
@@ -3533,10 +3553,11 @@ async function pushSalaryToSheet(){
       // don't keep getting resent forever.
       if(delIds.length)saveSalaryDeleted(loadSalaryDeleted().filter(id=>!delIds.includes(id)));
       clearRetryKind('salary');
+      pushInFlight.salary=false;
       return true;
     }
-    queueRetry('salary');return false;
-  }catch(e){console.warn('Salary push failed:',e);queueRetry('salary');return false;}
+    queueRetry('salary');pushInFlight.salary=false;return false;
+  }catch(e){console.warn('Salary push failed:',e);queueRetry('salary');pushInFlight.salary=false;return false;}
 }
 
 async function vitaPull(){
