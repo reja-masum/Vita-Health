@@ -1698,11 +1698,17 @@ function doGet(e){
     var lr=sheet.getLastRow(),lc=sheet.getLastColumn();
     if(lr<2)return;
     var allRows=sheet.getRange(1,1,lr,lc).getValues();
+    // Find the Passport column by its header text instead of assuming a fixed
+    // position — this stays correct even if columns get added/reordered later.
+    var hdr=allRows[0].map(function(h){return String(h||'').toLowerCase();});
+    var passIdx=-1;
+    for(var h=0;h<hdr.length;h++){if(hdr[h].indexOf('passport')>-1){passIdx=h;break;}}
+    if(passIdx<0)passIdx=4; // fallback to the original assumed column
     var filtered=[];
     filtered.push(COL_NAMES);
     for(var i=1;i<allRows.length;i++){
       var row=allRows[i];
-      if(!row[4])continue; // only pull rows that have a Passport No.
+      if(!String(row[passIdx]||'').trim())continue; // only pull rows that have a Passport No.
       filtered.push(COL_IDX.map(function(ci){
         return formatCell(row[ci]);
       }));
@@ -1731,11 +1737,15 @@ function doGet(e){
     var lr=sheet.getLastRow(),lc=sheet.getLastColumn();
     if(lr<2)return;
     var allRows=sheet.getRange(1,1,lr,Math.max(lc,7)).getValues();
+    var hdr=allRows[0].map(function(h){return String(h||'').toLowerCase();});
+    var passIdx=-1;
+    for(var h=0;h<hdr.length;h++){if(hdr[h].indexOf('passport')>-1){passIdx=h;break;}}
+    if(passIdx<0)passIdx=4;
     var filtered=[];
     filtered.push(COL_NAMES);
     for(var i=1;i<allRows.length;i++){
       var row=allRows[i];
-      if(!row[4])continue; // only pull rows that have a Passport No.
+      if(!String(row[passIdx]||'').trim())continue; // only pull rows that have a Passport No.
       filtered.push(COL_IDX.map(function(ci){return formatCell(row[ci]);}));
     }
     if(filtered.length>1)result[name]=filtered;
@@ -1764,11 +1774,15 @@ function doGet(e){
     var lr=sheet.getLastRow(),lc=sheet.getLastColumn();
     if(lr<2)return;
     var allRows=sheet.getRange(1,1,lr,Math.max(lc,10)).getValues();
+    var hdr=allRows[0].map(function(h){return String(h||'').toLowerCase();});
+    var passIdx=-1;
+    for(var h=0;h<hdr.length;h++){if(hdr[h].indexOf('passport')>-1){passIdx=h;break;}}
+    if(passIdx<0)passIdx=4;
     var filtered=[];
     filtered.push(COL_NAMES);
     for(var i=1;i<allRows.length;i++){
       var row=allRows[i];
-      if(!row[4])continue; // only pull rows that have a Passport No.
+      if(!String(row[passIdx]||'').trim())continue; // only pull rows that have a Passport No.
       filtered.push(COL_IDX.map(function(ci){return formatCell(row[ci]);}));
     }
     if(filtered.length>1)result[name]=filtered;
@@ -2762,12 +2776,12 @@ function renderVitaPatients(){
   const mf=g('vita-month-filter')?g('vita-month-filter').value:'';
   const sf=g('vita-status-filter')?g('vita-status-filter').value:'';
   const df=g('vita-date-filter')?g('vita-date-filter').value:'';
-  const af=getSelectedVitaAgencies();
+  const af=g('vita-agency-filter')?g('vita-agency-filter').value:'';
   let rows=loadArr(SK10);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf!=='')rows=rows.filter(r=>r._month===+mf);
   if(df)rows=rows.filter(r=>r.date===df);
-  if(af.length)rows=rows.filter(r=>af.includes(r.agency));
+  if(af)rows=rows.filter(r=>(r.agency||'').toLowerCase()===af.toLowerCase());
   if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP'||st==='HELDUP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   if(g('vita-record-count'))g('vita-record-count').textContent=rows.length+' records';
@@ -2797,9 +2811,9 @@ function renderVitaPatients(){
   </tr>`;}).join('');
 }
 function exportVitaCSV(){
-  const af=getSelectedVitaAgencies();
+  const af=g('vita-agency-filter')?g('vita-agency-filter').value:'';
   let rows=loadArr(SK10);
-  if(af.length)rows=rows.filter(r=>af.includes(r.agency));
+  if(af)rows=rows.filter(r=>(r.agency||'').toLowerCase()===af.toLowerCase());
   const out=[['#','Date','Reg No.','Name','Passport No.','Country','Mobile No.','Status','Agency','Problem','Remarks','Slips','Month']];
   rows.forEach((r,i)=>out.push([i+1,r.date,r.reg,r.name,r.passport,r.country||'',r.mobile,r.status,r.agency,r.problem,r.remarks||'',r.slips||'',r._monthName]));
   dlCSV(out,'vita_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
@@ -2810,12 +2824,12 @@ function getFilteredVitaRows(){
   const mf=g('vita-month-filter')?g('vita-month-filter').value:'';
   const sf=g('vita-status-filter')?g('vita-status-filter').value:'';
   const df=g('vita-date-filter')?g('vita-date-filter').value:'';
-  const af=getSelectedVitaAgencies();
+  const af=g('vita-agency-filter')?g('vita-agency-filter').value:'';
   let rows=loadArr(SK10);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf!=='')rows=rows.filter(r=>r._month===+mf);
   if(df)rows=rows.filter(r=>r.date===df);
-  if(af.length)rows=rows.filter(r=>af.includes(r.agency));
+  if(af)rows=rows.filter(r=>(r.agency||'').toLowerCase()===af.toLowerCase());
   if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   return {rows,yf,mf,sf,df,q,af};
@@ -2826,7 +2840,7 @@ function generateVitaPatientsPDF(){
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
   labelParts.push(mf!==''?MN_EN[+mf]:'All Months');
-  if(af&&af.length)labelParts.push('Agency: '+af.join(', '));
+  if(af)labelParts.push('Agency: '+af);
   if(sf)labelParts.push('Status: '+sf);
   if(df)labelParts.push('Date: '+df);
   if(q)labelParts.push('Search: "'+q+'"');
@@ -2839,7 +2853,7 @@ function generateVitaPatientsPDF(){
   if(yf)totalRows=totalRows.filter(r=>r._year===yf);
   if(mf!=='')totalRows=totalRows.filter(r=>r._month===+mf);
   if(df)totalRows=totalRows.filter(r=>r.date===df);
-  if(af&&af.length)totalRows=totalRows.filter(r=>af.includes(r.agency));
+  if(af)totalRows=totalRows.filter(r=>(r.agency||'').toLowerCase()===af.toLowerCase());
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   const statusCounts={};
   rows.forEach(r=>{const st=(r.status||'-').trim()||'-';statusCounts[st]=(statusCounts[st]||0)+1;});
@@ -2914,7 +2928,11 @@ ${summaryCards}
 async function syncVitaNow(){
   toast('Pulling from Vita Center Sheet...');
   const ok=await vitaPull();
-  if(ok){renderVitaPatients();toast('Vita Center data updated!');}
+  if(ok){
+    renderVitaPatients();
+    const n=loadArr(SK10).length;
+    toast(n>0?('Vita Center data updated! ('+n+' patients)'):'Sync ran but found 0 matching rows — check browser console for details');
+  }
   else{toast('Vita sync failed — check URL in Settings');}
 }
 
@@ -3945,34 +3963,46 @@ async function pushSalaryToSheet(){
 async function vitaPull(){
   const s=getSettings();
   const vitaUrls=s.vitaUrls||(s.vitaScriptUrl?[{year:'2026',url:s.vitaScriptUrl}]:[]);
-  if(!vitaUrls.length)return false;
+  if(!vitaUrls.length){console.log('[vitaPull] no URL configured');return false;}
+  console.log('[vitaPull] URLs configured:',vitaUrls);
   const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const all=[];
   let anySuccess=false;
-  // Fetch every configured year's URL in parallel (was sequential — the main
-  // cause of slow login when multiple years of Vita Center sheets are set up).
   const fetchResults=await Promise.all(vitaUrls.map(async entry=>{
     if(!entry.url)return null;
-    try{return {entry,data:await fetchJsonWithRetry(entry.url)};}
-    catch(e){console.log('Vita fetch failed for year',entry.year,':',e);return null;}
+    try{
+      const data=await fetchJsonWithRetry(entry.url);
+      console.log('[vitaPull] fetch OK for year',entry.year,'— tabs returned:',Object.keys(data));
+      return {entry,data};
+    }
+    catch(e){console.log('[vitaPull] fetch FAILED for year',entry.year,':',e);return null;}
   }));
   for(const result of fetchResults){
     if(!result)continue;
     const {entry,data}=result;
     anySuccess=true;
-    MONTHS.forEach((m,mi)=>{
+    Object.keys(data).forEach(tabName=>{
+      const tabLower=tabName.toLowerCase().trim();
+      let mi=MONTHS.findIndex(mn=>tabLower===mn.toLowerCase()||tabLower.startsWith(mn.toLowerCase()));
+      if(mi<0){console.log('[vitaPull] tab "'+tabName+'" did not match any month — skipped');return;}
+      const m=MONTHS[mi];
+      const sheetData=data[tabName];
       try{
-        if(!data[m]||data[m].length<2)return;
-        const hdr=data[m][0].map(h=>String(h||'').toLowerCase().trim());
+        if(!sheetData||sheetData.length<2){console.log('[vitaPull]',tabName,'— no data rows (only header or empty)');return;}
+        console.log('[vitaPull]',tabName,'— raw rows in sheet:',sheetData.length-1);
+        const hdr=sheetData[0].map(h=>String(h||'').toLowerCase().trim());
         const ci=(...keys)=>{for(const k of keys){const i=hdr.findIndex(h=>h.includes(k));if(i>=0)return i;}return -1;};
         const iSL=ci('sl'),iDate=ci('date'),iReg=ci('reg'),iName=ci('name'),iPass=ci('passport');
         const iCountry=ci('country'),iMob=ci('mobile'),iStatus=ci('status'),iAgency=ci('agency');
         const iProb=ci('problem'),iRemarks=ci('remark'),iSlips=ci('slip');
-        const rows=data[m].slice(1);
+        if(iPass<0)console.log('[vitaPull]',tabName,'— WARNING: no "Passport" column found in header:',sheetData[0]);
+        const rows=sheetData.slice(1);
+        let kept=0;
         rows.forEach((r,i)=>{
           const sl=iSL>=0?r[iSL]||'':'',nm=iName>=0?r[iName]||'':'',rg=iReg>=0?r[iReg]||'':'';
           const pass=iPass>=0?r[iPass]||'':'';
           if(!pass)return; // only pull rows that have a Passport No.
+          kept++;
           const dateRaw=iDate>=0?r[iDate]||'':'';
           const parsedDate=parseSheetDate(dateRaw);
           // Use configured year if date parsing fails, else use parsed year
@@ -3987,9 +4017,11 @@ async function vitaPull(){
             from:'Vita Center',source:'vita_sheet',sheetYear:entry.year||yr
           });
         });
-      }catch(e){console.log('Vita month parse failed:',m,e);}
+        console.log('[vitaPull]',tabName,'— rows kept after Passport check:',kept,'of',rows.length);
+      }catch(e){console.log('[vitaPull] parse FAILED for',m,':',e);}
     });
   }
+  console.log('[vitaPull] TOTAL rows collected across all tabs/years:',all.length);
   if(anySuccess)save(SK10,all);
   return anySuccess;
 }
