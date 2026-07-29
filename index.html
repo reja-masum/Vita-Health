@@ -878,6 +878,9 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         <option value="HELDUP">HELDUP</option>
         <option value="PROCESSING">PROCESSING</option>
       </select>
+      <select class="sel" id="vita-agency-filter" onchange="renderVitaPatients()">
+        <option value="">All Agencies</option>
+      </select>
       <input type="date" id="vita-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderVitaPatients()">
       <button onclick="g('vita-date-filter').value='';renderVitaPatients();" id="vita-date-clear" style="background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
       <button class="abtn bexp" onclick="exportVitaCSV()">Export</button>
@@ -963,8 +966,6 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         </select>
         <select class="sel" id="others-center-filter" onchange="renderOthersPatients()">
           <option value="">All Centers</option>
-          <option>Kent</option><option>ReadyHealth</option><option>Sadiq</option>
-          <option>Eureka</option><option>Luminous</option><option>Ammar</option><option>Medipath</option>
         </select>
         <select class="sel" id="others-status-filter" onchange="renderOthersPatients()">
           <option value="">All Status</option>
@@ -1701,7 +1702,7 @@ function doGet(e){
     filtered.push(COL_NAMES);
     for(var i=1;i<allRows.length;i++){
       var row=allRows[i];
-      if(!row[0]&&!row[2]&&!row[3])continue;
+      if(!row[4])continue; // only pull rows that have a Passport No.
       filtered.push(COL_IDX.map(function(ci){
         return formatCell(row[ci]);
       }));
@@ -1734,7 +1735,7 @@ function doGet(e){
     filtered.push(COL_NAMES);
     for(var i=1;i<allRows.length;i++){
       var row=allRows[i];
-      if(!row[0]&&!row[2]&&!row[3])continue;
+      if(!row[4])continue; // only pull rows that have a Passport No.
       filtered.push(COL_IDX.map(function(ci){return formatCell(row[ci]);}));
     }
     if(filtered.length>1)result[name]=filtered;
@@ -1767,7 +1768,7 @@ function doGet(e){
     filtered.push(COL_NAMES);
     for(var i=1;i<allRows.length;i++){
       var row=allRows[i];
-      if(!row[0]&&!row[2]&&!row[3])continue;
+      if(!row[4])continue; // only pull rows that have a Passport No.
       filtered.push(COL_IDX.map(function(ci){return formatCell(row[ci]);}));
     }
     if(filtered.length>1)result[name]=filtered;
@@ -2722,17 +2723,51 @@ function renderNotepad(){
 
 
 // PATIENTS
+// SIMPLE DROPDOWN FILTER POPULATION (Agency / Center / Slip)
+function populateVitaAgencyFilter(){
+  const sel=g('vita-agency-filter');if(!sel)return;
+  const cur=sel.value;
+  const agencies=[...new Set(loadArr(SK10).map(r=>r.agency).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">All Agencies</option>'+agencies.map(a=>`<option${a===cur?' selected':''}>${escapeHtml(a)}</option>`).join('');
+}
+function populateVitaOthersCenterFilter(){
+  const sel=g('vitaothers-center-filter');if(!sel)return;
+  const cur=sel.value;
+  const centers=[...new Set(loadArr(SK12).map(r=>r._center).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">All Centers</option>'+centers.map(c=>`<option${c===cur?' selected':''}>${escapeHtml(c)}</option>`).join('');
+}
+function populateVitaOthersSlipFilter(){
+  const sel=g('vitaothers-slip-filter');if(!sel)return;
+  const cur=sel.value;
+  const slips=[...new Set(loadArr(SK12).map(r=>r.slip).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">All Slips</option>'+slips.map(sp=>`<option${sp===cur?' selected':''}>${escapeHtml(sp)}</option>`).join('');
+}
+function populateVitaOthersAgencyFilter(){
+  const sel=g('vitaothers-agency-filter');if(!sel)return;
+  const cur=sel.value;
+  const agencies=[...new Set(loadArr(SK12).map(r=>r.agency).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">All Agencies</option>'+agencies.map(a=>`<option${a===cur?' selected':''}>${escapeHtml(a)}</option>`).join('');
+}
+function populateOthersCenterFilter(){
+  const sel=g('others-center-filter');if(!sel)return;
+  const cur=sel.value;
+  const centers=[...new Set(loadArr(SK11).map(r=>r._center).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">All Centers</option>'+centers.map(c=>`<option${c===cur?' selected':''}>${escapeHtml(c)}</option>`).join('');
+}
 function renderVitaPatients(){
   const tbody=g('vitaTbody');if(!tbody)return;
+  populateVitaAgencyFilter();
   const q=(g('vitaSearch')?g('vitaSearch').value:'').toLowerCase().trim();
   const yf=g('vita-year-filter')?g('vita-year-filter').value:'';
   const mf=g('vita-month-filter')?g('vita-month-filter').value:'';
   const sf=g('vita-status-filter')?g('vita-status-filter').value:'';
   const df=g('vita-date-filter')?g('vita-date-filter').value:'';
+  const af=getSelectedVitaAgencies();
   let rows=loadArr(SK10);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf!=='')rows=rows.filter(r=>r._month===+mf);
   if(df)rows=rows.filter(r=>r.date===df);
+  if(af.length)rows=rows.filter(r=>af.includes(r.agency));
   if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP'||st==='HELDUP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   if(g('vita-record-count'))g('vita-record-count').textContent=rows.length+' records';
@@ -2762,9 +2797,12 @@ function renderVitaPatients(){
   </tr>`;}).join('');
 }
 function exportVitaCSV(){
-  const rows=[['#','Date','Reg No.','Name','Passport No.','Country','Mobile No.','Status','Agency','Problem','Remarks','Slips','Month']];
-  loadArr(SK10).forEach((r,i)=>rows.push([i+1,r.date,r.reg,r.name,r.passport,r.country||'',r.mobile,r.status,r.agency,r.problem,r.remarks||'',r.slips||'',r._monthName]));
-  dlCSV(rows,'vita_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
+  const af=getSelectedVitaAgencies();
+  let rows=loadArr(SK10);
+  if(af.length)rows=rows.filter(r=>af.includes(r.agency));
+  const out=[['#','Date','Reg No.','Name','Passport No.','Country','Mobile No.','Status','Agency','Problem','Remarks','Slips','Month']];
+  rows.forEach((r,i)=>out.push([i+1,r.date,r.reg,r.name,r.passport,r.country||'',r.mobile,r.status,r.agency,r.problem,r.remarks||'',r.slips||'',r._monthName]));
+  dlCSV(out,'vita_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
 }
 function getFilteredVitaRows(){
   const q=(g('vitaSearch')?g('vitaSearch').value:'').toLowerCase().trim();
@@ -2772,20 +2810,23 @@ function getFilteredVitaRows(){
   const mf=g('vita-month-filter')?g('vita-month-filter').value:'';
   const sf=g('vita-status-filter')?g('vita-status-filter').value:'';
   const df=g('vita-date-filter')?g('vita-date-filter').value:'';
+  const af=getSelectedVitaAgencies();
   let rows=loadArr(SK10);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf!=='')rows=rows.filter(r=>r._month===+mf);
   if(df)rows=rows.filter(r=>r.date===df);
+  if(af.length)rows=rows.filter(r=>af.includes(r.agency));
   if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
-  return {rows,yf,mf,sf,df,q};
+  return {rows,yf,mf,sf,df,q,af};
 }
 function generateVitaPatientsPDF(){
-  const {rows,yf,mf,sf,df,q}=getFilteredVitaRows();
+  const {rows,yf,mf,sf,df,q,af}=getFilteredVitaRows();
   if(!rows.length){toast('No records match the current filters');return;}
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
   labelParts.push(mf!==''?MN_EN[+mf]:'All Months');
+  if(af&&af.length)labelParts.push('Agency: '+af.join(', '));
   if(sf)labelParts.push('Status: '+sf);
   if(df)labelParts.push('Date: '+df);
   if(q)labelParts.push('Search: "'+q+'"');
@@ -2798,6 +2839,7 @@ function generateVitaPatientsPDF(){
   if(yf)totalRows=totalRows.filter(r=>r._year===yf);
   if(mf!=='')totalRows=totalRows.filter(r=>r._month===+mf);
   if(df)totalRows=totalRows.filter(r=>r.date===df);
+  if(af&&af.length)totalRows=totalRows.filter(r=>af.includes(r.agency));
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   const statusCounts={};
   rows.forEach(r=>{const st=(r.status||'-').trim()||'-';statusCounts[st]=(statusCounts[st]||0)+1;});
@@ -2878,6 +2920,7 @@ async function syncVitaNow(){
 
 function renderOthersPatients(){
   const tbody=g('othersTbody');if(!tbody)return;
+  populateOthersCenterFilter();
   const q=(g('othersSearch')?g('othersSearch').value:'').toLowerCase().trim();
   const yf=g('others-year-filter')?g('others-year-filter').value:'';
   const mf=g('others-month-filter')?g('others-month-filter').value:'';
@@ -2914,9 +2957,12 @@ function renderOthersPatients(){
   </tr>`;}).join('');
 }
 function exportOthersCSV(){
-  const rows=[['#','Date','Reg Number','Name','Passport No.','Status','Comment','Center','Month']];
-  loadArr(SK11).forEach((r,i)=>rows.push([i+1,r.date,r.reg,r.name,r.passport,r.status,r.comment||'',r._center,r._monthName]));
-  dlCSV(rows,'others_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
+  const cf=g('others-center-filter')?g('others-center-filter').value:'';
+  let rows=loadArr(SK11);
+  if(cf)rows=rows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
+  const out=[['#','Date','Reg Number','Name','Passport No.','Status','Comment','Center','Month']];
+  rows.forEach((r,i)=>out.push([i+1,r.date,r.reg,r.name,r.passport,r.status,r.comment||'',r._center,r._monthName]));
+  dlCSV(out,'others_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
 }
 function getFilteredOthersRows(){
   const q=(g('othersSearch')?g('othersSearch').value:'').toLowerCase().trim();
@@ -2972,7 +3018,7 @@ function generateOthersPatientsPDF(){
     <td>${escapeHtml(r._center)||'-'}</td>
     <td>${escapeHtml(r.comment)||'-'}</td>
   </tr>`).join('');
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Others Center Patients Report — ${label}</title>
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Others Center (Med) + VITA (Slip) Report — ${label}</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   @page{size:A4;margin:12mm 15mm;}
@@ -3000,7 +3046,7 @@ function generateOthersPatientsPDF(){
   <div class="logo">VITA-<span>HEALTH</span> MEDICAL CENTER</div>
   <div style="font-size:11px;color:#666;margin-top:3px;">Praasad Palton Square (14th Floor), 3/11 Naya Paltan, 167 Fakirapool, DIT Ave, Dhaka 1000</div>
 </div>
-<div class="title">OTHERS CENTER PATIENTS REPORT</div>
+<div class="title">OTHERS CENTER (MED) + VITA (SLIP) REPORT</div>
 <div class="filterline">Filters applied — ${escapeHtml(label)}</div>
 ${summaryCards}
 <table><thead><tr><th style="width:4%;">#</th><th style="width:12%;">Date</th><th style="width:13%;">Reg No.</th><th style="width:18%;">Name</th><th style="width:14%;">Passport No.</th><th style="width:11%;">Status</th><th style="width:13%;">Center</th><th style="width:15%;">Comment</th></tr></thead><tbody>${bodyRows}</tbody></table>
@@ -3018,24 +3064,6 @@ async function syncOthersNow(){
 }
 
 // ═══════════════ VITA + OTHERS CENTER (combined multi-tab sheet) ═══════════════
-function populateVitaOthersCenterFilter(){
-  const sel=g('vitaothers-center-filter');if(!sel)return;
-  const cur=sel.value;
-  const centers=[...new Set(loadArr(SK12).map(r=>r._center).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">All Centers</option>'+centers.map(c=>`<option${c===cur?' selected':''}>${escapeHtml(c)}</option>`).join('');
-}
-function populateVitaOthersSlipFilter(){
-  const sel=g('vitaothers-slip-filter');if(!sel)return;
-  const cur=sel.value;
-  const slips=[...new Set(loadArr(SK12).map(r=>r.slip).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">All Slips</option>'+slips.map(sp=>`<option${sp===cur?' selected':''}>${escapeHtml(sp)}</option>`).join('');
-}
-function populateVitaOthersAgencyFilter(){
-  const sel=g('vitaothers-agency-filter');if(!sel)return;
-  const cur=sel.value;
-  const agencies=[...new Set(loadArr(SK12).map(r=>r.agency).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">All Agencies</option>'+agencies.map(ag=>`<option${ag===cur?' selected':''}>${escapeHtml(ag)}</option>`).join('');
-}
 function renderVitaOthersPatients(){
   const tbody=g('vitaOthersTbody');if(!tbody)return;
   populateVitaOthersCenterFilter();populateVitaOthersSlipFilter();populateVitaOthersAgencyFilter();
@@ -3075,9 +3103,14 @@ function renderVitaOthersPatients(){
   </tr>`).join('');
 }
 function exportVitaOthersCSV(){
-  const rows=[['#','Date','ID','Name','Passport','Slip','Agency','Status','Comment','Center','Month']];
-  loadArr(SK12).forEach((r,i)=>rows.push([i+1,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment||'',r._center,r._monthName]));
-  dlCSV(rows,'vita_others_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
+  const cf=g('vitaothers-center-filter')?g('vitaothers-center-filter').value:'',spf=g('vitaothers-slip-filter')?g('vitaothers-slip-filter').value:'',agf=g('vitaothers-agency-filter')?g('vitaothers-agency-filter').value:'';
+  let rows=loadArr(SK12);
+  if(cf)rows=rows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
+  if(spf)rows=rows.filter(r=>(r.slip||'').toLowerCase()===spf.toLowerCase());
+  if(agf)rows=rows.filter(r=>(r.agency||'').toLowerCase()===agf.toLowerCase());
+  const out=[['#','Date','ID','Name','Passport','Slip','Agency','Status','Comment','Center','Month']];
+  rows.forEach((r,i)=>out.push([i+1,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment||'',r._center,r._monthName]));
+  dlCSV(out,'vita_others_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
 }
 function getFilteredVitaOthersRows(){
   const q=(g('vitaOthersSearch')?g('vitaOthersSearch').value:'').toLowerCase().trim();
@@ -3147,7 +3180,7 @@ function generateVitaOthersPatientsPDF(){
     <td style="color:${sc(r.status)};font-weight:700;">${r.status||'-'}</td>
     <td>${escapeHtml(r.comment)||'-'}</td>
   </tr>`).join('');
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>VITA + Others Center Report — ${label}</title>
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Vita (Med) + Others Center (Slip) Report — ${label}</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   @page{size:A4;margin:12mm 15mm;}
@@ -3176,7 +3209,7 @@ function generateVitaOthersPatientsPDF(){
   <div class="logo">VITA-<span>HEALTH</span> MEDICAL CENTER</div>
   <div style="font-size:11px;color:#666;margin-top:3px;">Praasad Palton Square (14th Floor), 3/11 Naya Paltan, 167 Fakirapool, DIT Ave, Dhaka 1000</div>
 </div>
-<div class="title">VITA + OTHERS CENTER REPORT</div>
+<div class="title">VITA (MED) + OTHERS CENTER (SLIP) REPORT</div>
 <div class="filterline">Filters applied — ${escapeHtml(label)}</div>
 ${summaryCards}
 <table><thead><tr><th style="width:4%;">#</th><th style="width:10%;">Date</th><th style="width:11%;">ID</th><th style="width:16%;">Name</th><th style="width:13%;">Passport</th><th style="width:10%;">Slip</th><th style="width:11%;">Agency</th><th style="width:10%;">Status</th><th style="width:15%;">Comment</th></tr></thead><tbody>${bodyRows}</tbody></table>
@@ -3211,7 +3244,8 @@ async function vitaOthersPull(){
         const rows=sheetData.slice(1);
         rows.forEach((r,i)=>{
           const sl=iSL>=0?r[iSL]||'':'',nm=iName>=0?r[iName]||'':'',id=iId>=0?r[iId]||'':'';
-          if(!sl&&!nm&&!id)return;
+          const pass=iPass>=0?r[iPass]||'':'';
+          if(!pass)return; // only pull rows that have a Passport No.
           const dateRaw=iDate>=0?r[iDate]||'':'';
           const parsedDate=parseSheetDate(dateRaw);
           const dp=parsedDate?parsedDate.split('-'):[];
@@ -3937,7 +3971,8 @@ async function vitaPull(){
         const rows=data[m].slice(1);
         rows.forEach((r,i)=>{
           const sl=iSL>=0?r[iSL]||'':'',nm=iName>=0?r[iName]||'':'',rg=iReg>=0?r[iReg]||'':'';
-          if(!sl&&!nm&&!rg)return;
+          const pass=iPass>=0?r[iPass]||'':'';
+          if(!pass)return; // only pull rows that have a Passport No.
           const dateRaw=iDate>=0?r[iDate]||'':'';
           const parsedDate=parseSheetDate(dateRaw);
           // Use configured year if date parsing fails, else use parsed year
@@ -3986,7 +4021,8 @@ async function othersPull(){
         const rows=sheetData.slice(1);
         rows.forEach((r,i)=>{
           const sl=iSL>=0?r[iSL]||'':'',nm=iName>=0?r[iName]||'':'',rg=iReg>=0?r[iReg]||'':'';
-          if(!sl&&!nm&&!rg)return;
+          const pass=iPass>=0?r[iPass]||'':'';
+          if(!pass)return; // only pull rows that have a Passport No.
           const dateRaw=iDate>=0?r[iDate]||'':'';
           const parsedDate=parseSheetDate(dateRaw);
           const dp=parsedDate?parsedDate.split('-'):[];
