@@ -225,6 +225,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .cgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}@media(max-width:900px){.cgrid{grid-template-columns:1fr 1fr;}}@media(max-width:600px){.cgrid{grid-template-columns:1fr;}}
 .s2{grid-column:span 3;}
 .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:16px;overflow:hidden;box-sizing:border-box;flex-shrink:0;}
+.card:has(.msel.open){overflow:visible;}
 .ctitle{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .ctitle .dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0;}
 
@@ -267,7 +268,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .rpt-pill{font-size:11px;font-family:var(--mono);padding:2px 7px;border-radius:99px;font-weight:600;}
 .rpt-pill.p{background:rgba(0,229,160,.12);color:var(--green);}
 .rpt-pill.l{background:rgba(245,158,11,.12);color:var(--yellow);}
-.rpt-payroll{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.rpt-payroll{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
 .rpt-payroll-item .pl{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
 .rpt-payroll-item .pv{font-size:15px;font-weight:700;font-family:var(--mono);}
 .rpt-barlist{display:flex;flex-direction:column;gap:12px;}
@@ -1318,15 +1319,14 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- SECTION 5 -->
   <div class="rpt-grid2">
     <div class="rpt-card">
-      <div class="rpt-card-title">Operations &amp; Staff</div>
-      <div class="rpt-card-sub">Attendance &amp; payroll, this month</div>
-      <div id="report-attendance"></div>
+      <div class="rpt-card-title">Payroll</div>
+      <div class="rpt-card-sub">Staff payroll, this month</div>
       <div id="report-salary"></div>
     </div>
     <div class="rpt-card">
-      <div class="rpt-card-title">Patient Country</div>
-      <div class="rpt-card-sub">Vita Center patients by country, this month</div>
-      <div id="report-vita-country"></div>
+      <div class="rpt-card-title">Attendance</div>
+      <div class="rpt-card-sub">Staff attendance, this month</div>
+      <div id="report-attendance"></div>
     </div>
   </div>
 </div>
@@ -2573,9 +2573,11 @@ function buildMonthSels(){
   ['selMonth','fin-month','calc-month-filter','report-month-filter'].forEach(id=>{const el=g(id);if(!el)return;el.innerHTML='';MN_EN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;if(i===cur)o.selected=true;el.appendChild(o);});});
   buildMsel('d-month-filter',MN_EN,'Months');
   buildMsel('agency-month-sel',MN_EN,'Months');
+  mselState['agency-month-sel']=new Set([MN_EN[cur]]);
+  updateMselLabel('agency-month-sel');
   buildMsel('comm-month-filter',MN_EN,'Months');
   buildMsel('d-type-filter',['Income','Expense','Due','Free'],'Types');
-  buildMsel('comm-status-filter',['Unpaid','Provisional','Settled','Overpaid','Underpaid','Reconciled'],'Statuses');
+  buildMsel('comm-status-filter',['Unpaid','Provisional','Settled','Overpaid','Underpaid','Reconciled','Test-Pending'],'Statuses');
   buildMsel('vita-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
   buildMsel('vitaothers-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
   buildMsel('others-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
@@ -2994,7 +2996,10 @@ function commClearBatch(slug){
 // correct regardless of the active Year/Month/search filters; filters are applied last,
 // only to what's returned for on-screen display.
 function getCommissionRows(){
-  const allAgencyRows=loadArr(SK10).filter(r=>(r.agency||'').trim());
+  const allAgencyRows=loadArr(SK10).filter(r=>{
+    const ag=(r.agency||'').trim().toLowerCase();
+    return ag&&ag!=='regular'&&ag!=='direct';
+  });
   commLastNewlyLocked=commSyncLedger(allAgencyRows);
   const data=loadCommissionData();
   const allItems=allAgencyRows.map(r=>{
@@ -3197,7 +3202,7 @@ function commPdfCopyBlock(agencyName,batchItems,gross,adjustment,net){
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'#0a8f4a';if(u==='UNFIT')return'#c0246b';if(u.includes('HELD'))return'#b8860b';if(u==='PROCESSING'||u==='PENDING')return'#0891b2';return'#555';};
   const statusCounts={};
   batchItems.forEach(x=>{const st=(x.r.status||'-').trim()||'-';statusCounts[st]=(statusCounts[st]||0)+1;});
-  const statusChips=Object.entries(statusCounts).map(([st,cnt])=>`<span class="pdf-chip" style="border-color:${sc(st)};color:${sc(st)};">${escapeHtml(st)}: <b>${cnt}</b></span>`).join('');
+  const statusLine=Object.entries(statusCounts).map(([st,cnt])=>`<span style="color:${sc(st)};font-weight:700;">${escapeHtml(st)}: ${cnt}</span>`).join('&nbsp;&nbsp;&middot;&nbsp;&nbsp;');
   // Group by rate bucket: UNFIT status wins regardless of slip; otherwise group by the
   // actual Slip text (Vita / Veritas / Kent / ...), or "No Slip Yet" for the advance rate.
   // Test-patient rows (Test Recovery Fee already deducted) get their own labeled bucket
@@ -3231,11 +3236,11 @@ function commPdfCopyBlock(agencyName,batchItems,gross,adjustment,net){
       <div class="pdf-reglist">${regList}</div>
     </div>
     <div class="pdf-section">
-      <div class="pdf-section-title">Status Breakdown</div>
-      <div class="pdf-chips">${statusChips}</div>
+      <div class="pdf-section-title">Status</div>
+      <div class="pdf-status-line">${statusLine}</div>
     </div>
     <div class="pdf-calc">
-      <div class="pdf-section-title" style="margin-bottom:6px;">Commission Breakdown</div>
+      <div class="pdf-section-title" style="margin-bottom:6px;">Commission</div>
       ${breakdownRows}
       <div class="pdf-calc-row" style="border-top:1px solid #ccc;margin-top:4px;padding-top:5px;"><span>Gross Commission (${batchItems.length} patient${batchItems.length===1?'':'s'})</span><b>${fmtSigned(gross)}</b></div>
       <div class="pdf-calc-row"><span>Balance Adjustment${adjustment<0?' (previously overpaid)':adjustment>0?' (previously underpaid)':''}</span><b style="color:${adjustment>=0?'#0a8f4a':'#c0246b'};">${adjustment>=0?'+':'-'}${fmtExact(Math.abs(adjustment))}</b></div>
@@ -3279,8 +3284,7 @@ function generateCommissionAgencyPDF(slug){
   .pdf-section{margin-bottom:8px;}
   .pdf-section-title{font-size:9.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
   .pdf-reglist{font-size:10.5px;line-height:1.6;color:#1a1a2e;background:#f8f9fa;border-left:3px solid #00d4ff;border-radius:3px;padding:6px 9px;word-spacing:2px;}
-  .pdf-chips{display:flex;flex-wrap:wrap;gap:6px;}
-  .pdf-chip{display:inline-block;font-size:10px;font-weight:600;border:1px solid #ccc;border-radius:20px;padding:3px 11px;background:#fafafa;}
+  .pdf-status-line{font-size:10.5px;background:#f8f9fa;border-radius:3px;padding:6px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pdf-calc{border:1px solid #ddd;border-radius:5px;padding:8px 12px;margin-bottom:10px;background:#f9fafb;}
   .pdf-calc-row{display:flex;justify-content:space-between;font-size:10.5px;padding:3px 0;color:#333;}
   .pdf-calc-row.pdf-net{border-top:1px solid #ccc;margin-top:4px;padding-top:6px;font-size:13px;font-weight:800;color:#1a1a2e;}
@@ -6373,6 +6377,58 @@ function rptDonutCard(el,counts,emptyMsg,centerLabel){
   const more=entries.length>6?`<div class="rpt-dlrow"><span class="dk" style="color:var(--tm);">+${entries.length-6} more</span></div>`:'';
   el.innerHTML=`<div class="rpt-donut-wrap">${donut}<div class="rpt-donut-legend">${legend}${more}</div></div>`;
 }
+// Same donut, but names are arranged radially around the ring (with a short
+// leader line to their segment) instead of a side legend list.
+function rptDonutRadialCard(el,counts,emptyMsg,centerLabel){
+  if(!el)return;
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
+  const total=entries.reduce((a,[,c])=>a+c,0);
+  const shown=entries.slice(0,8);
+  const rest=entries.slice(8);
+  const segments=entries.map(([label,value],i)=>({label,value,color:RPT_COLORS[i%RPT_COLORS.length]}));
+  const W=320,H=286,cx=W/2,cy=H/2,ringSize=118,strokeW=15;
+  const r=(ringSize-strokeW)/2;
+  const c=2*Math.PI*r;
+  let offset=0;
+  const arcEls=segments.map(s=>{
+    const frac=s.value/total;
+    const dash=Math.max(frac*c-1,0);
+    const el2=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-dashoffset="${-offset}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset+=frac*c;
+    return el2;
+  }).join('');
+  let cum=0;
+  const labelR=r+strokeW/2+38;
+  const labelEls=shown.map(([label,value],i)=>{
+    const frac=value/total;
+    const midFrac=cum+frac/2;
+    cum+=frac;
+    const angleRad=(-90+360*midFrac)*Math.PI/180;
+    const lx=cx+labelR*Math.cos(angleRad);
+    const ly=cy+labelR*Math.sin(angleRad);
+    const dotX=cx+(r+strokeW/2+6)*Math.cos(angleRad);
+    const dotY=cy+(r+strokeW/2+6)*Math.sin(angleRad);
+    const anchor=Math.cos(angleRad)>0.15?'start':Math.cos(angleRad)<-0.15?'end':'middle';
+    const color=RPT_COLORS[i%RPT_COLORS.length];
+    const shortLabel=label.length>13?label.slice(0,12)+'…':label;
+    return`<g>
+      <line x1="${dotX.toFixed(1)}" y1="${dotY.toFixed(1)}" x2="${lx.toFixed(1)}" y2="${ly.toFixed(1)}" stroke="${color}" stroke-width="1" opacity="0.55"/>
+      <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="2.5" fill="${color}"/>
+      <text x="${(lx+(anchor==='start'?6:anchor==='end'?-6:0)).toFixed(1)}" y="${(ly+3).toFixed(1)}" font-size="9.5" text-anchor="${anchor}" fill="var(--tp)">${escapeHtml(shortLabel)} <tspan fill="var(--tm)" font-size="8.5">(${value})</tspan></text>
+    </g>`;
+  }).join('');
+  const more=rest.length?`<div class="rpt-empty" style="padding:2px 0 0;">+${rest.length} more</div>`:'';
+  el.innerHTML=`<div style="display:flex;justify-content:center;">
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
+      ${arcEls}
+      <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${total}</text>
+      <text x="${cx}" y="${cy+15}" text-anchor="middle" font-size="9" fill="var(--tm)" letter-spacing="0.05em">${centerLabel}</text>
+      ${labelEls}
+    </svg>
+  </div>${more}`;
+}
 function rptBarList(el,counts,emptyMsg,maxRows){
   if(!el)return;
   const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,maxRows||7);
@@ -6487,7 +6543,7 @@ function renderReportPage(){
 
   const vitaAgencyCounts={};
   vitaRows.forEach(r=>{const a=(r.agency||'Unknown').trim()||'Unknown';vitaAgencyCounts[a]=(vitaAgencyCounts[a]||0)+1;});
-  rptDonutCard(g('report-vita-agency'),vitaAgencyCounts,'No data.','patients');
+  rptDonutRadialCard(g('report-vita-agency'),vitaAgencyCounts,'No data.','patients');
 
   const vitaSlipsCounts={};
   vitaRows.forEach(r=>{const sp=(r.slips||'Unknown').trim()||'Unknown';vitaSlipsCounts[sp]=(vitaSlipsCounts[sp]||0)+1;});
@@ -6507,7 +6563,7 @@ function renderReportPage(){
   othersRows.forEach(r=>{const c=(r._center||'Unknown').trim()||'Unknown';ocCenterCounts[c]=(ocCenterCounts[c]||0)+1;});
   rptDonutCard(g('report-others-chart'),ocCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.','patients');
 
-  // ═══ SECTION 5 — Operations & Staff + Patient Country ═══
+  // ═══ SECTION 5 — Payroll + Attendance ═══
   const attEl=g('report-attendance');
   if(attEl){
     const byStaff={};
@@ -6538,10 +6594,6 @@ function renderReportPage(){
       <div class="rpt-payroll-item"><div class="pl">Pending Advances</div><div class="pv" style="color:var(--yellow);">${fmtExact(advTotal)}</div></div>
     </div>`;
   }
-  // Patient Country — Vita Center patients this month, by country
-  const vitaCountryCounts={};
-  vitaRows.forEach(r=>{const c=(r.country||'Unknown').trim()||'Unknown';vitaCountryCounts[c]=(vitaCountryCounts[c]||0)+1;});
-  rptDonutCard(g('report-vita-country'),vitaCountryCounts,'No country data for '+MN_EN[mf]+' '+yf+'.','patients');
 }
 function renderAgencyCard(){
   const el=g('agency-chart-wrap');if(!el)return;
