@@ -72,6 +72,80 @@ body{font-family:var(--font);background:var(--bg-deep);color:var(--tp);height:10
 .sitem-parent.expanded .sitem-arrow{transform:rotate(180deg);}
 .tright{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .sel{font-family:var(--font);font-size:12px;background:var(--bg-card);color:var(--tp);border:1px solid var(--border-bright);border-radius:var(--rs);padding:5px 8px;cursor:pointer;outline:none;max-width:100%;box-sizing:border-box;}
+
+/* MULTI-SELECT DROPDOWN */
+.msel{position:relative;display:inline-block;}
+.msel-btn{font-family:var(--font);font-size:12px;background:var(--bg-card);color:var(--tp);border:1px solid var(--border-bright);border-radius:var(--rs);padding:5px 10px;cursor:pointer;outline:none;display:flex;align-items:center;gap:6px;transition:border-color .15s,box-shadow .15s,background .15s;white-space:nowrap;}
+.msel-btn:hover{border-color:var(--cyan);}
+.msel.open .msel-btn{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,212,255,.12);}
+.msel.has-selection .msel-btn{border-color:rgba(0,212,255,.55);background:rgba(0,212,255,.07);}
+.msel.has-selection .msel-btn-label{color:var(--cyan);font-weight:600;}
+.msel-btn-label{max-width:150px;overflow:hidden;text-overflow:ellipsis;}
+.msel-caret{flex-shrink:0;transition:transform .15s;color:var(--ts);}
+.msel.open .msel-caret{transform:rotate(180deg);color:var(--cyan);}
+.msel.msel-disabled .msel-btn{opacity:.45;cursor:not-allowed;}
+.msel.msel-disabled .msel-btn:hover{border-color:var(--border-bright);}
+.msel-panel{display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:250;min-width:200px;max-width:280px;background:var(--bg-card);border:1px solid var(--border-bright);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden;animation:mselIn .12s ease-out;}
+.msel.open .msel-panel{display:block;}
+@keyframes mselIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.msel-toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border);gap:8px;}
+.msel-mini{background:none;border:none;color:var(--cyan);font-size:11px;font-weight:600;cursor:pointer;padding:2px 4px;border-radius:4px;}
+.msel-mini:hover{background:var(--bg-card2);}
+.msel-mini.mm-clear{color:var(--ts);}
+.msel-search-wrap{padding:8px 10px 0;}
+.msel-search{width:100%;box-sizing:border-box;font-family:var(--font);font-size:12px;background:var(--bg-card2);color:var(--tp);border:1px solid var(--border);border-radius:7px;padding:6px 8px;outline:none;}
+.msel-search:focus{border-color:var(--cyan);}
+.msel-list{max-height:220px;overflow-y:auto;padding:6px;}
+.msel-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;cursor:pointer;font-size:12.5px;color:var(--tp);transition:background .12s;}
+.msel-item:hover{background:var(--bg-card2);}
+.msel-cb{position:relative;flex-shrink:0;width:16px;height:16px;display:inline-block;}
+.msel-cb input[type="checkbox"]{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer;z-index:1;}
+.msel-cb-box{position:absolute;inset:0;border:1.5px solid var(--border-bright);border-radius:5px;background:var(--bg-card2);display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s,transform .1s;}
+.msel-cb-box svg{stroke:#04202b;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.4);transition:opacity .12s,transform .15s cubic-bezier(.34,1.6,.64,1);}
+.msel-cb input:checked+.msel-cb-box{background:var(--cyan);border-color:var(--cyan);}
+.msel-cb input:checked+.msel-cb-box svg{opacity:1;transform:scale(1);}
+.msel-cb input:active+.msel-cb-box{transform:scale(.88);}
+.msel-item-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.msel-empty{padding:16px 10px;text-align:center;font-size:12px;color:var(--tm);}
+
+/* COMMISSION CALCULATION PAGE */
+.comm-agency-card{padding:0;overflow:hidden;}
+.comm-agency-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;flex-wrap:wrap;transition:background .15s;}
+.comm-agency-head:hover{background:var(--bg-card2);}
+.comm-agency-name{font-size:14px;font-weight:700;color:var(--tp);display:flex;align-items:center;gap:8px;}
+.comm-agency-name .cnt{font-size:11px;font-weight:500;color:var(--tm);background:var(--bg-card2);border-radius:999px;padding:2px 9px;}
+.comm-agency-stats{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-family:var(--mono);}
+.comm-agency-stats .cst{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+.comm-agency-stats .cst-label{font-size:9.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;font-family:var(--font);}
+.comm-agency-stats .cst-val{font-size:13px;font-weight:700;}
+.comm-chevron{flex-shrink:0;transition:transform .2s;color:var(--ts);}
+.comm-agency-card.open .comm-chevron{transform:rotate(180deg);}
+.comm-agency-body{display:none;border-top:1px solid var(--border);}
+.comm-agency-card.open .comm-agency-body{display:block;}
+.comm-slip-pill{font-size:11px;font-weight:600;border-radius:6px;padding:2px 8px;display:inline-block;}
+.comm-slip-vita{background:rgba(0,212,255,.12);color:var(--cyan);}
+.comm-slip-other{background:rgba(157,78,221,.12);color:var(--purple);}
+.comm-slip-none{background:var(--bg-card2);color:var(--tm);}
+.comm-test-tag{font-size:9px;font-weight:800;letter-spacing:.04em;background:rgba(123,47,255,.15);color:var(--purple);border:1px solid rgba(123,47,255,.4);border-radius:4px;padding:1px 5px;vertical-align:middle;}
+.comm-badge{font-size:10.5px;font-weight:700;border-radius:6px;padding:3px 8px;display:inline-block;white-space:nowrap;}
+.comm-badge-gray{background:var(--bg-card2);color:var(--tm);}
+.comm-badge-amber{background:rgba(255,193,7,.12);color:var(--yellow);}
+.comm-badge-green{background:rgba(0,229,160,.12);color:var(--green);}
+.comm-badge-pink{background:rgba(247,37,133,.12);color:var(--pink);}
+.comm-badge-orange{background:rgba(255,145,0,.12);color:var(--orange);}
+.comm-unlock-btn{font-family:var(--font);font-size:10.5px;font-weight:600;border-radius:6px;padding:4px 9px;cursor:pointer;border:1px solid var(--border-bright);background:var(--bg-card2);color:var(--ts);white-space:nowrap;transition:all .15s;}
+.comm-unlock-btn:hover{border-color:var(--pink);color:var(--pink);}
+
+.comm-calcbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(0,212,255,.04);}
+.comm-calcbar-stats{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-left:auto;}
+.ccb-item{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+.ccb-label{font-size:9.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;}
+.ccb-val{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--tp);}
+.ccb-net .ccb-val{font-size:16px;}
+.comm-pdf-btn{font-family:var(--font);font-size:11.5px;font-weight:700;border-radius:var(--rs);padding:8px 14px;cursor:pointer;border:1px solid rgba(0,212,255,.4);background:rgba(0,212,255,.1);color:var(--cyan);white-space:nowrap;transition:all .15s;}
+.comm-pdf-btn:hover{background:rgba(0,212,255,.18);transform:translateY(-1px);}
+.comm-clear-btn{font-family:var(--font);font-size:11px;font-weight:600;border-radius:var(--rs);padding:8px 12px;cursor:pointer;border:1px solid var(--border-bright);background:var(--bg-card2);color:var(--ts);white-space:nowrap;transition:all .15s;}
+.comm-clear-btn:hover{border-color:var(--yellow);color:var(--yellow);}
 input[type="date"],input[type="month"]{color-scheme:dark;}
 input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webkit-calendar-picker-indicator{cursor:pointer;filter:brightness(1.4);}
 :root.light input[type="date"],:root.light input[type="month"]{color-scheme:light;}
@@ -153,7 +227,68 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:16px;overflow:hidden;box-sizing:border-box;flex-shrink:0;}
 .ctitle{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .ctitle .dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0;}
+
+/* REPORT PAGE */
+.rpt-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.rpt-eyebrow{font-size:10.5px;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase;font-weight:700;margin-bottom:3px;}
+.rpt-title{font-size:26px;font-weight:800;color:var(--tp);letter-spacing:-.02em;line-height:1;}
+.rpt-filters{display:flex;gap:8px;}
+.rpt-hero{display:flex;flex-wrap:wrap;background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:20px 6px;margin-bottom:16px;}
+.rpt-statstrip{display:flex;flex-wrap:wrap;background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:18px 4px;margin-bottom:16px;}
+.rpt-sstat{flex:1 1 150px;min-width:130px;padding:2px 22px;position:relative;}
+.rpt-sstat:not(:last-child)::after{content:'';position:absolute;right:0;top:4px;bottom:4px;width:1px;background:var(--border);}
+.rpt-sstat-label{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:8px;}
+.rpt-sstat-value{font-size:21px;font-weight:800;font-family:var(--mono);letter-spacing:-.01em;line-height:1;}
+.rpt-sstat-sub{font-size:10.5px;color:var(--ts);margin-top:7px;}
+@media(max-width:760px){.rpt-sstat:not(:last-child)::after{display:none;}.rpt-sstat{flex:1 1 45%;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:8px;}}
+.rpt-card{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:20px;margin-bottom:16px;}
+.rpt-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.rpt-card-title{font-size:14px;font-weight:700;color:var(--tp);}
+.rpt-card-sub{font-size:11px;color:var(--tm);margin-top:2px;margin-bottom:14px;}
+.rpt-legend{display:flex;gap:14px;}
+.rpt-legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ts);}
+.rpt-legend-item i{width:9px;height:9px;border-radius:3px;display:inline-block;}
+.rpt-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;}
+.rpt-grid2{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;}
+@media(max-width:900px){.rpt-grid3{grid-template-columns:1fr;}.rpt-grid2{grid-template-columns:1fr;}}
+.rpt-donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.rpt-donut-legend{flex:1;min-width:120px;display:flex;flex-direction:column;gap:9px;}
+.rpt-dlrow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;}
+.rpt-dlrow .dk{display:flex;align-items:center;gap:7px;color:var(--ts);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rpt-dlrow .dk i{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.rpt-dlrow .dv{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.rpt-dlrow .dv b{font-family:var(--mono);color:var(--tp);font-weight:600;}
+.rpt-dlrow .dv em{font-style:normal;font-size:10px;font-family:var(--mono);padding:1px 6px;border-radius:99px;font-weight:700;}
+.rpt-empty{font-size:12px;color:var(--tm);padding:20px 0;text-align:center;width:100%;}
+.rpt-staff-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+.rpt-staff-row:last-child{border-bottom:none;}
+.rpt-staff-name{font-size:12.5px;color:var(--tp);}
+.rpt-staff-pills{display:flex;gap:6px;}
+.rpt-pill{font-size:11px;font-family:var(--mono);padding:2px 7px;border-radius:99px;font-weight:600;}
+.rpt-pill.p{background:rgba(0,229,160,.12);color:var(--green);}
+.rpt-pill.l{background:rgba(245,158,11,.12);color:var(--yellow);}
+.rpt-payroll{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.rpt-payroll-item .pl{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.rpt-payroll-item .pv{font-size:15px;font-weight:700;font-family:var(--mono);}
+.rpt-barlist{display:flex;flex-direction:column;gap:12px;}
+.rpt-bar-row .bhead{display:flex;justify-content:space-between;margin-bottom:5px;}
+.rpt-bar-row .bname{font-size:12px;color:var(--tp);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;}
+.rpt-bar-row .bval{font-size:11.5px;font-family:var(--mono);color:var(--ts);}
+.rpt-bar-track{background:var(--bg-card2);border-radius:99px;height:8px;overflow:hidden;}
+.rpt-bar-fill{height:100%;border-radius:99px;}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;}
+.rpt-ringrow{display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;padding-top:8px;}
+.rpt-ring{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.rpt-ring-label{font-size:11.5px;color:var(--ts);text-align:center;max-width:120px;line-height:1.4;}
+.rpt-multi3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.rpt-multi2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+@media(max-width:760px){.rpt-multi3{grid-template-columns:1fr;}.rpt-multi2{grid-template-columns:1fr;}}
+.rpt-subpanel-title{font-size:10.5px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.rpt-coll-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.rpt-tooltip{position:absolute;background:#0d1420;border:1px solid var(--border-bright);border-radius:10px;padding:9px 12px;font-size:11.5px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:20;box-shadow:0 10px 24px rgba(0,0,0,.55);white-space:nowrap;}
+.rpt-tooltip.show{opacity:1;}
+.rpt-tooltip .tt-month{color:var(--tm);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+.rpt-tooltip .tt-row{display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);margin-top:2px;}
 .ppf{background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--rs);padding:9px;}
 .ppf label{display:block;font-size:11px;color:var(--tm);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
 .ppf input{font-family:var(--mono);font-size:15px;font-weight:500;background:transparent;border:none;color:var(--cyan);width:100%;outline:none;}
@@ -579,6 +714,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         <a onclick="showPage('others',this);closePatientsNav()">&#128101; Others Center</a>
       </div>
     </div>
+    <a onclick="showPage('report',this)">Report</a>
     <a onclick="showPage('history',this)">History</a>
     <a onclick="showPage('operations',this)" id="nav-operations">Operations</a>
     <a onclick="showPage('settings',this)">Settings</a>
@@ -600,6 +736,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
     <div class="sitem sitem-child" onclick="showPage('patients',null,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Vita Center</div>
     <div class="sitem sitem-child" onclick="showPage('others',null,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Others Center</div>
   </div>
+  <div class="sitem" onclick="showPage('report',null,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Report</div>
   <div class="sitem" onclick="showPage('history',null,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>History</div>
   <div class="sitem" id="sidebar-operations" onclick="showPage('operations',null,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="21" x2="23" y2="19"/><line x1="19" y1="21" x2="19" y2="19"/><line x1="21" y1="19" x2="21" y2="15"/></svg>Operations &amp; Staff</div>
   <div class="sitem" onclick="showPage('settings',null,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
@@ -672,7 +809,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   </div>
   <div class="cgrid">
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Agency Patient Share <span style="margin-left:auto;display:flex;align-items:center;gap:6px;"><select class="sel" id="agency-year-sel" style="font-size:11px;padding:3px 6px;" onchange="renderAgencyCard()"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select><select class="sel" id="agency-month-sel" style="font-size:11px;padding:3px 6px;" onchange="renderAgencyCard()"></select></span></div>
+      <div class="ctitle"><span class="dot"></span>Agency Patient Share <span style="margin-left:auto;display:flex;align-items:center;gap:6px;"><select class="sel" id="agency-year-sel" style="font-size:11px;padding:3px 6px;" onchange="renderAgencyCard()"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select><div class="msel" id="agency-month-sel-wrap"><button type="button" class="msel-btn" style="font-size:11px;padding:3px 8px;" onclick="toggleMsel('agency-month-sel')"><span class="msel-btn-label" id="agency-month-sel-label">All Months</span><svg class="msel-caret" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button><div class="msel-panel" id="agency-month-sel-panel"></div></div></span></div>
       <div id="agency-chart-wrap" class="slim-scroll" style="flex:1;min-height:0;overflow-y:auto;"></div>
     </div>
     <div class="card">
@@ -720,6 +857,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- Sub-page nav -->
   <div class="daily-subnav">
     <button class="daily-subnav-btn active" id="dsub-records" onclick="switchDailySubPage('records',this)">&#128200; Income &amp; Expenses</button>
+    <button class="daily-subnav-btn" id="dsub-agencycomm" onclick="switchDailySubPage('agencycomm',this)">&#128176; Commission</button>
     <button class="daily-subnav-btn" id="dsub-calc" onclick="switchDailySubPage('calc',this)">&#129518; Patient Calculation</button>
     <button class="daily-subnav-btn" id="dsub-commission" onclick="switchDailySubPage('commission',this)">&#129309; Agency Management</button>
   </div>
@@ -768,9 +906,21 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
       <div class="ptb">
         <div class="sw"><span class="si2">&#128269;</span><input type="text" id="d-search" placeholder="Search by note or date keyword..." oninput="debouncedRender('renderDailyTable')"></div>
         <select class="sel" id="d-year-filter" onchange="renderDailyTable()"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select>
-        <select class="sel" id="d-month-filter" onchange="renderDailyTable()"></select>
+        <div class="msel" id="d-month-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('d-month-filter')">
+            <span class="msel-btn-label" id="d-month-filter-label">All Months</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="d-month-filter-panel"></div>
+        </div>
         <input type="date" id="d-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderDailyTable()"><button onclick="clearDateFilterDaily()" id="d-date-clear" style="display:none;background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
-        <select class="sel" id="d-type-filter" onchange="renderDailyTable()"><option value="">All Types</option><option value="income">Income Only</option><option value="expense">Expense Only</option><option value="due">Due Only</option><option value="free">Free Only</option></select>
+        <div class="msel" id="d-type-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('d-type-filter')">
+            <span class="msel-btn-label" id="d-type-filter-label">All Types</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="d-type-filter-panel"></div>
+        </div>
         <button class="abtn bexp" onclick="exportDailyCSV()">Export</button>
         <button class="abtn bexp" onclick="generateDailyTrackerPDF()">📄 PDF Report</button>
       </div>
@@ -781,6 +931,58 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         </table>
       </div>
     </div>
+  </div>
+
+
+  <!-- ── SUB-PAGE: Commission Calculation ── -->
+  <div id="daily-view-agencycomm" style="display:none;flex-direction:column;gap:14px;">
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Commission Rates <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Reference only — not counted in income/expense</span></div>
+      <div class="oc-group-grid" style="max-width:780px;">
+        <div class="ff"><label>Vita Slip Rate (৳ / passport)</label><input type="number" id="comm-rate-vita" min="0" value="3000" style="font-size:15px;" oninput="saveCommissionRates();renderCommissionCalc();"></div>
+        <div class="ff"><label>Other Center Slip Rate (৳ / passport)</label><input type="number" id="comm-rate-other" min="0" value="2000" style="font-size:15px;" oninput="saveCommissionRates();renderCommissionCalc();"></div>
+        <div class="ff"><label>UNFIT Patient Rate (৳ / passport)</label><input type="number" id="comm-rate-unfit" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();renderCommissionCalc();"></div>
+        <div class="ff"><label>Test Patient Recovery Fee (৳ / passport)</label><input type="number" id="comm-rate-testfee" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();renderCommissionCalc();"></div>
+      </div>
+      <div style="font-size:11px;color:var(--tm);margin-top:8px;">Set the <b>Remarks</b> column dropdown to Paid/Unpaid in the Vita Center sheet. If a patient's Status is <b>UNFIT</b>, the UNFIT rate applies automatically (Slip is ignored). Otherwise: Slip = "Vita" → Vita rate; any other Slip → Other Center rate; Slip still blank → Vita rate is used as an advance until the Slip resolves. If the assumed rate turns out wrong once the Slip/Status resolves, the difference is tracked automatically as a Balance per agency — no manual recalculation needed. A patient whose <b>Reg No contains "TEST"</b> (e.g. 26PM1(TEST)) gets no commission at all until a Slip appears — once it does, the Test Recovery Fee is deducted from that slip's normal rate (can go negative — meaning the agency owes that amount back).</div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Filter</div>
+      <div class="ptb">
+        <div class="sw"><span class="si2">&#128269;</span><input type="text" id="comm-search" placeholder="Search agency, passport, or name..." oninput="debouncedRender('renderCommissionCalc')"></div>
+        <select class="sel" id="comm-year-filter" onchange="renderCommissionCalc()"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select>
+        <div class="msel" id="comm-month-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('comm-month-filter')">
+            <span class="msel-btn-label" id="comm-month-filter-label">All Months</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="comm-month-filter-panel"></div>
+        </div>
+        <div class="msel" id="comm-status-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('comm-status-filter')">
+            <span class="msel-btn-label" id="comm-status-filter-label">All Statuses</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="comm-status-filter-panel"></div>
+        </div>
+        <button type="button" class="msel-mini" style="border:1px solid var(--border-bright);border-radius:var(--rs);padding:5px 10px;" onclick="commSetAllOpen(true)">Expand all</button>
+        <button type="button" class="msel-mini" style="border:1px solid var(--border-bright);border-radius:var(--rs);padding:5px 10px;" onclick="commSetAllOpen(false)">Collapse all</button>
+      </div>
+      <div style="font-size:11px;color:var(--tm);margin-top:8px;">Paid/Unpaid is set in the sheet's Remarks column, not here — this page only reads it and calculates.</div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Commission Summary</div>
+      <div class="daily-summary-grid cols-4">
+        <div class="daily-sum-card dsc-purple"><div class="dsc-label">Total Disbursed</div><div class="dsc-val" id="comm-total-all">৳0</div></div>
+        <div class="daily-sum-card dsc-green"><div class="dsc-label">Net Balance</div><div class="dsc-val" id="comm-total-paid">৳0</div></div>
+        <div class="daily-sum-card dsc-yellow"><div class="dsc-label">Unpaid Rows</div><div class="dsc-val" id="comm-total-due" style="color:var(--yellow);">0</div></div>
+        <div class="daily-sum-card dsc-pink"><div class="dsc-label">Provisional (Slip Pending)</div><div class="dsc-val" id="comm-total-count" style="color:var(--cyan);">0</div></div>
+      </div>
+    </div>
+
+    <div id="commAgencyGroups" style="display:flex;flex-direction:column;gap:14px;"></div>
   </div>
 
 
@@ -865,22 +1067,34 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         <option value="">All Years</option>
         <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
       </select>
-      <select class="sel" id="vita-month-filter" onchange="renderVitaPatients()">
-        <option value="">All Months</option>
-        <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option>
-        <option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option>
-        <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
-      </select>
-      <select class="sel" id="vita-status-filter" onchange="renderVitaPatients()">
-        <option value="">All Status</option>
-        <option value="FIT">FIT</option>
-        <option value="UNFIT">UNFIT</option>
-        <option value="HELDUP">HELDUP</option>
-        <option value="PROCESSING">PROCESSING</option>
-      </select>
-      <select class="sel" id="vita-agency-filter" onchange="renderVitaPatients()">
-        <option value="">All Agencies</option>
-      </select>
+      <div class="msel" id="vita-month-filter-wrap">
+        <button type="button" class="msel-btn" onclick="toggleMsel('vita-month-filter')">
+          <span class="msel-btn-label" id="vita-month-filter-label">All Months</span>
+          <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="msel-panel" id="vita-month-filter-panel"></div>
+      </div>
+      <div class="msel" id="vita-status-filter-wrap">
+        <button type="button" class="msel-btn" onclick="toggleMsel('vita-status-filter')">
+          <span class="msel-btn-label" id="vita-status-filter-label">All Status</span>
+          <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="msel-panel" id="vita-status-filter-panel"></div>
+      </div>
+      <div class="msel" id="vita-agency-filter-wrap">
+        <button type="button" class="msel-btn" onclick="toggleMsel('vita-agency-filter')">
+          <span class="msel-btn-label" id="vita-agency-filter-label">All Agencies</span>
+          <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="msel-panel" id="vita-agency-filter-panel"></div>
+      </div>
+      <div class="msel" id="vita-slip-filter-wrap">
+        <button type="button" class="msel-btn" onclick="toggleMsel('vita-slip-filter')">
+          <span class="msel-btn-label" id="vita-slip-filter-label">All Slips</span>
+          <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="msel-panel" id="vita-slip-filter-panel"></div>
+      </div>
       <input type="date" id="vita-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderVitaPatients()">
       <button onclick="g('vita-date-filter').value='';renderVitaPatients();" id="vita-date-clear" style="background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
       <button class="abtn bexp" onclick="exportVitaCSV()">Export</button>
@@ -914,26 +1128,41 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
           <option value="">All Years</option>
           <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
         </select>
-        <select class="sel" id="vitaothers-month-filter" onchange="renderVitaOthersPatients()">
-          <option value="">All Months</option>
-          <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option>
-          <option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option>
-          <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
-        </select>
-        <select class="sel" id="vitaothers-center-filter" onchange="renderVitaOthersPatients()">
-          <option value="">All Centers</option>
-        </select>
-        <select class="sel" id="vitaothers-slip-filter" onchange="renderVitaOthersPatients()">
-          <option value="">All Slips</option>
-        </select>
-        <select class="sel" id="vitaothers-agency-filter" onchange="renderVitaOthersPatients()">
-          <option value="">All Agencies</option>
-        </select>
-        <select class="sel" id="vitaothers-status-filter" onchange="renderVitaOthersPatients()">
-          <option value="">All Status</option>
-          <option value="FIT">FIT</option><option value="UNFIT">UNFIT</option>
-          <option value="HELDUP">HELDUP</option><option value="PROCESSING">PROCESSING</option>
-        </select>
+        <div class="msel" id="vitaothers-month-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('vitaothers-month-filter')">
+            <span class="msel-btn-label" id="vitaothers-month-filter-label">All Months</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="vitaothers-month-filter-panel"></div>
+        </div>
+        <div class="msel" id="vitaothers-center-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('vitaothers-center-filter')">
+            <span class="msel-btn-label" id="vitaothers-center-filter-label">All Centers</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="vitaothers-center-filter-panel"></div>
+        </div>
+        <div class="msel" id="vitaothers-slip-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('vitaothers-slip-filter')">
+            <span class="msel-btn-label" id="vitaothers-slip-filter-label">All Slips</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="vitaothers-slip-filter-panel"></div>
+        </div>
+        <div class="msel" id="vitaothers-agency-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('vitaothers-agency-filter')">
+            <span class="msel-btn-label" id="vitaothers-agency-filter-label">All Agencies</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="vitaothers-agency-filter-panel"></div>
+        </div>
+        <div class="msel" id="vitaothers-status-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('vitaothers-status-filter')">
+            <span class="msel-btn-label" id="vitaothers-status-filter-label">All Status</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="vitaothers-status-filter-panel"></div>
+        </div>
         <input type="date" id="vitaothers-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderVitaOthersPatients()">
         <button onclick="g('vitaothers-date-filter').value='';renderVitaOthersPatients();" style="background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
         <button class="abtn bexp" onclick="exportVitaOthersCSV()">Export</button>
@@ -958,20 +1187,27 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
           <option value="">All Years</option>
           <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
         </select>
-        <select class="sel" id="others-month-filter" onchange="renderOthersPatients()">
-          <option value="">All Months</option>
-          <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option>
-          <option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option>
-          <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
-        </select>
-        <select class="sel" id="others-center-filter" onchange="renderOthersPatients()">
-          <option value="">All Centers</option>
-        </select>
-        <select class="sel" id="others-status-filter" onchange="renderOthersPatients()">
-          <option value="">All Status</option>
-          <option value="FIT">FIT</option><option value="UNFIT">UNFIT</option>
-          <option value="HELDUP">HELDUP</option><option value="PROCESSING">PROCESSING</option>
-        </select>
+        <div class="msel" id="others-month-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('others-month-filter')">
+            <span class="msel-btn-label" id="others-month-filter-label">All Months</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="others-month-filter-panel"></div>
+        </div>
+        <div class="msel" id="others-center-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('others-center-filter')">
+            <span class="msel-btn-label" id="others-center-filter-label">All Centers</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="others-center-filter-panel"></div>
+        </div>
+        <div class="msel" id="others-status-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('others-status-filter')">
+            <span class="msel-btn-label" id="others-status-filter-label">All Status</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="others-status-filter-panel"></div>
+        </div>
         <input type="date" id="others-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderOthersPatients()">
         <button onclick="g('others-date-filter').value='';renderOthersPatients();" style="background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
         <button class="abtn bexp" onclick="exportOthersCSV()">Export</button>
@@ -985,6 +1221,112 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         </table>
       </div>
       <div style="font-size:12px;color:var(--tm);margin-top:8px;text-align:right;" id="others-record-count"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- REPORT -->
+<div class="page" id="page-report">
+  <div class="rpt-head">
+    <div>
+      <div class="rpt-eyebrow">Overview</div>
+      <div class="rpt-title">Report</div>
+    </div>
+    <div class="rpt-filters">
+      <select class="sel" id="report-year-filter" onchange="renderReportPage()">
+        <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+      </select>
+      <select class="sel" id="report-month-filter" onchange="renderReportPage()"></select>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Stat strip -->
+  <div class="rpt-statstrip" id="report-kpi-row"></div>
+
+  <!-- SECTION 2: Patient overview (round) + Collections -->
+  <div class="rpt-grid2">
+    <div class="rpt-card">
+      <div class="rpt-card-title">Patient Management</div>
+      <div class="rpt-card-sub">Total patients this month, by page</div>
+      <div class="rpt-ringrow" id="report-patient-rings"></div>
+    </div>
+    <div class="rpt-card">
+      <div class="rpt-card-title">Collections</div>
+      <div class="rpt-card-sub">Income breakdown, this month</div>
+      <div id="report-collections"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Cash flow -->
+  <div class="rpt-card">
+    <div class="rpt-card-head">
+      <div>
+        <div class="rpt-card-title">Cash Flow</div>
+        <div class="rpt-card-sub">Income vs expense, last 12 months · tap a point for details</div>
+      </div>
+      <div class="rpt-legend">
+        <span class="rpt-legend-item"><i style="background:var(--green);"></i>Income</span>
+        <span class="rpt-legend-item"><i style="background:var(--pink);"></i>Expense</span>
+      </div>
+    </div>
+    <div id="report-finance-trend" style="position:relative;"></div>
+  </div>
+
+  <!-- SECTION 4: Breakdown detail -->
+  <div class="rpt-card">
+    <div class="rpt-card-title">Vita Center</div>
+    <div class="rpt-card-sub">Status &middot; Agency &middot; Slips breakdown</div>
+    <div class="rpt-multi3">
+      <div>
+        <div class="rpt-subpanel-title">Status</div>
+        <div id="report-vita-status"></div>
+      </div>
+      <div>
+        <div class="rpt-subpanel-title">Agency</div>
+        <div id="report-vita-agency"></div>
+      </div>
+      <div>
+        <div class="rpt-subpanel-title">Slips</div>
+        <div id="report-vita-slips"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rpt-grid2">
+    <div class="rpt-card">
+      <div class="rpt-card-title">Vita (Med) + Others (Slip)</div>
+      <div class="rpt-card-sub">Center &amp; Agency breakdown</div>
+      <div class="rpt-multi2">
+        <div>
+          <div class="rpt-subpanel-title">Center</div>
+          <div id="report-vitaothers-center"></div>
+        </div>
+        <div>
+          <div class="rpt-subpanel-title">Agency</div>
+          <div id="report-vitaothers-agency"></div>
+        </div>
+      </div>
+    </div>
+    <div class="rpt-card">
+      <div class="rpt-card-title">Others (Med) + VITA (Slip)</div>
+      <div class="rpt-card-sub">Center breakdown</div>
+      <div id="report-others-chart"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="rpt-grid2">
+    <div class="rpt-card">
+      <div class="rpt-card-title">Operations &amp; Staff</div>
+      <div class="rpt-card-sub">Attendance &amp; payroll, this month</div>
+      <div id="report-attendance"></div>
+      <div id="report-salary"></div>
+    </div>
+    <div class="rpt-card">
+      <div class="rpt-card-title">Patient Country</div>
+      <div class="rpt-card-sub">Vita Center patients by country, this month</div>
+      <div id="report-vita-country"></div>
     </div>
   </div>
 </div>
@@ -1799,7 +2141,7 @@ const ML=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec
 const MN_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const CENTERS=['Vita','Kent','Sadiq','Ready-Health','MediPath'];
 const CENTER_COLORS={'Vita':'rgba(0,212,255,.8)','Kent':'rgba(247,37,133,.8)','Sadiq':'rgba(123,47,255,.8)','Ready-Health':'rgba(0,229,160,.8)','MediPath':'rgba(255,107,53,.8)','Other Center':'rgba(245,158,11,.8)'};
-const SK='vh_data',SK2='vh_settings_v2',SK4='vh_daily',SK5='vh_other_exp',SK8='vh_notepad',SK9='vh_commission',SK10='vh_vita_patients',SK11='vh_others_patients',SK12='vh_vitaothers_patients';
+const SK='vh_data',SK2='vh_settings_v2',SK4='vh_daily',SK5='vh_other_exp',SK8='vh_notepad',SK9='vh_commission',SK10='vh_vita_patients',SK11='vh_others_patients',SK12='vh_vitaothers_patients',SK13='vh_commission_calc';
 const SK_USERS='vh_users_v2', SK_ATT='vh_attendance_v2', SK_SAL='vh_salary_v2', SK_CALC='vh_calc_v1', SK_SAL_DEL='vh_salary_deleted_v1', SK_ADV='vh_salary_advance_v1', SK_SAL_HIST='vh_salary_increment_log_v1', SK_AUDIT='vh_audit_log_v1', SK_RETRY='vh_sync_retry_v1';
 // Bangladesh government public holidays 2026 (per Ministry of Public Administration circular).
 // Aug 15 is intentionally NOT included — it is not on the official 2026 govt holiday list.
@@ -2037,7 +2379,7 @@ function applyRoleUI(){
   // Define which pages each role can access
   // page keyword must match showPage() names and onclick attribute text
   const ACCESS={
-    accountant:['dashboard','daily','patients','others'],
+    accountant:['dashboard','report','daily','patients','others'],
     staff:['operations']
   };
   const allowed=ACCESS[role]||[];
@@ -2106,6 +2448,7 @@ function saveSettings(s){localStorage.setItem(SK2,JSON.stringify(s));}
 // HELPERS
 const g=id=>document.getElementById(id);
 const fmtExact=n=>'৳'+Math.round(n).toLocaleString();
+const fmtSigned=n=>n<0?'-'+fmtExact(Math.abs(n)):fmtExact(n);
 // parseSheetDate defined below near syncPull — do not duplicate here
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 // Fetches JSON with one automatic retry — Google Apps Script Web Apps sometimes cold-start
@@ -2213,7 +2556,7 @@ function showPage(name,navEl,sideEl){
   document.querySelectorAll('.bnav-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
   const patientsBnav=g('bnav-patients-btn');
   if(patientsBnav)patientsBnav.classList.toggle('active',name==='patients'||name==='others');
-  if(name==='history')renderHistory();if(name==='patients'){renderVitaPatients();}if(name==='others'){renderVitaOthersPatients();renderOthersPatients();}if(name==='daily'){renderDailyTable();renderCommissionLog();}if(name==='settings')renderSettings();if(name==='operations')initOpsPage();
+  if(name==='report')renderReportPage();if(name==='history')renderHistory();if(name==='patients'){renderVitaPatients();}if(name==='others'){renderVitaOthersPatients();renderOthersPatients();}if(name==='daily'){renderDailyTable();renderCommissionLog();}if(name==='settings')renderSettings();if(name==='operations')initOpsPage();
   closeSB();
 }
 function toggleSB(){const sb=g('sidebar'),ov=g('mob-overlay');sb.classList.toggle('open');if(ov)ov.style.display=sb.classList.contains('open')?'block':'none';}function closeSB(){const sb=g('sidebar'),ov=g('mob-overlay');sb.classList.remove('open');if(ov)ov.style.display='none';}
@@ -2227,10 +2570,16 @@ document.addEventListener('click',(e)=>{
 // BUILD SELECTS
 function buildMonthSels(){
   const cur=new Date().getMonth();
-  ['selMonth','d-month-filter','fin-month','agency-month-sel','calc-month-filter'].forEach(id=>{const el=g(id);if(!el)return;el.innerHTML='';MN_EN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;if(i===cur)o.selected=true;el.appendChild(o);});});
-  const dmf=g('d-month-filter');
-  if(dmf){const allOpt=document.createElement('option');allOpt.value='';allOpt.textContent='All Months';dmf.insertBefore(allOpt,dmf.firstChild);}
-  g('fin-month').addEventListener('change',onFinanceYearMonthChange);g('fin-year').addEventListener('change',onFinanceYearMonthChange);g('d-month-filter').addEventListener('change',renderDailyTable);
+  ['selMonth','fin-month','calc-month-filter','report-month-filter'].forEach(id=>{const el=g(id);if(!el)return;el.innerHTML='';MN_EN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;if(i===cur)o.selected=true;el.appendChild(o);});});
+  buildMsel('d-month-filter',MN_EN,'Months');
+  buildMsel('agency-month-sel',MN_EN,'Months');
+  buildMsel('comm-month-filter',MN_EN,'Months');
+  buildMsel('d-type-filter',['Income','Expense','Due','Free'],'Types');
+  buildMsel('comm-status-filter',['Unpaid','Provisional','Settled','Overpaid','Underpaid','Reconciled'],'Statuses');
+  buildMsel('vita-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
+  buildMsel('vitaothers-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
+  buildMsel('others-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
+  g('fin-month').addEventListener('change',onFinanceYearMonthChange);g('fin-year').addEventListener('change',onFinanceYearMonthChange);
   const _now=new Date(),_yr=_now.getFullYear(),_mo=String(_now.getMonth()+1).padStart(2,'0'),_dy=String(_now.getDate()).padStart(2,'0');const today=`${_yr}-${_mo}-${_dy}`;g('di-date').value=today;g('de-date').value=today;
 }
 function onFinanceYearMonthChange(){g('selYear').value=g('fin-year').value;g('selMonth').value=g('fin-month').value;if(g('calc-year-filter'))g('calc-year-filter').value=g('fin-year').value;if(g('calc-month-filter'))g('calc-month-filter').value=g('fin-month').value;loadMonthData();g('yr-label').textContent=yk();updateYearSummary();}
@@ -2437,8 +2786,10 @@ function switchDailySubPage(view,btn){
   if(btn)btn.classList.add('active');
   g('daily-view-records').style.display=view==='records'?'flex':'none';
   if(g('daily-view-calc'))g('daily-view-calc').style.display=view==='calc'?'flex':'none';
+  if(g('daily-view-agencycomm'))g('daily-view-agencycomm').style.display=view==='agencycomm'?'flex':'none';
   g('daily-view-commission').style.display=view==='commission'?'flex':'none';
   if(view==='calc')renderCalcPage();
+  if(view==='agencycomm')renderCommissionCalc();
   if(view==='commission'){renderCommissionLog();populateAgencyDL();}
 }
 
@@ -2498,6 +2849,455 @@ function exportCommissionCSV(){
   const rows=[['Date','Agency','Contact Name','Mobile','Address','Note','Amount']];
   loadArr(SK9).forEach(r=>rows.push([r.date,r.agency||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount]));
   dlCSV(rows,'agency_commission_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
+}
+
+// ═══════════════════════════════════════════
+// COMMISSION CALCULATION (Vita Center Agency + Slip based)
+// Paid/Unpaid is driven by the "Commission Status" column in the sheet itself
+// (read directly from r.remarks). The app never marks paid — it only locks a
+// disbursed-amount snapshot the first time it sees a row as Paid, then
+// reconciles that snapshot against the real rate once the Slip is known.
+// Self-contained — not counted in income/expense/reports elsewhere.
+// ═══════════════════════════════════════════
+const commOpenState={}; // agency slug -> bool (expanded/collapsed)
+let commLastNewlyLocked=new Set(); // keys locked during the most recent sync pass (for "New" badge)
+
+function loadCommissionData(){
+  const d=load(SK13);
+  if(typeof d.rateVita!=='number')d.rateVita=3000;
+  if(typeof d.rateOther!=='number')d.rateOther=2000;
+  if(typeof d.rateUnfit!=='number')d.rateUnfit=7000;
+  if(typeof d.rateTestFee!=='number')d.rateTestFee=7000;
+  if(!d.ledger||typeof d.ledger!=='object')d.ledger={};
+  if(!d.batches||typeof d.batches!=='object')d.batches={}; // agency name -> [row keys] pending PDF/print
+  if(!d.reconciled||typeof d.reconciled!=='object')d.reconciled={}; // agency name -> [row keys] whose delta has already been absorbed into a past net-payment
+  return d;
+}
+function initCommissionRatesUI(){
+  const d=loadCommissionData();
+  if(g('comm-rate-vita'))g('comm-rate-vita').value=d.rateVita;
+  if(g('comm-rate-other'))g('comm-rate-other').value=d.rateOther;
+  if(g('comm-rate-unfit'))g('comm-rate-unfit').value=d.rateUnfit;
+  if(g('comm-rate-testfee'))g('comm-rate-testfee').value=d.rateTestFee;
+}
+function saveCommissionRates(){
+  const d=loadCommissionData();
+  d.rateVita=parseFloat(g('comm-rate-vita').value)||0;
+  d.rateOther=parseFloat(g('comm-rate-other').value)||0;
+  d.rateUnfit=parseFloat(g('comm-rate-unfit').value)||0;
+  d.rateTestFee=parseFloat(g('comm-rate-testfee').value)||0;
+  save(SK13,d);
+  scheduleCommissionPush();
+}
+function commRowKey(r){
+  return[r._year,r._month,r.sl,r.passport,r.reg].map(v=>String(v==null?'':v).trim()).join('|');
+}
+function commIsVitaSlip(slip){
+  return(slip||'').trim().toLowerCase()==='vita';
+}
+function commIsUnfit(status){
+  return(status||'').toUpperCase().trim().replace(/\s+/g,'')==='UNFIT';
+}
+// A "test" patient — identified by "TEST" appearing anywhere in Reg No,
+// e.g. "26PM1(TEST)". They pay a discounted fee up front and earn the
+// agency no commission until a Slip actually comes through.
+function commIsTestPatient(r){
+  return/test/i.test(r.reg||'');
+}
+function commIsPaidFlag(v){
+  return/^paid$/i.test(String(v||'').trim());
+}
+// Determine which rate applies to a row right now.
+// - UNFIT status always wins over Slip (Slip is irrelevant for an unfit patient).
+// - Otherwise Slip decides: "Vita" → Vita rate, anything else → Other Center rate.
+// - If Slip is still blank: regular patients get the Vita rate as an unresolved
+//   advance (lockable); TEST patients get NOTHING and are not lockable at all
+//   until a Slip appears — they already paid a discounted test fee up front,
+//   so no advance commission is owed.
+// - Once a TEST patient's Slip appears, the Test Recovery Fee is deducted from
+//   whatever the normal rate would have been (can go negative — the agency
+//   then owes that amount back, since the test-fee shortfall is being recovered).
+function commRateFor(r,data){
+  const isTest=commIsTestPatient(r);
+  if(commIsUnfit(r.status)){
+    const amount=data.rateUnfit-(isTest?data.rateTestFee:0);
+    return{amount,resolved:true,lockable:true,reason:isTest?'unfit-test':'unfit'};
+  }
+  const slip=(r.slips||'').trim();
+  if(!slip){
+    if(isTest)return{amount:0,resolved:false,lockable:false,reason:'test-pending'};
+    return{amount:data.rateVita,resolved:false,lockable:true,reason:'provisional'};
+  }
+  const isVita=commIsVitaSlip(slip);
+  const base=isVita?data.rateVita:data.rateOther;
+  const amount=isTest?(base-data.rateTestFee):base;
+  return{amount,resolved:true,lockable:true,reason:isTest?(isVita?'vita-test':'other-test'):(isVita?'vita':'other')};
+}
+// Lock any row the sheet marks "Paid" that hasn't been locked yet (and is
+// currently lockable — see commRateFor). Runs over ALL agency-referred Vita
+// rows (not just the current filtered view) so a row outside the visible
+// Year/Month filter still gets captured correctly.
+// Every newly-locked row is also pushed into that agency's pending "batch" —
+// this is what the PDF/print button reads, entirely hands-off for the user:
+// write Paid in the sheet, sync, and the batch + PDF are ready automatically.
+// Returns the set of keys newly locked in this pass.
+function commSyncLedger(allRows){
+  const d=loadCommissionData();
+  const newlyLocked=new Set();
+  allRows.forEach(r=>{
+    const key=commRowKey(r);
+    if(commIsPaidFlag(r.remarks)&&!d.ledger[key]){
+      const rate=commRateFor(r,d);
+      if(!rate.lockable)return; // TEST patient, no Slip yet — hold off
+      d.ledger[key]={disbursedAmount:rate.amount,lockedAt:new Date().toISOString(),slipAtLock:(r.slips||'').trim(),statusAtLock:(r.status||'').trim()};
+      newlyLocked.add(key);
+      const agency=(r.agency||'Unknown').trim()||'Unknown';
+      if(!d.batches[agency])d.batches[agency]=[];
+      if(!d.batches[agency].includes(key))d.batches[agency].push(key);
+    }
+  });
+  if(newlyLocked.size){save(SK13,d);scheduleCommissionPush();}
+  return newlyLocked;
+}
+function commUnlockRow(key){
+  const d=loadCommissionData();
+  if(!d.ledger[key])return;
+  if(!confirm('Unlock this row? It will be treated as a fresh Paid entry the next time it syncs.'))return;
+  delete d.ledger[key];
+  Object.keys(d.batches).forEach(ag=>{d.batches[ag]=d.batches[ag].filter(k=>k!==key);});
+  save(SK13,d);
+  scheduleCommissionPush();
+  toast('Row unlocked');
+  renderCommissionCalc();
+}
+function commClearBatch(slug){
+  const agency=commSlugToName[slug];if(!agency)return;
+  const d=loadCommissionData();
+  if(!d.batches[agency]||!d.batches[agency].length)return;
+  if(!confirm('Clear this agency\'s pending batch? Do this after you have printed and paid it. Any overpaid/underpaid balance shown just now was already folded into that Net Payable amount, so it will be settled and the running Balance will reset to 0.'))return;
+  if(!d.reconciled[agency])d.reconciled[agency]=[];
+  Object.values(commRowLookup).forEach(x=>{
+    const a=(x.r.agency||'Unknown').trim()||'Unknown';
+    if(a!==agency)return;
+    if((x.status==='overpaid'||x.status==='underpaid'||x.status==='settled')&&!d.reconciled[agency].includes(x.key)){
+      d.reconciled[agency].push(x.key);
+    }
+  });
+  delete d.batches[agency];
+  save(SK13,d);
+  scheduleCommissionPush();
+  toast('Batch cleared, balance settled');
+  renderCommissionCalc();
+}
+// Build the full list of commission-eligible rows (has an Agency) with computed status.
+// Always processes ALL agency rows first (unfiltered) so commRowLookup/batches stay
+// correct regardless of the active Year/Month/search filters; filters are applied last,
+// only to what's returned for on-screen display.
+function getCommissionRows(){
+  const allAgencyRows=loadArr(SK10).filter(r=>(r.agency||'').trim());
+  commLastNewlyLocked=commSyncLedger(allAgencyRows);
+  const data=loadCommissionData();
+  const allItems=allAgencyRows.map(r=>{
+    const key=commRowKey(r);
+    const slip=(r.slips||'').trim();
+    const hasSlip=!!slip;
+    const isVita=commIsVitaSlip(slip);
+    const rate=commRateFor(r,data);
+    const actualAmount=rate.resolved?rate.amount:null;
+    const entry=data.ledger[key];
+    const locked=!!entry;
+    const isNew=commLastNewlyLocked.has(key);
+    const agencyName=(r.agency||'Unknown').trim()||'Unknown';
+    let status,delta=0;
+    if(!locked){
+      status=(!rate.lockable&&commIsPaidFlag(r.remarks))?'test-pending':'unpaid';
+    }else if(!rate.resolved){
+      status='provisional';
+    }else{
+      delta=entry.disbursedAmount-actualAmount;
+      status=delta===0?'settled':(delta>0?'overpaid':'underpaid');
+    }
+    // Once a batch is cleared, any discrepancy it carried has already been folded
+    // into that payment's Net amount — mark it reconciled so it stops counting
+    // toward the agency's live outstanding Balance, while the Delta value itself
+    // stays visible on the row as a historical record of what happened.
+    const reconciled=locked&&data.reconciled[agencyName]&&data.reconciled[agencyName].includes(key);
+    if(reconciled&&status!=='provisional'&&status!=='unpaid')status='reconciled';
+    return{r,key,slip,hasSlip,isVita,rateReason:rate.reason,advanceAmount:rate.amount,actualAmount,entry,locked,isNew,status,delta};
+  });
+  commRowLookup={};
+  allItems.forEach(x=>{commRowLookup[x.key]=x;});
+  const q=(g('comm-search')?g('comm-search').value:'').toLowerCase().trim();
+  const yf=g('comm-year-filter')?g('comm-year-filter').value:'';
+  const mf=mselValues('comm-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
+  const sf=mselValues('comm-status-filter').map(v=>v.toLowerCase());
+  let out=allItems;
+  if(yf)out=out.filter(x=>String(x.r._year)===yf);
+  if(mf.length)out=out.filter(x=>mf.includes(+x.r._month));
+  if(q)out=out.filter(x=>[x.r.agency,x.r.passport,x.r.name,x.r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
+  if(sf.length)out=out.filter(x=>sf.includes(x.status));
+  return out;
+}
+function commSetAllOpen(open){
+  Object.keys(commOpenState).forEach(k=>commOpenState[k]=open);
+  document.querySelectorAll('.comm-agency-card').forEach(c=>c.classList.toggle('open',open));
+}
+function toggleCommAgencyOpen(slug){
+  commOpenState[slug]=!commOpenState[slug];
+  const card=g('commCard-'+slug);
+  if(card)card.classList.toggle('open',commOpenState[slug]);
+}
+function commSlug(name){return String(name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'agency';}
+const COMM_STATUS_META={
+  unpaid:{label:'Unpaid',cls:'comm-badge-gray'},
+  provisional:{label:'Provisional',cls:'comm-badge-amber'},
+  settled:{label:'Settled',cls:'comm-badge-green'},
+  overpaid:{label:'Overpaid',cls:'comm-badge-pink'},
+  underpaid:{label:'Underpaid',cls:'comm-badge-orange'},
+  reconciled:{label:'Reconciled',cls:'comm-badge-green'},
+  'test-pending':{label:'Test — Awaiting Slip',cls:'comm-badge-gray'}
+};
+let commRowLookup={}; // key -> row-item, refreshed on every render, used by the PDF generator
+let commSlugToName={}; // slug -> agency display name, refreshed on every render
+
+function renderCommissionCalc(){
+  const wrap=g('commAgencyGroups');if(!wrap)return;
+  initCommissionRatesUI();
+  const items=getCommissionRows(); // filtered (Year/Month/search/status) — controls what's listed in tables
+  const allByAgency={}; // unfiltered — used for running Balance/Disbursed/Unpaid, which are never period-bound
+  Object.values(commRowLookup).forEach(x=>{
+    const a=(x.r.agency||'Unknown').trim()||'Unknown';
+    (allByAgency[a]=allByAgency[a]||[]).push(x);
+  });
+
+  // overall totals — Disbursed/Unpaid/Provisional respect the active filter (period snapshot),
+  // but Net Balance is always the full running total across all time, same as each agency card.
+  let totalDisbursed=0,unpaidCount=0,provisionalCount=0;
+  items.forEach(x=>{
+    if(x.locked)totalDisbursed+=x.entry.disbursedAmount;
+    if(x.status==='unpaid')unpaidCount++;
+    if(x.status==='provisional')provisionalCount++;
+  });
+  let totalBalance=0;
+  Object.values(commRowLookup).forEach(x=>{if(x.status==='overpaid'||x.status==='underpaid'||x.status==='settled')totalBalance+=x.delta;});
+  if(g('comm-total-all'))g('comm-total-all').textContent=fmtSigned(totalDisbursed);
+  if(g('comm-total-paid')){g('comm-total-paid').textContent=(totalBalance>=0?'':'-')+fmtExact(Math.abs(totalBalance));g('comm-total-paid').style.color=totalBalance>0?'var(--green)':(totalBalance<0?'var(--pink)':'var(--ts)');}
+  if(g('comm-total-due'))g('comm-total-due').textContent=unpaidCount;
+  if(g('comm-total-count'))g('comm-total-count').textContent=provisionalCount;
+
+  const newBanner=commLastNewlyLocked.size?`<div class="card" style="border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.05);"><div style="font-size:12.5px;color:var(--cyan);font-weight:600;">&#10024; ${commLastNewlyLocked.size} row${commLastNewlyLocked.size===1?'':'s'} just synced as Paid from the sheet — locked at today's rate and added to that agency's pending batch below.</div></div>`:'';
+
+  if(!items.length){
+    wrap.innerHTML=newBanner+'<div class="card"><div style="text-align:center;padding:28px;color:var(--tm);font-size:13px;">No agency-referred Vita Center patients match the current filters.</div></div>';
+    return;
+  }
+
+  // group filtered rows by agency (what actually gets listed in each table)
+  const byAgency={};
+  items.forEach(x=>{
+    const a=(x.r.agency||'Unknown').trim()||'Unknown';
+    (byAgency[a]=byAgency[a]||[]).push(x);
+  });
+  const agencyNames=Object.keys(byAgency).sort((a,b)=>a.localeCompare(b));
+  const commData=loadCommissionData();
+  commSlugToName={};
+
+  wrap.innerHTML=newBanner+agencyNames.map(agency=>{
+    const rows=byAgency[agency].slice().sort((a,b)=>(a.r.date||'').localeCompare(b.r.date||'')); // oldest first, top to bottom
+    const slug=commSlug(agency);
+    commSlugToName[slug]=agency;
+    // Disbursed/Balance/Unpaid are always computed across ALL months for this agency —
+    // a running ledger shouldn't reset just because the on-screen filter changed.
+    let agDisbursed=0,agBalance=0,agUnpaid=0,agTestPending=0;
+    (allByAgency[agency]||[]).forEach(x=>{
+      if(x.locked)agDisbursed+=x.entry.disbursedAmount;
+      if(x.status==='overpaid'||x.status==='underpaid'||x.status==='settled')agBalance+=x.delta;
+      if(x.status==='unpaid')agUnpaid++;
+      if(x.status==='test-pending')agTestPending++;
+    });
+    if(!(slug in commOpenState))commOpenState[slug]=true; // default expanded
+    const open=commOpenState[slug];
+    const commSc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'var(--green)';if(u==='UNFIT')return'var(--pink)';if(u.includes('HELD'))return'var(--yellow)';if(u==='PROCESSING'||u==='PENDING')return'var(--cyan)';return'var(--ts)';};
+    // Pending batch = rows locked from the sheet, not yet printed/cleared
+    const batchKeys=(commData.batches[agency]||[]).filter(k=>commRowLookup[k]);
+    const batchItems=batchKeys.map(k=>commRowLookup[k]);
+    const batchGross=batchItems.reduce((s,x)=>s+x.entry.disbursedAmount,0);
+    const batchNet=batchGross-agBalance;
+    const batchBar=batchItems.length?`<div class="comm-calcbar" id="commCalcBar-${slug}">
+          <div class="comm-calcbar-stats">
+            <div class="ccb-item"><span class="ccb-label">Pending Batch</span><span class="ccb-val">${batchItems.length} patient${batchItems.length===1?'':'s'}</span></div>
+            <div class="ccb-item"><span class="ccb-label">Gross</span><span class="ccb-val">${fmtSigned(batchGross)}</span></div>
+            <div class="ccb-item"><span class="ccb-label">Balance</span><span class="ccb-val" style="color:${agBalance>0?'var(--pink)':agBalance<0?'var(--orange)':'var(--ts)'};">${agBalance>=0?'':'-'}${fmtExact(Math.abs(agBalance))}</span></div>
+            <div class="ccb-item ccb-net"><span class="ccb-label">Net to Pay</span><span class="ccb-val" style="color:var(--cyan);">${fmtSigned(batchNet)}</span></div>
+          </div>
+          <button type="button" class="comm-pdf-btn" onclick="generateCommissionAgencyPDF('${slug}')">&#128196; Download Slip PDF</button>
+          <button type="button" class="comm-clear-btn" onclick="commClearBatch('${slug}')" title="After you've printed and paid this batch">Clear Batch</button>
+        </div>`:'';
+    const bodyRows=rows.map(x=>{
+      const r=x.r;
+      const slipPillClass=!x.hasSlip?'comm-slip-none':(x.isVita?'comm-slip-vita':'comm-slip-other');
+      const slipLabel=x.hasSlip?escapeHtml(x.slip):'No Slip Yet';
+      const isTest=commIsTestPatient(r);
+      const testTag=isTest?' <span class="comm-test-tag">TEST</span>':'';
+      const rateNote=x.rateReason==='unfit-test'?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(UNFIT − Test Fee)</span>'
+        :x.rateReason==='unfit'?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(UNFIT rate)</span>'
+        :(x.rateReason==='vita-test'||x.rateReason==='other-test')?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(− Test Fee)</span>'
+        :'';
+      const meta=COMM_STATUS_META[x.status];
+      const badge=`<span class="comm-badge ${meta.cls}">${x.isNew?'&#10024; New — ':''}${meta.label}</span>`;
+      const amtCell=x.locked?fmtSigned(x.entry.disbursedAmount):'<span style="color:var(--tm);">—</span>';
+      // Delta always reflects the true historical over/underpay amount, regardless of
+      // whether it's since been reconciled — reconciliation only changes the Comm.
+      // Status badge (so it stops double-counting toward Balance), not this figure.
+      const deltaCell=!x.locked?'<span style="color:var(--tm);">—</span>':(x.delta>0?`<span style="color:var(--pink);">+${fmtExact(x.delta)}</span>`:x.delta<0?`<span style="color:var(--orange);">${fmtExact(x.delta)}</span>`:x.actualAmount!=null?'<span style="color:var(--green);">৳0</span>':'<span style="color:var(--tm);">—</span>');
+      const unlockBtn=x.locked?`<button class="comm-unlock-btn" onclick="commUnlockRow('${x.key}')" title="Undo lock — correction only">Unlock</button>`:'';
+      return`<tr>
+        <td style="color:var(--tm);">${escapeHtml(r.sl)||'-'}</td>
+        <td style="white-space:nowrap;">${r.date||'-'}</td>
+        <td style="font-family:var(--mono);font-size:12px;">${escapeHtml(r.reg)||'-'}${testTag}</td>
+        <td style="font-weight:500;">${escapeHtml(r.name)||'-'}</td>
+        <td style="font-family:var(--mono);font-size:12px;">${r.passport||'-'}</td>
+        <td style="color:${commSc(r.status)};font-weight:600;font-size:12px;">${escapeHtml(r.status)||'-'}</td>
+        <td><span class="comm-slip-pill ${slipPillClass}">${slipLabel}</span>${rateNote}</td>
+        <td style="text-align:right;font-family:var(--mono);font-weight:600;">${amtCell}</td>
+        <td style="text-align:right;font-family:var(--mono);font-size:12px;">${deltaCell}</td>
+        <td>${badge}</td>
+        <td style="text-align:center;">${unlockBtn}</td>
+      </tr>`;
+    }).join('');
+    return`<div class="card comm-agency-card ${open?'open':''}" id="commCard-${slug}">
+      <div class="comm-agency-head" onclick="toggleCommAgencyOpen('${slug}')">
+        <div class="comm-agency-name">${escapeHtml(agency)}<span class="cnt">${rows.length} patient${rows.length===1?'':'s'}</span></div>
+        <div class="comm-agency-stats">
+          <div class="cst"><span class="cst-label">Disbursed</span><span class="cst-val" style="color:var(--cyan);">${fmtSigned(agDisbursed)}</span></div>
+          ${agTestPending?`<div class="cst"><span class="cst-label">Test — Awaiting Slip</span><span class="cst-val" style="color:var(--ts);">${agTestPending}</span></div>`:''}
+          <div class="cst"><span class="cst-label">Balance</span><span class="cst-val" style="color:${agBalance>0?'var(--pink)':agBalance<0?'var(--orange)':'var(--ts)'};">${agBalance>=0?'':'-'}${fmtExact(Math.abs(agBalance))}</span></div>
+          <div class="cst"><span class="cst-label">Unpaid Left</span><span class="cst-val" style="color:var(--yellow);">${agUnpaid}</span></div>
+        </div>
+        <svg class="comm-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="comm-agency-body">
+        ${batchBar}
+        <div class="tw">
+          <table class="dt">
+            <thead><tr><th>#</th><th>Date</th><th>Reg No</th><th>Name</th><th>Passport</th><th>Status</th><th>Slip</th><th style="text-align:right;">Locked ৳</th><th style="text-align:right;">Delta</th><th>Comm. Status</th><th></th></tr></thead>
+            <tbody>${bodyRows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Commission Payment Voucher PDF (A4, top copy for the agency / bottom copy for the office) ──
+// Compact by design: no per-row table (doesn't scale past a handful of rows) — just
+// the Reg No. list, a rate-based commission breakdown (count × rate = subtotal), and the calculation.
+function commPdfCopyBlock(agencyName,batchItems,gross,adjustment,net){
+  const regList=batchItems.map(x=>escapeHtml(x.r.reg)+(commIsTestPatient(x.r)?' (TEST)':'')||'-').join(', ');
+  const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'#0a8f4a';if(u==='UNFIT')return'#c0246b';if(u.includes('HELD'))return'#b8860b';if(u==='PROCESSING'||u==='PENDING')return'#0891b2';return'#555';};
+  const statusCounts={};
+  batchItems.forEach(x=>{const st=(x.r.status||'-').trim()||'-';statusCounts[st]=(statusCounts[st]||0)+1;});
+  const statusChips=Object.entries(statusCounts).map(([st,cnt])=>`<span class="pdf-chip" style="border-color:${sc(st)};color:${sc(st)};">${escapeHtml(st)}: <b>${cnt}</b></span>`).join('');
+  // Group by rate bucket: UNFIT status wins regardless of slip; otherwise group by the
+  // actual Slip text (Vita / Veritas / Kent / ...), or "No Slip Yet" for the advance rate.
+  // Test-patient rows (Test Recovery Fee already deducted) get their own labeled bucket
+  // so the negative/reduced rate isn't confused with a regular patient's rate.
+  const groups={}; // label -> {rate, count}
+  batchItems.forEach(x=>{
+    let label,rate;
+    if(x.rateReason==='unfit'){label='UNFIT';rate=x.advanceAmount;}
+    else if(x.rateReason==='unfit-test'){label='UNFIT (Test, net of recovery fee)';rate=x.advanceAmount;}
+    else if(x.rateReason==='vita-test'){label='Vita (Test, net of recovery fee)';rate=x.advanceAmount;}
+    else if(x.rateReason==='other-test'){label=x.slip+' (Test, net of recovery fee)';rate=x.advanceAmount;}
+    else if(x.hasSlip){label=x.slip;rate=x.advanceAmount;}
+    else{label='No Slip Yet (Advance)';rate=x.advanceAmount;}
+    if(!groups[label])groups[label]={rate,count:0};
+    groups[label].count++;
+  });
+  const breakdownRows=Object.entries(groups).map(([label,{rate,count}])=>`<div class="pdf-calc-row"><span>${escapeHtml(label)} &nbsp;${count} &times; ${fmtSigned(rate)}</span><b>${fmtSigned(rate*count)}</b></div>`).join('');
+  return`<div class="pdf-copy">
+    <div class="pdf-header">
+      <div class="pdf-logo">VITA-<span>HEALTH</span> MEDICAL CENTER</div>
+      <div class="pdf-addr">Praasad Palton Square (14th Floor), 3/11 Naya Paltan, 167 Fakirapool, DIT Ave, Dhaka 1000</div>
+    </div>
+    <div class="pdf-title">COMMISSION PAYMENT VOUCHER</div>
+    <div class="pdf-meta">
+      <span><b>Agency:</b> ${escapeHtml(agencyName)}</span>
+      <span><b>Date:</b> ${new Date().toLocaleDateString('en-BD',{day:'2-digit',month:'long',year:'numeric'})}</span>
+      <span><b>Total Patients:</b> ${batchItems.length}</span>
+    </div>
+    <div class="pdf-section">
+      <div class="pdf-section-title">Reg No.</div>
+      <div class="pdf-reglist">${regList}</div>
+    </div>
+    <div class="pdf-section">
+      <div class="pdf-section-title">Status Breakdown</div>
+      <div class="pdf-chips">${statusChips}</div>
+    </div>
+    <div class="pdf-calc">
+      <div class="pdf-section-title" style="margin-bottom:6px;">Commission Breakdown</div>
+      ${breakdownRows}
+      <div class="pdf-calc-row" style="border-top:1px solid #ccc;margin-top:4px;padding-top:5px;"><span>Gross Commission (${batchItems.length} patient${batchItems.length===1?'':'s'})</span><b>${fmtSigned(gross)}</b></div>
+      <div class="pdf-calc-row"><span>Balance Adjustment${adjustment<0?' (previously overpaid)':adjustment>0?' (previously underpaid)':''}</span><b style="color:${adjustment>=0?'#0a8f4a':'#c0246b'};">${adjustment>=0?'+':'-'}${fmtExact(Math.abs(adjustment))}</b></div>
+      <div class="pdf-calc-row pdf-net"><span>Net Payable</span><b>${fmtSigned(net)}</b></div>
+    </div>
+    <div class="pdf-sign">
+      <div class="pdf-sign-box"><div class="pdf-sign-line"></div><span>Received By — Agency Representative</span></div>
+      <div class="pdf-sign-box"><div class="pdf-sign-line"></div><span>Paid By — Vita Health Representative</span></div>
+    </div>
+  </div>`;
+}
+function generateCommissionAgencyPDF(slug){
+  const agency=commSlugToName[slug];if(!agency)return;
+  const commData=loadCommissionData();
+  const batchKeys=(commData.batches[agency]||[]).filter(k=>commRowLookup[k]);
+  if(!batchKeys.length){toast('No pending batch for this agency — mark rows Paid in the sheet and sync first');return;}
+  const batchItems=batchKeys.map(k=>commRowLookup[k]);
+  // balance excludes this pending batch's own rows (freshly locked rows always
+  // start at delta 0, so this is equivalent to the agency's current running balance)
+  const agencyAll=Object.values(commRowLookup).filter(x=>(x.r.agency||'Unknown').trim()===agency);
+  let agBalance=0;
+  agencyAll.forEach(x=>{if(x.status==='overpaid'||x.status==='underpaid'||x.status==='settled')agBalance+=x.delta;});
+  const gross=batchItems.reduce((s,x)=>s+x.entry.disbursedAmount,0);
+  const adjustment=-agBalance;
+  const net=gross+adjustment;
+  const copy1=commPdfCopyBlock(agency,batchItems,gross,adjustment,net);
+  const copy2=commPdfCopyBlock(agency,batchItems,gross,adjustment,net);
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Commission Voucher — ${escapeHtml(agency)}</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  @page{size:A4;margin:10mm 14mm;}
+  html,body{width:100%;}
+  body{font-family:Arial,sans-serif;font-size:11px;color:#1a1a2e;background:#fff;}
+  .pdf-copy{min-height:130mm;padding:5mm 0 3mm;display:flex;flex-direction:column;position:relative;}
+  .pdf-header{text-align:center;border-bottom:2.5px solid #00d4ff;padding-bottom:8px;margin-bottom:9px;}
+  .pdf-logo{font-size:14px;font-weight:900;letter-spacing:1.5px;}
+  .pdf-logo span{color:#00d4ff;}
+  .pdf-addr{font-size:9px;color:#666;margin-top:2px;}
+  .pdf-title{background:#1a1a2e;color:#00d4ff;text-align:center;padding:6px;font-size:12.5px;font-weight:700;margin-bottom:8px;border-radius:3px;letter-spacing:.04em;}
+  .pdf-meta{display:flex;justify-content:center;gap:20px;font-size:10.5px;color:#333;margin-bottom:10px;}
+  .pdf-section{margin-bottom:8px;}
+  .pdf-section-title{font-size:9.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  .pdf-reglist{font-size:10.5px;line-height:1.6;color:#1a1a2e;background:#f8f9fa;border-left:3px solid #00d4ff;border-radius:3px;padding:6px 9px;word-spacing:2px;}
+  .pdf-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .pdf-chip{display:inline-block;font-size:10px;font-weight:600;border:1px solid #ccc;border-radius:20px;padding:3px 11px;background:#fafafa;}
+  .pdf-calc{border:1px solid #ddd;border-radius:5px;padding:8px 12px;margin-bottom:10px;background:#f9fafb;}
+  .pdf-calc-row{display:flex;justify-content:space-between;font-size:10.5px;padding:3px 0;color:#333;}
+  .pdf-calc-row.pdf-net{border-top:1px solid #ccc;margin-top:4px;padding-top:6px;font-size:13px;font-weight:800;color:#1a1a2e;}
+  .pdf-sign{display:flex;justify-content:space-between;gap:24px;margin-top:auto;padding-top:8px;}
+  .pdf-sign-box{flex:1;text-align:center;}
+  .pdf-sign-line{border-top:1px solid #333;margin-bottom:5px;height:12mm;}
+  .pdf-sign-box span{font-size:9px;color:#555;}
+  .pdf-cutline{border-top:1px dashed #aaa;margin:2mm 0;}
+  @media print{body{padding:0;}.pdf-copy{page-break-inside:avoid;}}
+</style></head><body>
+${copy1}
+<div class="pdf-cutline"></div>
+${copy2}
+</body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);w.document.close();
+  setTimeout(()=>w.print(),600);
 }
 function switchDailyTab(type){
   document.querySelectorAll('.dt-tab').forEach(t=>t.classList.remove('active'));
@@ -2578,15 +3378,24 @@ function renderDueReminders(){
   list.innerHTML=dues.map(r=>`<div class="due-item"><div class="due-item-info"><div class="due-item-date">${r.date} &middot; ${r.patients||0} pt${r.patients===1?'':'s'}</div><div class="due-item-note">${r.note?escapeHtml(r.note):'No note'}</div></div><div class="due-item-amt">${fmtExact(r.amount)}</div><button class="paid-btn" onclick="markEntryPaid('${r.id}')">&#10003; Paid</button></div>`).join('');
 }
 function clearDateFilterDaily(){g('d-date-filter').value='';g('d-date-clear').style.display='none';renderDailyTable();}
+function dTypeFilterMatch(r,tfArr){
+  if(!tfArr.length)return true;
+  return tfArr.some(tf=>{
+    if(tf==='due')return r.type==='income'&&r.status==='due';
+    if(tf==='free')return r.type==='income'&&r.status==='free';
+    return r.type===tf;
+  });
+}
 function renderDailyTable(){
-  const yr=g('d-year-filter').value,mfRaw=g('d-month-filter').value,mi=mfRaw===''?'':+mfRaw;
+  const yr=g('d-year-filter').value;
+  const miArr=mselValues('d-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
   const dateF=g('d-date-filter')?g('d-date-filter').value:'';
   const kw=(g('d-search')?g('d-search').value:'').trim().toLowerCase();
-  const tf=g('d-type-filter')?g('d-type-filter').value:'';
+  const tfArr=mselValues('d-type-filter').map(v=>v.toLowerCase());
   if(g('d-date-clear'))g('d-date-clear').style.display=dateF?'block':'none';
 
   const all=loadArr(SK4);
-  const monthRows=all.filter(r=>r.year===yr&&(mi===''||r.month===mi));
+  const monthRows=all.filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month)));
   const mInc=monthRows.filter(r=>r.type==='income'&&(r.status==='paid'||!r.status)).reduce((a,r)=>a+(r.amount||0),0);
   const mDue=monthRows.filter(r=>r.type==='income'&&r.status==='due').reduce((a,r)=>a+(r.amount||0),0);
   const mExp=monthRows.filter(r=>r.type==='expense').reduce((a,r)=>a+(r.amount||0),0);
@@ -2597,9 +3406,7 @@ function renderDailyTable(){
   let rows;
   if(kw){rows=monthRows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.date||'').includes(kw));}
   else{rows=monthRows;if(dateF)rows=rows.filter(r=>r.date===dateF);}
-  if(tf==='due')rows=rows.filter(r=>r.type==='income'&&r.status==='due');
-  else if(tf==='free')rows=rows.filter(r=>r.type==='income'&&r.status==='free');
-  else if(tf)rows=rows.filter(r=>r.type===tf);
+  rows=rows.filter(r=>dTypeFilterMatch(r,tfArr));
   rows=rows.slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
 
   const tbody=g('dailyTbody');
@@ -2617,33 +3424,33 @@ function renderDailyTable(){
   }).join('');
 }
 function exportDailyCSV(){
-  const yr=g('d-year-filter').value,mi=+g('d-month-filter').value;
+  const yr=g('d-year-filter').value;
+  const miArr=mselValues('d-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
   const rows=[['Date','Type','Patients','Amount','Status','Note']];
-  loadArr(SK4).filter(r=>r.year===yr&&r.month===mi).sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>rows.push([r.date,r.type,r.patients||'',r.amount,r.status||'',r.note||'']));
-  dlCSV(rows,'vitahealth_daily_'+yr+'_'+MN_EN[mi]+'.csv');toast('Exported');
+  loadArr(SK4).filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month))).sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>rows.push([r.date,r.type,r.patients||'',r.amount,r.status||'',r.note||'']));
+  dlCSV(rows,'vitahealth_daily_'+yr+'_'+(miArr.length===1?MN_EN[miArr[0]]:miArr.length?'multi':'all')+'.csv');toast('Exported');
 }
 function getFilteredDailyRows(){
-  const yr=g('d-year-filter').value,mfRaw=g('d-month-filter').value,mi=mfRaw===''?'':+mfRaw;
+  const yr=g('d-year-filter').value;
+  const miArr=mselValues('d-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
   const dateF=g('d-date-filter')?g('d-date-filter').value:'';
   const kw=(g('d-search')?g('d-search').value:'').trim().toLowerCase();
-  const tf=g('d-type-filter')?g('d-type-filter').value:'';
+  const tfArr=mselValues('d-type-filter').map(v=>v.toLowerCase());
   const all=loadArr(SK4);
-  const monthRows=all.filter(r=>r.year===yr&&(mi===''||r.month===mi));
+  const monthRows=all.filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month)));
   let rows;
   if(kw){rows=monthRows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.date||'').includes(kw));}
   else{rows=monthRows;if(dateF)rows=rows.filter(r=>r.date===dateF);}
-  if(tf==='due')rows=rows.filter(r=>r.type==='income'&&r.status==='due');
-  else if(tf==='free')rows=rows.filter(r=>r.type==='income'&&r.status==='free');
-  else if(tf)rows=rows.filter(r=>r.type===tf);
+  rows=rows.filter(r=>dTypeFilterMatch(r,tfArr));
   rows=rows.slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
-  return{rows,yr,mi,dateF,kw,tf};
+  return{rows,yr,mi:miArr,dateF,kw,tf:tfArr};
 }
 function generateDailyTrackerPDF(){
   const{rows:rowsDesc,yr,mi,dateF,kw,tf}=getFilteredDailyRows();
   if(!rowsDesc.length){toast('No records match the current filters');return;}
   const rows=rowsDesc.slice().sort((a,b)=>a.date.localeCompare(b.date));
-  const labelParts=[yr,mi===''?'All Months':MN_EN[mi]];
-  if(tf)labelParts.push('Type: '+(tf==='due'?'Due':tf==='free'?'Free':tf.charAt(0).toUpperCase()+tf.slice(1)));
+  const labelParts=[yr,mi.length?mi.map(i=>MN_EN[i]).join(', '):'All Months'];
+  if(tf.length)labelParts.push('Type: '+tf.map(t=>t==='due'?'Due':t==='free'?'Free':t.charAt(0).toUpperCase()+t.slice(1)).join(', '));
   if(dateF)labelParts.push('Date: '+dateF);
   if(kw)labelParts.push('Search: "'+kw+'"');
   const label=labelParts.join(' · ');
@@ -2736,53 +3543,178 @@ function renderNotepad(){
 }
 
 
+// ═══════════════ GENERIC MULTI-SELECT DROPDOWN ═══════════════
+const mselState={};        // id -> Set of selected values
+const mselOnChange={};     // id -> callback fired after selection changes
+const mselOptionsCache={}; // id -> last full options array
+const mselNounMap={};      // id -> plural noun for label text
+let mselOpenId=null;
+
+function mselInit(id,onChangeFn){mselOnChange[id]=onChangeFn;}
+
+function buildMsel(id,options,noun){
+  const wrap=g(id+'-wrap');if(!wrap)return;
+  mselNounMap[id]=noun||'Items';
+  if(!mselState[id])mselState[id]=new Set();
+  const optSet=new Set(options);
+  [...mselState[id]].forEach(v=>{if(!optSet.has(v))mselState[id].delete(v);});
+  mselOptionsCache[id]=options;
+  const empty=!options.length;
+  wrap.classList.toggle('msel-disabled',empty);
+  if(empty&&wrap.classList.contains('open'))closeMsel(id);
+  renderMselPanel(id,options);
+  updateMselLabel(id);
+}
+function renderMselPanel(id,options,filterQ){
+  const panel=g(id+'-panel');if(!panel)return;
+  if(!options.length){panel.innerHTML='<div class="msel-empty">No data yet</div>';return;}
+  const state=mselState[id]||(mselState[id]=new Set());
+  const q=(filterQ||'').toLowerCase();
+  const shown=q?options.filter(o=>o.toLowerCase().includes(q)):options;
+  const searchBox=options.length>8?`<div class="msel-search-wrap"><input type="text" class="msel-search" placeholder="Search..." oninput="mselFilterOptions('${id}',this.value)"></div>`:'';
+  const list=shown.length?shown.map(o=>`<label class="msel-item"><span class="msel-cb"><input type="checkbox" value="${escapeHtml(o)}" ${state.has(o)?'checked':''} onchange="mselToggle('${id}',this.value,this.checked)"><span class="msel-cb-box"><svg viewBox="0 0 16 16" width="10" height="10"><polyline points="3,8 6.5,11.5 13,4"/></svg></span></span><span class="msel-item-text">${escapeHtml(o)}</span></label>`).join(''):'<div class="msel-empty">No matches</div>';
+  panel.innerHTML=`<div class="msel-toolbar">
+      <button type="button" class="msel-mini" onclick="mselSelectAll('${id}')">Select all</button>
+      <button type="button" class="msel-mini mm-clear" onclick="mselClear('${id}')">Clear</button>
+    </div>
+    ${searchBox}
+    <div class="msel-list">${list}</div>`;
+}
+function mselFilterOptions(id,q){renderMselPanel(id,mselOptionsCache[id]||[],q);}
+function updateMselLabel(id){
+  const lbl=g(id+'-label');if(!lbl)return;
+  const wrap=g(id+'-wrap');
+  const state=mselState[id]||new Set();
+  const noun=mselNounMap[id]||'Items';
+  if(wrap&&wrap.classList.contains('msel-disabled')){lbl.textContent='No '+noun.toLowerCase()+' yet';return;}
+  if(state.size===0)lbl.textContent='All '+noun;
+  else if(state.size===1)lbl.textContent=[...state][0];
+  else lbl.textContent=state.size+' '+noun+' selected';
+  if(wrap)wrap.classList.toggle('has-selection',state.size>0);
+}
+function mselToggle(id,value,checked){
+  const state=mselState[id]||(mselState[id]=new Set());
+  if(checked)state.add(value);else state.delete(value);
+  updateMselLabel(id);
+  if(mselOnChange[id])mselOnChange[id]();
+}
+function mselSelectAll(id){
+  const options=mselOptionsCache[id]||[];
+  mselState[id]=new Set(options);
+  renderMselPanel(id,options);
+  updateMselLabel(id);
+  if(mselOnChange[id])mselOnChange[id]();
+}
+function mselClear(id){
+  mselState[id]=new Set();
+  renderMselPanel(id,mselOptionsCache[id]||[]);
+  updateMselLabel(id);
+  if(mselOnChange[id])mselOnChange[id]();
+}
+function toggleMsel(id){
+  const wrap=g(id+'-wrap');if(!wrap||wrap.classList.contains('msel-disabled'))return;
+  if(mselOpenId&&mselOpenId!==id)closeMsel(mselOpenId);
+  wrap.classList.contains('open')?closeMsel(id):openMsel(id);
+}
+function openMsel(id){const wrap=g(id+'-wrap');if(!wrap)return;wrap.classList.add('open');mselOpenId=id;}
+function closeMsel(id){const wrap=g(id+'-wrap');if(!wrap)return;wrap.classList.remove('open');if(mselOpenId===id)mselOpenId=null;}
+document.addEventListener('click',function(e){
+  if(mselOpenId){
+    const wrap=g(mselOpenId+'-wrap');
+    if(wrap&&!wrap.contains(e.target))closeMsel(mselOpenId);
+  }
+});
+function mselValues(id){return[...(mselState[id]||new Set())];}
+function mselMatch(id,val){
+  const sel=mselState[id];
+  if(!sel||sel.size===0)return true;
+  const v=(val||'').toLowerCase();
+  for(const s of sel){if(s.toLowerCase()===v)return true;}
+  return false;
+}
+mselInit('vitaothers-center-filter',()=>renderVitaOthersPatients());
+mselInit('others-center-filter',()=>renderOthersPatients());
+mselInit('vita-month-filter',()=>renderVitaPatients());
+mselInit('d-month-filter',()=>renderDailyTable());
+mselInit('d-type-filter',()=>renderDailyTable());
+mselInit('agency-month-sel',()=>renderAgencyCard());
+mselInit('comm-month-filter',()=>renderCommissionCalc());
+mselInit('comm-status-filter',()=>renderCommissionCalc());
+mselInit('vita-status-filter',()=>renderVitaPatients());
+mselInit('vita-agency-filter',()=>renderVitaPatients());
+mselInit('vita-slip-filter',()=>renderVitaPatients());
+mselInit('vitaothers-month-filter',()=>renderVitaOthersPatients());
+mselInit('vitaothers-slip-filter',()=>renderVitaOthersPatients());
+mselInit('vitaothers-agency-filter',()=>renderVitaOthersPatients());
+mselInit('vitaothers-status-filter',()=>renderVitaOthersPatients());
+mselInit('others-month-filter',()=>renderOthersPatients());
+mselInit('others-status-filter',()=>renderOthersPatients());
+
 // PATIENTS
 // SIMPLE DROPDOWN FILTER POPULATION (Agency / Center / Slip)
 function populateVitaAgencyFilter(){
-  const sel=g('vita-agency-filter');if(!sel)return;
-  const cur=sel.value;
   const agencies=[...new Set(loadArr(SK10).map(r=>r.agency).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">All Agencies</option>'+agencies.map(a=>`<option${a===cur?' selected':''}>${escapeHtml(a)}</option>`).join('');
+  buildMsel('vita-agency-filter',agencies,'Agencies');
+}
+function populateVitaMonthFilter(){
+  buildMsel('vita-month-filter',MN_EN,'Months');
+}
+function populateVitaSlipFilter(){
+  const slips=[...new Set(loadArr(SK10).map(r=>r.slips).filter(Boolean).map(s=>s.trim()).filter(Boolean))].sort();
+  buildMsel('vita-slip-filter',slips,'Slips');
 }
 function populateVitaOthersCenterFilter(){
-  const sel=g('vitaothers-center-filter');if(!sel)return;
-  const cur=sel.value;
   const centers=[...new Set(loadArr(SK12).map(r=>r._center).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">All Centers</option>'+centers.map(c=>`<option${c===cur?' selected':''}>${escapeHtml(c)}</option>`).join('');
+  buildMsel('vitaothers-center-filter',centers,'Centers');
+}
+function populateVitaOthersMonthFilter(){
+  buildMsel('vitaothers-month-filter',MN_EN,'Months');
 }
 function populateVitaOthersSlipFilter(){
-  const sel=g('vitaothers-slip-filter');if(!sel)return;
-  const cur=sel.value;
   const slips=[...new Set(loadArr(SK12).map(r=>r.slip).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">All Slips</option>'+slips.map(sp=>`<option${sp===cur?' selected':''}>${escapeHtml(sp)}</option>`).join('');
+  buildMsel('vitaothers-slip-filter',slips,'Slips');
 }
 function populateVitaOthersAgencyFilter(){
-  const sel=g('vitaothers-agency-filter');if(!sel)return;
-  const cur=sel.value;
   const agencies=[...new Set(loadArr(SK12).map(r=>r.agency).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">All Agencies</option>'+agencies.map(a=>`<option${a===cur?' selected':''}>${escapeHtml(a)}</option>`).join('');
+  buildMsel('vitaothers-agency-filter',agencies,'Agencies');
+}
+function populateOthersMonthFilter(){
+  buildMsel('others-month-filter',MN_EN,'Months');
 }
 function populateOthersCenterFilter(){
-  const sel=g('others-center-filter');if(!sel)return;
-  const cur=sel.value;
   const centers=[...new Set(loadArr(SK11).map(r=>r._center).filter(Boolean))].sort();
-  sel.innerHTML='<option value="">All Centers</option>'+centers.map(c=>`<option${c===cur?' selected':''}>${escapeHtml(c)}</option>`).join('');
+  buildMsel('others-center-filter',centers,'Centers');
+}
+function vitaStatusMatch(r,sfArr){
+  if(!sfArr.length)return true;
+  const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');
+  return sfArr.some(sf=>{
+    const sfN2=sf.toUpperCase().trim().replace(/\s+/g,'');
+    if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');
+    if(sfN2==='HELDUP')return st==='HELDUP';
+    if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';
+    return st===sfN2;
+  });
 }
 function renderVitaPatients(){
   const tbody=g('vitaTbody');if(!tbody)return;
   populateVitaAgencyFilter();
+  populateVitaSlipFilter();
+  populateVitaMonthFilter();
   const q=(g('vitaSearch')?g('vitaSearch').value:'').toLowerCase().trim();
   const yf=g('vita-year-filter')?g('vita-year-filter').value:'';
-  const mf=g('vita-month-filter')?g('vita-month-filter').value:'';
-  const sf=g('vita-status-filter')?g('vita-status-filter').value:'';
+  const mf=mselValues('vita-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
+  const sf=mselValues('vita-status-filter');
   const df=g('vita-date-filter')?g('vita-date-filter').value:'';
-  const af=g('vita-agency-filter')?g('vita-agency-filter').value:'';
+  const af=mselValues('vita-agency-filter');
+  const spf=mselValues('vita-slip-filter');
   let rows=loadArr(SK10);
   if(yf)rows=rows.filter(r=>r._year===yf);
-  if(mf!=='')rows=rows.filter(r=>r._month===+mf);
+  if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
   if(df)rows=rows.filter(r=>r.date===df);
-  if(af)rows=rows.filter(r=>(r.agency||'').toLowerCase()===af.toLowerCase());
-  if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP'||st==='HELDUP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
+  if(af.length)rows=rows.filter(r=>mselMatch('vita-agency-filter',r.agency));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()));
+  rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   if(g('vita-record-count'))g('vita-record-count').textContent=rows.length+' records';
   const empty=loadArr(SK10).length?'No records match filters.':'No data yet — configure Vita Center Sheet URL in Settings, then tap Sync Now.';
@@ -2811,9 +3743,11 @@ function renderVitaPatients(){
   </tr>`;}).join('');
 }
 function exportVitaCSV(){
-  const af=g('vita-agency-filter')?g('vita-agency-filter').value:'';
+  const af=mselValues('vita-agency-filter');
+  const spf=mselValues('vita-slip-filter');
   let rows=loadArr(SK10);
-  if(af)rows=rows.filter(r=>(r.agency||'').toLowerCase()===af.toLowerCase());
+  if(af.length)rows=rows.filter(r=>mselMatch('vita-agency-filter',r.agency));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()));
   const out=[['#','Date','Reg No.','Name','Passport No.','Country','Mobile No.','Status','Agency','Problem','Remarks','Slips','Month']];
   rows.forEach((r,i)=>out.push([i+1,r.date,r.reg,r.name,r.passport,r.country||'',r.mobile,r.status,r.agency,r.problem,r.remarks||'',r.slips||'',r._monthName]));
   dlCSV(out,'vita_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
@@ -2821,27 +3755,30 @@ function exportVitaCSV(){
 function getFilteredVitaRows(){
   const q=(g('vitaSearch')?g('vitaSearch').value:'').toLowerCase().trim();
   const yf=g('vita-year-filter')?g('vita-year-filter').value:'';
-  const mf=g('vita-month-filter')?g('vita-month-filter').value:'';
-  const sf=g('vita-status-filter')?g('vita-status-filter').value:'';
+  const mf=mselValues('vita-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
+  const sf=mselValues('vita-status-filter');
   const df=g('vita-date-filter')?g('vita-date-filter').value:'';
-  const af=g('vita-agency-filter')?g('vita-agency-filter').value:'';
+  const af=mselValues('vita-agency-filter');
+  const spf=mselValues('vita-slip-filter');
   let rows=loadArr(SK10);
   if(yf)rows=rows.filter(r=>r._year===yf);
-  if(mf!=='')rows=rows.filter(r=>r._month===+mf);
+  if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
   if(df)rows=rows.filter(r=>r.date===df);
-  if(af)rows=rows.filter(r=>(r.agency||'').toLowerCase()===af.toLowerCase());
-  if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
+  if(af.length)rows=rows.filter(r=>mselMatch('vita-agency-filter',r.agency));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()));
+  rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
-  return {rows,yf,mf,sf,df,q,af};
+  return {rows,yf,mf,sf,df,q,af,spf};
 }
 function generateVitaPatientsPDF(){
-  const {rows,yf,mf,sf,df,q,af}=getFilteredVitaRows();
+  const {rows,yf,mf,sf,df,q,af,spf}=getFilteredVitaRows();
   if(!rows.length){toast('No records match the current filters');return;}
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
-  labelParts.push(mf!==''?MN_EN[+mf]:'All Months');
-  if(af)labelParts.push('Agency: '+af);
-  if(sf)labelParts.push('Status: '+sf);
+  labelParts.push(mf.length?mf.map(i=>MN_EN[i]).join(', '):'All Months');
+  if(af.length)labelParts.push('Agency: '+af.join(', '));
+  if(spf.length)labelParts.push('Slip: '+spf.join(', '));
+  if(sf.length)labelParts.push('Status: '+sf.join(', '));
   if(df)labelParts.push('Date: '+df);
   if(q)labelParts.push('Search: "'+q+'"');
   const label=labelParts.join(' · ');
@@ -2851,9 +3788,9 @@ function generateVitaPatientsPDF(){
   // count of the currently-filtered status. Status breakdown still respects the status filter.
   let totalRows=loadArr(SK10);
   if(yf)totalRows=totalRows.filter(r=>r._year===yf);
-  if(mf!=='')totalRows=totalRows.filter(r=>r._month===+mf);
+  if(mf.length)totalRows=totalRows.filter(r=>mf.includes(+r._month));
   if(df)totalRows=totalRows.filter(r=>r.date===df);
-  if(af)totalRows=totalRows.filter(r=>(r.agency||'').toLowerCase()===af.toLowerCase());
+  if(af.length)totalRows=totalRows.filter(r=>mselMatch('vita-agency-filter',r.agency));
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   const statusCounts={};
   rows.forEach(r=>{const st=(r.status||'-').trim()||'-';statusCounts[st]=(statusCounts[st]||0)+1;});
@@ -2938,19 +3875,19 @@ async function syncVitaNow(){
 
 function renderOthersPatients(){
   const tbody=g('othersTbody');if(!tbody)return;
-  populateOthersCenterFilter();
+  populateOthersCenterFilter();populateOthersMonthFilter();
   const q=(g('othersSearch')?g('othersSearch').value:'').toLowerCase().trim();
   const yf=g('others-year-filter')?g('others-year-filter').value:'';
-  const mf=g('others-month-filter')?g('others-month-filter').value:'';
-  const cf=g('others-center-filter')?g('others-center-filter').value:'';
-  const sf=g('others-status-filter')?g('others-status-filter').value:'';
+  const mf=mselValues('others-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
+  const cf=mselValues('others-center-filter');
+  const sf=mselValues('others-status-filter');
   const df=g('others-date-filter')?g('others-date-filter').value:'';
   let rows=loadArr(SK11);
   if(yf)rows=rows.filter(r=>r._year===yf);
-  if(mf!=='')rows=rows.filter(r=>r._month===+mf);
-  if(cf)rows=rows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
+  if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
+  if(cf.length)rows=rows.filter(r=>mselMatch('others-center-filter',r._center));
   if(df)rows=rows.filter(r=>r.date===df);
-  if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP'||st==='HELD UP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
+  rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   if(g('others-record-count'))g('others-record-count').textContent=rows.length+' records';
   const empty=loadArr(SK11).length?'No records match filters.':'No data yet — configure Others Center Sheet URL in Settings, then tap Sync Now.';
@@ -2975,9 +3912,9 @@ function renderOthersPatients(){
   </tr>`;}).join('');
 }
 function exportOthersCSV(){
-  const cf=g('others-center-filter')?g('others-center-filter').value:'';
+  const cf=mselValues('others-center-filter');
   let rows=loadArr(SK11);
-  if(cf)rows=rows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
+  if(cf.length)rows=rows.filter(r=>mselMatch('others-center-filter',r._center));
   const out=[['#','Date','Reg Number','Name','Passport No.','Status','Comment','Center','Month']];
   rows.forEach((r,i)=>out.push([i+1,r.date,r.reg,r.name,r.passport,r.status,r.comment||'',r._center,r._monthName]));
   dlCSV(out,'others_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
@@ -2985,16 +3922,16 @@ function exportOthersCSV(){
 function getFilteredOthersRows(){
   const q=(g('othersSearch')?g('othersSearch').value:'').toLowerCase().trim();
   const yf=g('others-year-filter')?g('others-year-filter').value:'';
-  const mf=g('others-month-filter')?g('others-month-filter').value:'';
-  const cf=g('others-center-filter')?g('others-center-filter').value:'';
-  const sf=g('others-status-filter')?g('others-status-filter').value:'';
+  const mf=mselValues('others-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
+  const cf=mselValues('others-center-filter');
+  const sf=mselValues('others-status-filter');
   const df=g('others-date-filter')?g('others-date-filter').value:'';
   let rows=loadArr(SK11);
   if(yf)rows=rows.filter(r=>r._year===yf);
-  if(mf!=='')rows=rows.filter(r=>r._month===+mf);
-  if(cf)rows=rows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
+  if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
+  if(cf.length)rows=rows.filter(r=>mselMatch('others-center-filter',r._center));
   if(df)rows=rows.filter(r=>r.date===df);
-  if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP'||st==='HELD UP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
+  rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   return{rows,yf,mf,cf,sf,df,q};
 }
@@ -3003,9 +3940,9 @@ function generateOthersPatientsPDF(){
   if(!rows.length){toast('No records match the current filters');return;}
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
-  labelParts.push(mf!==''?MN_EN[+mf]:'All Months');
-  if(cf)labelParts.push('Center: '+cf);
-  if(sf)labelParts.push('Status: '+sf);
+  labelParts.push(mf.length?mf.map(i=>MN_EN[i]).join(', '):'All Months');
+  if(cf.length)labelParts.push('Center: '+cf.join(', '));
+  if(sf.length)labelParts.push('Status: '+sf.join(', '));
   if(df)labelParts.push('Date: '+df);
   if(q)labelParts.push('Search: "'+q+'"');
   const label=labelParts.join(' · ');
@@ -3015,8 +3952,8 @@ function generateOthersPatientsPDF(){
   // currently-filtered status. Status breakdown still respects the status filter.
   let totalRows=loadArr(SK11);
   if(yf)totalRows=totalRows.filter(r=>r._year===yf);
-  if(mf!=='')totalRows=totalRows.filter(r=>r._month===+mf);
-  if(cf)totalRows=totalRows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
+  if(mf.length)totalRows=totalRows.filter(r=>mf.includes(+r._month));
+  if(cf.length)totalRows=totalRows.filter(r=>mselMatch('others-center-filter',r._center));
   if(df)totalRows=totalRows.filter(r=>r.date===df);
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   const centerCounts={};
@@ -3084,23 +4021,23 @@ async function syncOthersNow(){
 // ═══════════════ VITA + OTHERS CENTER (combined multi-tab sheet) ═══════════════
 function renderVitaOthersPatients(){
   const tbody=g('vitaOthersTbody');if(!tbody)return;
-  populateVitaOthersCenterFilter();populateVitaOthersSlipFilter();populateVitaOthersAgencyFilter();
+  populateVitaOthersCenterFilter();populateVitaOthersSlipFilter();populateVitaOthersAgencyFilter();populateVitaOthersMonthFilter();
   const q=(g('vitaOthersSearch')?g('vitaOthersSearch').value:'').toLowerCase().trim();
   const yf=g('vitaothers-year-filter')?g('vitaothers-year-filter').value:'';
-  const mf=g('vitaothers-month-filter')?g('vitaothers-month-filter').value:'';
-  const cf=g('vitaothers-center-filter')?g('vitaothers-center-filter').value:'';
-  const spf=g('vitaothers-slip-filter')?g('vitaothers-slip-filter').value:'';
-  const agf=g('vitaothers-agency-filter')?g('vitaothers-agency-filter').value:'';
-  const sf=g('vitaothers-status-filter')?g('vitaothers-status-filter').value:'';
+  const mf=mselValues('vitaothers-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
+  const cf=mselValues('vitaothers-center-filter');
+  const spf=mselValues('vitaothers-slip-filter');
+  const agf=mselValues('vitaothers-agency-filter');
+  const sf=mselValues('vitaothers-status-filter');
   const df=g('vitaothers-date-filter')?g('vitaothers-date-filter').value:'';
   let rows=loadArr(SK12);
   if(yf)rows=rows.filter(r=>r._year===yf);
-  if(mf!=='')rows=rows.filter(r=>r._month===+mf);
-  if(cf)rows=rows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
-  if(spf)rows=rows.filter(r=>(r.slip||'').toLowerCase()===spf.toLowerCase());
-  if(agf)rows=rows.filter(r=>(r.agency||'').toLowerCase()===agf.toLowerCase());
+  if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
+  if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
+  if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
   if(df)rows=rows.filter(r=>r.date===df);
-  if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP'||st==='HELD UP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
+  rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   if(g('vitaothers-record-count'))g('vitaothers-record-count').textContent=rows.length+' records';
   const empty=loadArr(SK12).length?'No records match filters.':'No data yet — configure VITA + Others Center Sheet URL in Settings, then tap Sync Now.';
@@ -3121,11 +4058,11 @@ function renderVitaOthersPatients(){
   </tr>`).join('');
 }
 function exportVitaOthersCSV(){
-  const cf=g('vitaothers-center-filter')?g('vitaothers-center-filter').value:'',spf=g('vitaothers-slip-filter')?g('vitaothers-slip-filter').value:'',agf=g('vitaothers-agency-filter')?g('vitaothers-agency-filter').value:'';
+  const cf=mselValues('vitaothers-center-filter'),spf=mselValues('vitaothers-slip-filter'),agf=mselValues('vitaothers-agency-filter');
   let rows=loadArr(SK12);
-  if(cf)rows=rows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
-  if(spf)rows=rows.filter(r=>(r.slip||'').toLowerCase()===spf.toLowerCase());
-  if(agf)rows=rows.filter(r=>(r.agency||'').toLowerCase()===agf.toLowerCase());
+  if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
+  if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
   const out=[['#','Date','ID','Name','Passport','Slip','Agency','Status','Comment','Center','Month']];
   rows.forEach((r,i)=>out.push([i+1,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment||'',r._center,r._monthName]));
   dlCSV(out,'vita_others_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
@@ -3133,20 +4070,20 @@ function exportVitaOthersCSV(){
 function getFilteredVitaOthersRows(){
   const q=(g('vitaOthersSearch')?g('vitaOthersSearch').value:'').toLowerCase().trim();
   const yf=g('vitaothers-year-filter')?g('vitaothers-year-filter').value:'';
-  const mf=g('vitaothers-month-filter')?g('vitaothers-month-filter').value:'';
-  const cf=g('vitaothers-center-filter')?g('vitaothers-center-filter').value:'';
-  const spf=g('vitaothers-slip-filter')?g('vitaothers-slip-filter').value:'';
-  const agf=g('vitaothers-agency-filter')?g('vitaothers-agency-filter').value:'';
-  const sf=g('vitaothers-status-filter')?g('vitaothers-status-filter').value:'';
+  const mf=mselValues('vitaothers-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
+  const cf=mselValues('vitaothers-center-filter');
+  const spf=mselValues('vitaothers-slip-filter');
+  const agf=mselValues('vitaothers-agency-filter');
+  const sf=mselValues('vitaothers-status-filter');
   const df=g('vitaothers-date-filter')?g('vitaothers-date-filter').value:'';
   let rows=loadArr(SK12);
   if(yf)rows=rows.filter(r=>r._year===yf);
-  if(mf!=='')rows=rows.filter(r=>r._month===+mf);
-  if(cf)rows=rows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
-  if(spf)rows=rows.filter(r=>(r.slip||'').toLowerCase()===spf.toLowerCase());
-  if(agf)rows=rows.filter(r=>(r.agency||'').toLowerCase()===agf.toLowerCase());
+  if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
+  if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
+  if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
   if(df)rows=rows.filter(r=>r.date===df);
-  if(sf){const sfN=sf.toUpperCase().trim();rows=rows.filter(r=>{const st=(r.status||'').toUpperCase().trim().replace(/\s+/g,'');const sfN2=sfN.replace(/\s+/g,'');if(sfN2==='FIT')return st==='FIT'||st.startsWith('FIT&');if(sfN2==='HELDUP')return st==='HELDUP'||st==='HELD UP';if(sfN2==='PROCESSING')return st==='PROCESSING'||st==='PENDING';return st===sfN2;});}
+  rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   return{rows,yf,mf,cf,spf,agf,sf,df,q};
 }
@@ -3155,11 +4092,11 @@ function generateVitaOthersPatientsPDF(){
   if(!rows.length){toast('No records match the current filters');return;}
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
-  labelParts.push(mf!==''?MN_EN[+mf]:'All Months');
-  if(cf)labelParts.push('Center: '+cf);
-  if(spf)labelParts.push('Slip: '+spf);
-  if(agf)labelParts.push('Agency: '+agf);
-  if(sf)labelParts.push('Status: '+sf);
+  labelParts.push(mf.length?mf.map(i=>MN_EN[i]).join(', '):'All Months');
+  if(cf.length)labelParts.push('Center: '+cf.join(', '));
+  if(spf.length)labelParts.push('Slip: '+spf.join(', '));
+  if(agf.length)labelParts.push('Agency: '+agf.join(', '));
+  if(sf.length)labelParts.push('Status: '+sf.join(', '));
   if(df)labelParts.push('Date: '+df);
   if(q)labelParts.push('Search: "'+q+'"');
   const label=labelParts.join(' · ');
@@ -3168,10 +4105,10 @@ function generateVitaOthersPatientsPDF(){
   // status filter (see Vita/Others PDF fix — status breakdown stays separate).
   let totalRows=loadArr(SK12);
   if(yf)totalRows=totalRows.filter(r=>r._year===yf);
-  if(mf!=='')totalRows=totalRows.filter(r=>r._month===+mf);
-  if(cf)totalRows=totalRows.filter(r=>(r._center||'').toLowerCase()===cf.toLowerCase());
-  if(spf)totalRows=totalRows.filter(r=>(r.slip||'').toLowerCase()===spf.toLowerCase());
-  if(agf)totalRows=totalRows.filter(r=>(r.agency||'').toLowerCase()===agf.toLowerCase());
+  if(mf.length)totalRows=totalRows.filter(r=>mf.includes(+r._month));
+  if(cf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
+  if(spf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
+  if(agf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
   if(df)totalRows=totalRows.filter(r=>r.date===df);
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   const centerCounts={};
@@ -3737,6 +4674,54 @@ async function syncPull(){
       }
     }catch(e){console.log('Calc data section parse failed:',e);}
     try{
+      // ── COMMISSION CALCULATION: restore rates/ledger/batches/reconciled from Sheet ──
+      const commRaw=data.commission_calc||data['commission_calc']||null;
+      if(commRaw&&commRaw.length>1){
+        const hdr=commRaw[0].map(h=>String(h||'').toLowerCase().trim());
+        const gi=k=>hdr.indexOf(k);
+        const iType=gi('type'),iKey=gi('key'),iAgency=gi('agency'),iDisb=gi('disbursedamount'),
+              iLocked=gi('lockedat'),iSlip=gi('slipatlock'),iStatus=gi('statusatlock'),
+              iRV=gi('ratevita'),iRO=gi('rateother'),iRU=gi('rateunfit'),iRT=gi('ratetestfee');
+        const sheetData={rateVita:3000,rateOther:2000,rateUnfit:7000,rateTestFee:7000,ledger:{},batches:{},reconciled:{}};
+        for(let i=1;i<commRaw.length;i++){
+          const r=commRaw[i];if(!r)continue;
+          const type=String(r[iType]||'').trim();
+          if(type==='settings'){
+            if(iRV>=0&&r[iRV]!=='')sheetData.rateVita=+r[iRV]||sheetData.rateVita;
+            if(iRO>=0&&r[iRO]!=='')sheetData.rateOther=+r[iRO]||sheetData.rateOther;
+            if(iRU>=0&&r[iRU]!=='')sheetData.rateUnfit=+r[iRU]||sheetData.rateUnfit;
+            if(iRT>=0&&r[iRT]!=='')sheetData.rateTestFee=+r[iRT]||sheetData.rateTestFee;
+          }else if(type==='ledger'){
+            const key=String(r[iKey]||'');if(!key)continue;
+            sheetData.ledger[key]={disbursedAmount:+r[iDisb]||0,lockedAt:String(r[iLocked]||''),slipAtLock:String(r[iSlip]||''),statusAtLock:String(r[iStatus]||'')};
+          }else if(type==='batch'){
+            const key=String(r[iKey]||''),agency=String(r[iAgency]||'');if(!key||!agency)continue;
+            if(!sheetData.batches[agency])sheetData.batches[agency]=[];
+            sheetData.batches[agency].push(key);
+          }else if(type==='reconciled'){
+            const key=String(r[iKey]||''),agency=String(r[iAgency]||'');if(!key||!agency)continue;
+            if(!sheetData.reconciled[agency])sheetData.reconciled[agency]=[];
+            sheetData.reconciled[agency].push(key);
+          }
+        }
+        // Sheet is source of truth across devices; only keep local-only additions
+        // (ledger locks/batches/reconciliations made here but not yet confirmed pushed).
+        if(pushInFlight.commission){
+          const local=loadCommissionData();
+          Object.entries(local.ledger).forEach(([k,v])=>{if(!sheetData.ledger[k])sheetData.ledger[k]=v;});
+          Object.entries(local.batches).forEach(([ag,keys])=>{
+            const merged=new Set([...(sheetData.batches[ag]||[]),...keys]);
+            sheetData.batches[ag]=[...merged];
+          });
+          Object.entries(local.reconciled).forEach(([ag,keys])=>{
+            const merged=new Set([...(sheetData.reconciled[ag]||[]),...keys]);
+            sheetData.reconciled[ag]=[...merged];
+          });
+        }
+        save(SK13,sheetData);
+      }
+    }catch(e){console.log('Commission calc section parse failed:',e);}
+    try{
       // ── SALARY: restore from Sheet ──
       const salRaw=data.salary||data.Salary||null;
       if(salRaw&&salRaw.length>1){
@@ -3902,7 +4887,7 @@ async function syncPull(){
 
 // serializeForPush defined below with full column support
 
-let pushInFlight={main:false,salary:false};
+let pushInFlight={main:false,salary:false,commission:false};
 async function pushToSheet(){
   const s=getSettings();
   const url=s.scriptUrl||((s.dailyUrls&&s.dailyUrls.length)?s.dailyUrls.find(e=>e.url)?.url:'');
@@ -3932,6 +4917,44 @@ async function pushCalcToSheet(){
   try{
     await fetch(url,{method:'POST',body:JSON.stringify({calc_data:calcRows}),headers:{'Content-Type':'text/plain'}});
   }catch(e){console.warn('Calc push failed:',e);}
+}
+
+// ── COMMISSION CALCULATION SYNC ──────────────────────────────────────────
+// Serializes rates/ledger/batches/reconciled into a flat sheet-friendly table
+// (self-describing via a "type" column) and pushes it as a "commission_calc"
+// sheet in the same Finance spreadsheet. Read back in syncPull() below.
+function serializeCommissionForPush(){
+  const d=loadCommissionData();
+  const header=['type','key','agency','disbursedAmount','lockedAt','slipAtLock','statusAtLock','rateVita','rateOther','rateUnfit','rateTestFee'];
+  const rows=[header];
+  rows.push(['settings','','','','','','',d.rateVita,d.rateOther,d.rateUnfit,d.rateTestFee]);
+  Object.entries(d.ledger).forEach(([key,entry])=>{
+    rows.push(['ledger',key,'',entry.disbursedAmount,entry.lockedAt||'',entry.slipAtLock||'',entry.statusAtLock||'','','','','']);
+  });
+  Object.entries(d.batches).forEach(([agency,keys])=>{
+    (keys||[]).forEach(key=>rows.push(['batch',key,agency,'','','','','','','','']));
+  });
+  Object.entries(d.reconciled).forEach(([agency,keys])=>{
+    (keys||[]).forEach(key=>rows.push(['reconciled',key,agency,'','','','','','','','']));
+  });
+  return rows;
+}
+let _commSyncTimer=null;
+function scheduleCommissionPush(){
+  if(_commSyncTimer)clearTimeout(_commSyncTimer);
+  _commSyncTimer=setTimeout(()=>pushCommissionToSheet(),1500);
+}
+async function pushCommissionToSheet(){
+  const s=getSettings();
+  const url=s.scriptUrl||((s.dailyUrls&&s.dailyUrls.length)?s.dailyUrls.find(e=>e.url)?.url:'');
+  if(!url)return true;
+  pushInFlight.commission=true;
+  try{
+    const resp=await fetch(url,{method:'POST',body:JSON.stringify({commission_calc:serializeCommissionForPush()}),headers:{'Content-Type':'text/plain'}});
+    const result=await resp.json().catch(()=>null);
+    pushInFlight.commission=false;
+    return!!(result&&result.status==='ok');
+  }catch(e){console.warn('Commission push failed:',e);pushInFlight.commission=false;return false;}
 }
 
 async function pushSalaryToSheet(){
@@ -5030,7 +6053,7 @@ function initOpsPage(){
 const ALL_STORAGE_KEYS=[
   'vh_data','vh_settings_v2','vh_patients','vh_daily','vh_other_exp',
   'vh_vita_sheet','vh_other_sheet','vh_notepad','vh_commission',
-  'vh_vita_patients','vh_others_patients',
+  'vh_vita_patients','vh_others_patients','vh_vitaothers_patients','vh_commission_calc',
   'vh_users_v2','vh_attendance_v2','vh_salary_v2','vh_calc_v1',
   'vh_passport_pdfs'
 ];
@@ -5226,25 +6249,318 @@ function updateOcGroupTotal(){
 }
 
 // ═══════════════════════════ AGENCY PATIENT SHARE CARD ═══════════════════════════
+// ---- SVG helpers (Report page) ----
+// ---- SVG helpers (Report page) ----
+// ---- SVG helpers (Report page) ----
+function svgDonut(segments,size,strokeW,centerVal,centerLabel){
+  const total=segments.reduce((a,s)=>a+s.value,0)||1;
+  const r=(size-strokeW)/2;
+  const c=2*Math.PI*r;
+  let offset=0;
+  const circles=segments.map(s=>{
+    const frac=s.value/total;
+    const dash=Math.max(frac*c-1,0);
+    const el=`<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-dashoffset="${-offset}" stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>`;
+    offset+=frac*c;
+    return el;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0;">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
+    ${circles}
+    <text x="${size/2}" y="${size/2-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${centerVal}</text>
+    <text x="${size/2}" y="${size/2+15}" text-anchor="middle" font-size="9" fill="var(--tm)" letter-spacing="0.05em">${centerLabel}</text>
+  </svg>`;
+}
+function svgRing(value,max,size,strokeW,color,valueColor){
+  const r=(size-strokeW)/2;
+  const c=2*Math.PI*r;
+  const pct=max>0?Math.min(1,value/max):0;
+  const dash=Math.max(pct*c-1,0);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="${size/2}" y="${size/2+8}" text-anchor="middle" font-size="24" font-weight="800" fill="${valueColor||'var(--tp)'}" font-family="var(--mono)">${value}</text>
+  </svg>`;
+}
+const RPT_SHORT_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function svgAreaChart(data,height){
+  const width=1000,pad={l:8,r:8,t:14,b:24};
+  const w=width-pad.l-pad.r,h=height-pad.t-pad.b;
+  const maxVal=Math.max(1,...data.map(d=>Math.max(d.inc,d.exp)));
+  const n=data.length;
+  const x=i=>pad.l+(n>1?(i/(n-1))*w:w/2);
+  const y=v=>pad.t+h-(v/maxVal)*h;
+  const incPts=data.map((d,i)=>`${x(i)},${y(d.inc)}`).join(' ');
+  const expPts=data.map((d,i)=>`${x(i)},${y(d.exp)}`).join(' ');
+  const incArea=`${x(0)},${pad.t+h} ${incPts} ${x(n-1)},${pad.t+h}`;
+  const expArea=`${x(0)},${pad.t+h} ${expPts} ${x(n-1)},${pad.t+h}`;
+  const grid=[0,0.5,1].map(f=>`<line x1="${pad.l}" y1="${pad.t+h*f}" x2="${width-pad.r}" y2="${pad.t+h*f}" stroke="var(--border)" stroke-width="1" opacity="0.6"/>`).join('');
+  // Show every other label if there are many months, to avoid crowding
+  const skip=n>8?2:1;
+  const labels=data.map((d,i)=>i%skip===0?`<text x="${x(i)}" y="${height-6}" text-anchor="middle" font-size="10.5" fill="var(--tm)">${d.label}</text>`:'').join('');
+  // Small visible dots (cosmetic) + larger invisible hit-targets (for hover/tap tooltip)
+  const dots=data.map((d,i)=>`<circle cx="${x(i)}" cy="${y(d.inc)}" r="2.5" fill="var(--green)"/><circle cx="${x(i)}" cy="${y(d.exp)}" r="2.5" fill="var(--pink)"/>`).join('');
+  const hit=data.map((d,i)=>{
+    const midY=(y(d.inc)+y(d.exp))/2;
+    return`<circle class="rpt-hit" data-pt="${i}" cx="${x(i)}" cy="${midY}" r="16" fill="transparent" style="cursor:pointer;"/>
+    <line x1="${x(i)}" y1="${pad.t}" x2="${x(i)}" y2="${pad.t+h}" stroke="var(--cyan)" stroke-width="1" opacity="0" data-guide="${i}"/>`;
+  }).join('');
+  return `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="overflow:visible;">
+    <defs>
+      <linearGradient id="rptIncGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--green)" stop-opacity="0.20"/>
+        <stop offset="100%" stop-color="var(--green)" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="rptExpGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--pink)" stop-opacity="0.16"/>
+        <stop offset="100%" stop-color="var(--pink)" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${grid}
+    <polygon points="${incArea}" fill="url(#rptIncGrad)"/>
+    <polygon points="${expArea}" fill="url(#rptExpGrad)"/>
+    <polyline points="${incPts}" fill="none" stroke="var(--green)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>
+    <polyline points="${expPts}" fill="none" stroke="var(--pink)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>
+    ${dots}
+    ${labels}
+    ${hit}
+  </svg>`;
+}
+function attachChartTooltip(containerEl,series){
+  const svgEl=containerEl.querySelector('svg');if(!svgEl)return;
+  let tip=containerEl.querySelector('.rpt-tooltip');
+  if(!tip){tip=document.createElement('div');tip.className='rpt-tooltip';containerEl.appendChild(tip);}
+  const showAt=(idx,clientX,clientY)=>{
+    const d=series[idx];if(!d)return;
+    tip.innerHTML=`<div class="tt-month">${d.label}</div>
+      <div class="tt-row"><span style="color:var(--green);">Income</span><b>${fmtExact(d.inc)}</b></div>
+      <div class="tt-row"><span style="color:var(--pink);">Expense</span><b>${fmtExact(d.exp)}</b></div>`;
+    const contRect=containerEl.getBoundingClientRect();
+    let left=clientX-contRect.left+12;
+    let top=clientY-contRect.top-46;
+    const tw=tip.offsetWidth||120;
+    if(left+tw>contRect.width)left=clientX-contRect.left-tw-12;
+    if(top<0)top=clientY-contRect.top+16;
+    tip.style.left=left+'px';tip.style.top=top+'px';
+    tip.classList.add('show');
+  };
+  const hide=()=>tip.classList.remove('show');
+  svgEl.querySelectorAll('.rpt-hit').forEach(hitEl=>{
+    const idx=+hitEl.getAttribute('data-pt');
+    hitEl.addEventListener('mouseenter',e=>showAt(idx,e.clientX,e.clientY));
+    hitEl.addEventListener('mousemove',e=>showAt(idx,e.clientX,e.clientY));
+    hitEl.addEventListener('mouseleave',hide);
+    hitEl.addEventListener('touchstart',e=>{const t=e.touches[0];showAt(idx,t.clientX,t.clientY);e.preventDefault();e.stopPropagation();},{passive:false});
+  });
+  containerEl.addEventListener('touchstart',e=>{if(!e.target.closest('.rpt-hit'))hide();},{passive:true});
+}
+const RPT_COLORS=['var(--cyan)','var(--purple)','var(--green)','var(--yellow)','var(--pink)','var(--orange)','#60a5fa','#a78bfa'];
+function rptDonutCard(el,counts,emptyMsg,centerLabel){
+  if(!el)return;
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
+  const total=entries.reduce((a,[,c])=>a+c,0);
+  const segments=entries.map(([label,value],i)=>({label,value,color:RPT_COLORS[i%RPT_COLORS.length]}));
+  const donut=svgDonut(segments,116,16,total,centerLabel);
+  const legend=entries.slice(0,6).map(([label,cnt],i)=>{
+    const pct=Math.round(cnt/total*100);
+    const c=RPT_COLORS[i%RPT_COLORS.length];
+    return`<div class="rpt-dlrow">
+      <span class="dk"><i style="background:${c};"></i>${escapeHtml(label)}</span>
+      <span class="dv"><b>${cnt}</b><em style="background:color-mix(in srgb, ${c} 18%, transparent);color:${c};">${pct}%</em></span>
+    </div>`;
+  }).join('');
+  const more=entries.length>6?`<div class="rpt-dlrow"><span class="dk" style="color:var(--tm);">+${entries.length-6} more</span></div>`:'';
+  el.innerHTML=`<div class="rpt-donut-wrap">${donut}<div class="rpt-donut-legend">${legend}${more}</div></div>`;
+}
+function rptBarList(el,counts,emptyMsg,maxRows){
+  if(!el)return;
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,maxRows||7);
+  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
+  const maxV=Math.max(...entries.map(([,v])=>v),1);
+  el.innerHTML=`<div class="rpt-barlist">`+entries.map(([label,val],i)=>{
+    const pct=Math.round(val/maxV*100);
+    const c=RPT_COLORS[i%RPT_COLORS.length];
+    return`<div class="rpt-bar-row">
+      <div class="bhead"><span class="bname">${escapeHtml(label)}</span><span class="bval">${val}</span></div>
+      <div class="rpt-bar-track"><div class="rpt-bar-fill" style="width:${pct}%;background:${c};"></div></div>
+    </div>`;
+  }).join('')+`</div>`;
+}
+// Vita/Other Center income split — mirrors the same formula used on the Finance
+// (Patient Calculation) page, so the Report page always agrees with it.
+function computeCenterIncomeFor(yr,mi){
+  const dailyRows=loadArr(SK4).filter(r=>String(r.year)===String(yr)&&+r.month===mi);
+  const vitaInc=dailyRows.filter(r=>r.type==='income'&&(r.status==='paid'||!r.status)).reduce((a,r)=>a+(r.amount||0),0);
+  const due=dailyRows.filter(r=>r.type==='income'&&r.status==='due').reduce((a,r)=>a+(r.amount||0),0);
+  const duePts=dailyRows.filter(r=>r.type==='income'&&r.status==='due').reduce((a,r)=>a+(r.patients||0),0);
+  const expense=dailyRows.filter(r=>r.type==='expense').reduce((a,r)=>a+(r.amount||0),0);
+  const counts=computeOthersCenterCounts(yr,mi);
+  const calc=(loadCalc()[dataKey(String(yr),mi)])||null;
+  const aRate=(calc&&calc.ocARate!=null)?calc.ocARate:4000;
+  const bRate=(calc&&calc.ocBRate!=null)?calc.ocBRate:3000;
+  const otherInc=counts.kentCount*aRate+counts.medipathCount*bRate;
+  return{vitaInc,otherInc,due,duePts,expense,totalIncome:vitaInc+otherInc};
+}
+function renderReportPage(){
+  const yf=g('report-year-filter')?g('report-year-filter').value:String(new Date().getFullYear());
+  const mf=g('report-month-filter')?+g('report-month-filter').value:new Date().getMonth();
+  const monthKey=yf+'-'+String(mf+1).padStart(2,'0');
+
+  // ---- FINANCE (Vita/Other split, mirrors Patient Calculation page) ----
+  const {vitaInc,otherInc,due,duePts,expense,totalIncome}=computeCenterIncomeFor(yf,mf);
+  const net=totalIncome-expense;
+
+  // ---- PATIENTS (all 3 sources) ----
+  const vitaRows=loadArr(SK10).filter(r=>String(r._year)===yf&&+r._month===mf);
+  const othersRows=loadArr(SK11).filter(r=>String(r._year)===yf&&+r._month===mf);
+  const vitaOthersRows=loadArr(SK12).filter(r=>String(r._year)===yf&&+r._month===mf);
+  const maxPatients=Math.max(vitaRows.length,othersRows.length,vitaOthersRows.length,1);
+
+  // ---- ATTENDANCE (staff only) ----
+  const staffNames=new Set(loadUsers().filter(u=>u.role==='staff').map(u=>u.name||u.username));
+  const attRows=loadAttendance().filter(r=>staffNames.has(r.name||r.username)&&r.date&&r.date.startsWith(monthKey));
+  const presentCount=attRows.filter(r=>r.status==='Present').length;
+  const leaveCount=attRows.filter(r=>r.status==='Leave').length;
+
+  // ---- SALARY ----
+  const salRows=loadSalary().filter(r=>r.month===monthKey);
+  const salaryTotal=salRows.reduce((a,r)=>a+(r.net||0),0);
+  const salaryPaid=salRows.filter(r=>r.paid).reduce((a,r)=>a+(r.net||0),0);
+  const salaryUnpaid=salaryTotal-salaryPaid;
+  const advTotal=loadSalaryAdvances().filter(r=>!r.settled).reduce((a,r)=>a+(r.amount||0),0);
+
+  // ═══ SECTION 1 — Stat strip ═══
+  const kpi=g('report-kpi-row');
+  if(kpi)kpi.innerHTML=`
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Net Profit</div><div class="rpt-sstat-value" style="color:${net>=0?'var(--green)':'var(--pink)'};">${fmtExact(net)}</div><div class="rpt-sstat-sub">${MN_EN[mf]} ${yf}</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Total Income</div><div class="rpt-sstat-value">${fmtExact(totalIncome)}</div><div class="rpt-sstat-sub">Vita + Other Center</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Expense</div><div class="rpt-sstat-value">${fmtExact(expense)}</div><div class="rpt-sstat-sub">This month</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Vita Center Income</div><div class="rpt-sstat-value" style="color:var(--cyan);">${fmtExact(vitaInc)}</div><div class="rpt-sstat-sub">via Finance</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Other Center Income</div><div class="rpt-sstat-value" style="color:var(--orange);">${fmtExact(otherInc)}</div><div class="rpt-sstat-sub">Kent + Medipath</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Pending Due</div><div class="rpt-sstat-value" style="color:var(--yellow);">${fmtExact(due)}</div><div class="rpt-sstat-sub">${duePts} patient(s)</div></div>
+  `;
+
+  // ═══ SECTION 2 — Patient rings + Collections ═══
+  const ringEl=g('report-patient-rings');
+  if(ringEl){
+    ringEl.innerHTML=`
+      <div class="rpt-ring">${svgRing(vitaRows.length,maxPatients,110,13,'var(--cyan)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Vita Center</b><br>Patient</div></div>
+      <div class="rpt-ring">${svgRing(othersRows.length,maxPatients,110,13,'var(--purple)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Others (Med)</b><br>+ VITA (Slip)</div></div>
+      <div class="rpt-ring">${svgRing(vitaOthersRows.length,maxPatients,110,13,'var(--green)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Vita (Med)</b><br>+ Others (Slip)</div></div>
+    `;
+  }
+  const collEl=g('report-collections');
+  if(collEl){
+    if(totalIncome+due+expense<=0){
+      collEl.innerHTML='<div class="rpt-empty">No income data for '+MN_EN[mf]+' '+yf+'.</div>';
+    }else{
+      const segs=[{label:'Paid',value:totalIncome,color:'var(--green)'},{label:'Due',value:due,color:'var(--yellow)'},{label:'Expense',value:expense,color:'var(--pink)'}].filter(s=>s.value>0);
+      const total=totalIncome+due+expense;
+      const donut=svgDonut(segs,110,14,'','');
+      const legend=segs.map(s=>{
+        const pct=Math.round(s.value/total*100);
+        return`<div class="rpt-dlrow"><span class="dk"><i style="background:${s.color};"></i>${s.label}</span><span class="dv"><b>${fmtExact(s.value)}</b><em style="background:color-mix(in srgb, ${s.color} 18%, transparent);color:${s.color};">${pct}%</em></span></div>`;
+      }).join('');
+      collEl.innerHTML=`<div class="rpt-donut-wrap">${donut}<div class="rpt-donut-legend">${legend}</div></div>`;
+    }
+  }
+
+  // ═══ SECTION 3 — Cash flow (12 months, interactive) ═══
+  const trendEl=g('report-finance-trend');
+  if(trendEl){
+    const months=[];
+    for(let i=11;i>=0;i--){let mi=mf-i,yy=+yf;while(mi<0){mi+=12;yy--;}months.push({mi,yy});}
+    const series=months.map(({mi,yy})=>{
+      const c=computeCenterIncomeFor(yy,mi);
+      return{label:RPT_SHORT_MONTHS[mi]+' '+String(yy).slice(2),inc:c.totalIncome,exp:c.expense};
+    });
+    trendEl.innerHTML=svgAreaChart(series,190);
+    attachChartTooltip(trendEl,series);
+  }
+
+  // ═══ SECTION 4 — Breakdown detail ═══
+  // Vita Center: Status, Agency, Slips
+  const vitaStatusCounts={};
+  vitaRows.forEach(r=>{const st=(r.status||'Unknown').trim()||'Unknown';vitaStatusCounts[st]=(vitaStatusCounts[st]||0)+1;});
+  rptBarList(g('report-vita-status'),vitaStatusCounts,'No data.');
+
+  const vitaAgencyCounts={};
+  vitaRows.forEach(r=>{const a=(r.agency||'Unknown').trim()||'Unknown';vitaAgencyCounts[a]=(vitaAgencyCounts[a]||0)+1;});
+  rptDonutCard(g('report-vita-agency'),vitaAgencyCounts,'No data.','patients');
+
+  const vitaSlipsCounts={};
+  vitaRows.forEach(r=>{const sp=(r.slips||'Unknown').trim()||'Unknown';vitaSlipsCounts[sp]=(vitaSlipsCounts[sp]||0)+1;});
+  rptBarList(g('report-vita-slips'),vitaSlipsCounts,'No data.',6);
+
+  // Vita (Med) + Others (Slip): Center, Agency
+  const voCenterCounts={};
+  vitaOthersRows.forEach(r=>{const c=(r._center||'Unknown').trim()||'Unknown';voCenterCounts[c]=(voCenterCounts[c]||0)+1;});
+  rptBarList(g('report-vitaothers-center'),voCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.');
+
+  const voAgencyCounts={};
+  vitaOthersRows.forEach(r=>{const a=(r.agency||'Unknown').trim()||'Unknown';voAgencyCounts[a]=(voAgencyCounts[a]||0)+1;});
+  rptBarList(g('report-vitaothers-agency'),voAgencyCounts,'No data for '+MN_EN[mf]+' '+yf+'.',6);
+
+  // Others (Med) + VITA (Slip): Center only
+  const ocCenterCounts={};
+  othersRows.forEach(r=>{const c=(r._center||'Unknown').trim()||'Unknown';ocCenterCounts[c]=(ocCenterCounts[c]||0)+1;});
+  rptDonutCard(g('report-others-chart'),ocCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.','patients');
+
+  // ═══ SECTION 5 — Operations & Staff + Patient Country ═══
+  const attEl=g('report-attendance');
+  if(attEl){
+    const byStaff={};
+    attRows.forEach(r=>{
+      const k=r.name||r.username;
+      if(!byStaff[k])byStaff[k]={present:0,leave:0};
+      if(r.status==='Present')byStaff[k].present++;
+      else if(r.status==='Leave')byStaff[k].leave++;
+    });
+    const names=Object.keys(byStaff);
+    if(!names.length){attEl.innerHTML='<div class="rpt-empty">No attendance data for '+MN_EN[mf]+' '+yf+'.</div>';}
+    else{
+      attEl.innerHTML=names.map(n=>{
+        const d=byStaff[n];
+        return`<div class="rpt-staff-row">
+          <span class="rpt-staff-name">${escapeHtml(n)}</span>
+          <span class="rpt-staff-pills"><span class="rpt-pill p">${d.present}P</span><span class="rpt-pill l">${d.leave}L</span></span>
+        </div>`;
+      }).join('');
+    }
+  }
+  const salEl=g('report-salary');
+  if(salEl){
+    salEl.innerHTML=`<div class="rpt-payroll">
+      <div class="rpt-payroll-item"><div class="pl">Total Payroll</div><div class="pv">${fmtExact(salaryTotal)}</div></div>
+      <div class="rpt-payroll-item"><div class="pl">Paid</div><div class="pv" style="color:var(--green);">${fmtExact(salaryPaid)}</div></div>
+      <div class="rpt-payroll-item"><div class="pl">Unpaid</div><div class="pv" style="color:var(--pink);">${fmtExact(salaryUnpaid)}</div></div>
+      <div class="rpt-payroll-item"><div class="pl">Pending Advances</div><div class="pv" style="color:var(--yellow);">${fmtExact(advTotal)}</div></div>
+    </div>`;
+  }
+  // Patient Country — Vita Center patients this month, by country
+  const vitaCountryCounts={};
+  vitaRows.forEach(r=>{const c=(r.country||'Unknown').trim()||'Unknown';vitaCountryCounts[c]=(vitaCountryCounts[c]||0)+1;});
+  rptDonutCard(g('report-vita-country'),vitaCountryCounts,'No country data for '+MN_EN[mf]+' '+yf+'.','patients');
+}
 function renderAgencyCard(){
   const el=g('agency-chart-wrap');if(!el)return;
-  const mnSel=g('agency-month-sel');
-  const now=new Date();
-  const mn=mnSel&&mnSel.options.length>0?+mnSel.value:now.getMonth();
-  const yr=g('agency-year-sel')?String(g('agency-year-sel').value):String(now.getFullYear());
+  const mnArr=mselValues('agency-month-sel').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
+  const yr=g('agency-year-sel')?String(g('agency-year-sel').value):String(new Date().getFullYear());
+  const periodLabel=mnArr.length?mnArr.map(i=>MN_EN[i]).join(', '):'all months';
   const vita=loadArr(SK10).filter(r=>{
     const rowMonth=+r._month;  // always numeric 0-11
     const rowYear=String(r._year||'');
-    return rowMonth===mn&&rowYear===yr;
+    return(mnArr.length===0||mnArr.includes(rowMonth))&&rowYear===yr;
   });
   const all=[...vita];
-  if(!all.length){el.innerHTML='<div style="font-size:12px;color:var(--tm);padding:12px 0;">No Vita Center patient data for '+MN_EN[mn]+' '+yr+'.</div>';return;}
+  if(!all.length){el.innerHTML='<div style="font-size:12px;color:var(--tm);padding:12px 0;">No Vita Center patient data for '+periodLabel+' '+yr+'.</div>';return;}
   const counts={};
   all.forEach(r=>{
     const ag=(r.agency||'').trim();
     if(ag&&ag.toLowerCase()!=='direct')counts[ag]=(counts[ag]||0)+1;
   });
-  if(!Object.keys(counts).length){el.innerHTML='<div style="font-size:12px;color:var(--tm);padding:12px 0;">No agency patients found for '+MN_EN[mn]+' '+yr+'.</div>';return;}
+  if(!Object.keys(counts).length){el.innerHTML='<div style="font-size:12px;color:var(--tm);padding:12px 0;">No agency patients found for '+periodLabel+' '+yr+'.</div>';return;}
   const total=Object.values(counts).reduce((a,b)=>a+b,0);
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]); // show all agencies
   const colors=['var(--cyan)','var(--green)','var(--yellow)','var(--purple)','var(--pink)','var(--orange)','#60a5fa','#a78bfa'];
