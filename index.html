@@ -282,8 +282,9 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .rpt-ring{display:flex;flex-direction:column;align-items:center;gap:10px;}
 .rpt-ring-label{font-size:11.5px;color:var(--ts);text-align:center;max-width:120px;line-height:1.4;}
 .rpt-multi3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.rpt-multi3.rpt-multi3-agency{grid-template-columns:0.8fr 2fr 0.8fr;}
 .rpt-multi2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
-@media(max-width:760px){.rpt-multi3{grid-template-columns:1fr;}.rpt-multi2{grid-template-columns:1fr;}}
+@media(max-width:760px){.rpt-multi3{grid-template-columns:1fr;}.rpt-multi3.rpt-multi3-agency{grid-template-columns:1fr;}.rpt-multi2{grid-template-columns:1fr;}}
 .rpt-subpanel-title{font-size:10.5px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
 .rpt-coll-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
 .rpt-tooltip{position:absolute;background:#0d1420;border:1px solid var(--border-bright);border-radius:10px;padding:9px 12px;font-size:11.5px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:20;box-shadow:0 10px 24px rgba(0,0,0,.55);white-space:nowrap;}
@@ -858,9 +859,9 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- Sub-page nav -->
   <div class="daily-subnav">
     <button class="daily-subnav-btn active" id="dsub-records" onclick="switchDailySubPage('records',this)">&#128200; Income &amp; Expenses</button>
-    <button class="daily-subnav-btn" id="dsub-agencycomm" onclick="switchDailySubPage('agencycomm',this)">&#128176; Commission</button>
     <button class="daily-subnav-btn" id="dsub-calc" onclick="switchDailySubPage('calc',this)">&#129518; Patient Calculation</button>
     <button class="daily-subnav-btn" id="dsub-commission" onclick="switchDailySubPage('commission',this)">&#129309; Agency Management</button>
+    <button class="daily-subnav-btn" id="dsub-agencycomm" onclick="switchDailySubPage('agencycomm',this)">&#128176; Commission</button>
   </div>
 
   <!-- ── SUB-PAGE 1: Income & Expenses ── -->
@@ -937,15 +938,8 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
 
   <!-- ── SUB-PAGE: Commission Calculation ── -->
   <div id="daily-view-agencycomm" style="display:none;flex-direction:column;gap:14px;">
-    <div class="card">
-      <div class="ctitle"><span class="dot"></span>Commission Rates <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Reference only — not counted in income/expense</span></div>
-      <div class="oc-group-grid" style="max-width:780px;">
-        <div class="ff"><label>Vita Slip Rate (৳ / passport)</label><input type="number" id="comm-rate-vita" min="0" value="3000" style="font-size:15px;" oninput="saveCommissionRates();renderCommissionCalc();"></div>
-        <div class="ff"><label>Other Center Slip Rate (৳ / passport)</label><input type="number" id="comm-rate-other" min="0" value="2000" style="font-size:15px;" oninput="saveCommissionRates();renderCommissionCalc();"></div>
-        <div class="ff"><label>UNFIT Patient Rate (৳ / passport)</label><input type="number" id="comm-rate-unfit" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();renderCommissionCalc();"></div>
-        <div class="ff"><label>Test Patient Recovery Fee (৳ / passport)</label><input type="number" id="comm-rate-testfee" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();renderCommissionCalc();"></div>
-      </div>
-      <div style="font-size:11px;color:var(--tm);margin-top:8px;">Set the <b>Remarks</b> column dropdown to Paid/Unpaid in the Vita Center sheet. If a patient's Status is <b>UNFIT</b>, the UNFIT rate applies automatically (Slip is ignored). Otherwise: Slip = "Vita" → Vita rate; any other Slip → Other Center rate; Slip still blank → Vita rate is used as an advance until the Slip resolves. If the assumed rate turns out wrong once the Slip/Status resolves, the difference is tracked automatically as a Balance per agency — no manual recalculation needed. A patient whose <b>Reg No contains "TEST"</b> (e.g. 26PM1(TEST)) gets no commission at all until a Slip appears — once it does, the Test Recovery Fee is deducted from that slip's normal rate (can go negative — meaning the agency owes that amount back).</div>
+    <div class="card" style="border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.04);">
+      <div style="font-size:12px;color:var(--tp);">Commission rates (per-agency Vita rate, Other Center rates, UNFIT rate, Test Recovery Fee) are managed on the <b>Agency Management</b> page. Set the <b>Remarks</b> column dropdown to Paid/Unpaid in the Vita Center sheet — everything below calculates automatically from there.</div>
     </div>
 
     <div class="card">
@@ -1027,6 +1021,34 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- ── SUB-PAGE 2: Agency Management ── -->
   <div id="daily-view-commission" style="display:none;flex-direction:column;gap:14px;">
     <div class="card">
+      <div class="ctitle"><span class="dot"></span>Commission Rates <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Used by the Commission page — reference only, not counted in income/expense</span></div>
+      <div style="font-size:11px;color:var(--tm);margin-bottom:12px;">Vita slip rate is <b>per agency</b> (set below). Slip from another center uses that center's shared rate. UNFIT status and Test patients (Reg No contains "TEST") use their own fixed rules.</div>
+
+      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin-bottom:8px;">Vita Slip Rate — per Agency</div>
+      <div class="agency-form-grid" style="max-width:520px;align-items:end;">
+        <div class="ff"><label>Agency Name</label><input type="text" id="agency-rate-name" placeholder="e.g. BSL" list="agency-dl"></div>
+        <div class="ff"><label>Vita Rate (৳)</label><input type="number" id="agency-rate-amount" min="0" placeholder="3000"></div>
+        <button class="abtn bcom" style="padding:9px 18px;white-space:nowrap;" onclick="saveAgencyVitaRate()">Save Rate</button>
+      </div>
+      <div id="agencyVitaRatesTable" style="margin-top:10px;"></div>
+
+      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border);">Other Center Slip Rates — shared by all agencies</div>
+      <div class="oc-group-grid" style="max-width:780px;">
+        <div class="ff"><label>Veritas (৳)</label><input type="number" id="other-rate-veritas" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
+        <div class="ff"><label>Kent (৳)</label><input type="number" id="other-rate-kent" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
+        <div class="ff"><label>KGN (৳)</label><input type="number" id="other-rate-kgn" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
+        <div class="ff"><label>Medipath (৳)</label><input type="number" id="other-rate-medipath" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
+        <div class="ff"><label>Medison (৳)</label><input type="number" id="other-rate-medison" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
+      </div>
+
+      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border);">Fixed Rates</div>
+      <div class="oc-group-grid" style="max-width:520px;">
+        <div class="ff"><label>UNFIT Patient Rate (৳)</label><input type="number" id="comm-rate-unfit" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();"></div>
+        <div class="ff"><label>Test Patient Recovery Fee (৳)</label><input type="number" id="comm-rate-testfee" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();"></div>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="ctitle"><span class="dot"></span>Add Agency Commission <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Reference only — not counted in income or expense</span></div>
       <div class="agency-form-grid">
         <div class="ff"><label>Amount (৳)</label><input type="number" id="dc-amount" min="0" placeholder="0" style="font-size:15px;"></div>
@@ -1036,8 +1058,9 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         <div class="ff"><label>Address</label><input type="text" id="dc-address" placeholder="Address"></div>
         <div class="ff"><label>Note</label><input type="text" id="dc-note" placeholder="e.g. June referral"></div>
       </div>
-      <div style="margin-top:9px;">
-        <button class="abtn bcom" style="padding:9px 22px;white-space:nowrap;" onclick="addCommissionEntry()">+ Add Commission</button>
+      <div style="margin-top:9px;display:flex;gap:8px;">
+        <button class="abtn bcom" id="dc-submit-btn" style="padding:9px 22px;white-space:nowrap;" onclick="addCommissionEntry()">+ Add Commission</button>
+        <button class="abtn" id="dc-cancel-btn" style="padding:9px 22px;white-space:nowrap;display:none;background:var(--bg-card2);color:var(--ts);" onclick="cancelCommissionEdit()">Cancel</button>
       </div>
     </div>
 
@@ -1278,7 +1301,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <div class="rpt-card">
     <div class="rpt-card-title">Vita Center</div>
     <div class="rpt-card-sub">Status &middot; Agency &middot; Slips breakdown</div>
-    <div class="rpt-multi3">
+    <div class="rpt-multi3 rpt-multi3-agency">
       <div>
         <div class="rpt-subpanel-title">Status</div>
         <div id="report-vita-status"></div>
@@ -2572,12 +2595,14 @@ function buildMonthSels(){
   const cur=new Date().getMonth();
   ['selMonth','fin-month','calc-month-filter','report-month-filter'].forEach(id=>{const el=g(id);if(!el)return;el.innerHTML='';MN_EN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;if(i===cur)o.selected=true;el.appendChild(o);});});
   buildMsel('d-month-filter',MN_EN,'Months');
+  mselState['d-month-filter']=new Set([MN_EN[cur]]);
+  updateMselLabel('d-month-filter');
   buildMsel('agency-month-sel',MN_EN,'Months');
   mselState['agency-month-sel']=new Set([MN_EN[cur]]);
   updateMselLabel('agency-month-sel');
   buildMsel('comm-month-filter',MN_EN,'Months');
   buildMsel('d-type-filter',['Income','Expense','Due','Free'],'Types');
-  buildMsel('comm-status-filter',['Unpaid','Provisional','Settled','Overpaid','Underpaid','Reconciled','Test-Pending'],'Statuses');
+  buildMsel('comm-status-filter',['Unpaid','Provisional','Settled','Overpaid','Underpaid','Reconciled','Test-Pending','No-Rate-Configured'],'Statuses');
   buildMsel('vita-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
   buildMsel('vitaothers-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
   buildMsel('others-status-filter',['FIT','UNFIT','HELDUP','PROCESSING'],'Status');
@@ -2792,7 +2817,7 @@ function switchDailySubPage(view,btn){
   g('daily-view-commission').style.display=view==='commission'?'flex':'none';
   if(view==='calc')renderCalcPage();
   if(view==='agencycomm')renderCommissionCalc();
-  if(view==='commission'){renderCommissionLog();populateAgencyDL();}
+  if(view==='commission'){renderCommissionLog();populateAgencyDL();initCommissionRatesUI();}
 }
 
 function addCommissionEntry(){
@@ -2825,6 +2850,51 @@ function deleteCommissionEntry(id){
     if(!all.find(r=>r.id===rec.id)){all.push(rec);save(SK9,all);renderCommissionLog();pushToSheet();toast('Restored');}
   });
 }
+let editingCommissionId=null;
+function editCommissionEntry(id){
+  const rec=loadArr(SK9).find(r=>r.id===id);if(!rec)return;
+  editingCommissionId=id;
+  g('dc-amount').value=rec.amount;
+  g('dc-agency').value=rec.agency||'';
+  if(g('dc-contact-name'))g('dc-contact-name').value=rec.contactName||'';
+  if(g('dc-mobile'))g('dc-mobile').value=rec.mobile||'';
+  if(g('dc-address'))g('dc-address').value=rec.address||'';
+  g('dc-note').value=rec.note||'';
+  const btn=g('dc-submit-btn');
+  if(btn){btn.textContent='Update Commission';btn.setAttribute('onclick','saveCommissionEdit()');}
+  const cancelBtn=g('dc-cancel-btn');if(cancelBtn)cancelBtn.style.display='inline-block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function saveCommissionEdit(){
+  if(!editingCommissionId)return;
+  const amount=parseFloat(g('dc-amount').value)||0;
+  if(amount<=0){toast('Enter a valid amount');return;}
+  const all=loadArr(SK9);
+  const idx=all.findIndex(r=>r.id===editingCommissionId);
+  if(idx<0){cancelCommissionEdit();return;}
+  all[idx]={...all[idx],
+    amount,
+    agency:(g('dc-agency').value||'').trim(),
+    contactName:(g('dc-contact-name')?g('dc-contact-name').value:'').trim(),
+    mobile:(g('dc-mobile')?g('dc-mobile').value:'').trim(),
+    address:(g('dc-address')?g('dc-address').value:'').trim(),
+    note:(g('dc-note').value||'').trim()
+  };
+  save(SK9,all);toast('Commission entry updated');
+  cancelCommissionEdit();
+  renderCommissionLog();pushToSheet();
+}
+function cancelCommissionEdit(){
+  editingCommissionId=null;
+  g('dc-amount').value='';g('dc-agency').value='';
+  if(g('dc-contact-name'))g('dc-contact-name').value='';
+  if(g('dc-mobile'))g('dc-mobile').value='';
+  if(g('dc-address'))g('dc-address').value='';
+  g('dc-note').value='';
+  const btn=g('dc-submit-btn');
+  if(btn){btn.textContent='+ Add Commission';btn.setAttribute('onclick','addCommissionEntry()');}
+  const cancelBtn=g('dc-cancel-btn');if(cancelBtn)cancelBtn.style.display='none';
+}
 function renderCommissionLog(){
   const tbody=g('commissionTbody');if(!tbody)return;
   const kw=g('dc-search')?g('dc-search').value.toLowerCase().trim():'';
@@ -2839,12 +2909,12 @@ function renderCommissionLog(){
     <td style="font-size:12px;color:var(--ts);">${escapeHtml(r.address||'-')}</td>
     <td style="font-size:12px;color:var(--ts);">${escapeHtml(r.note||'-')}</td>
     <td style="font-family:var(--mono);text-align:right;color:var(--yellow);font-weight:600;">${fmtExact(r.amount)}</td>
-    <td style="text-align:right;"><button onclick="deleteCommissionEntry('${r.id}')" class="rm-btn">&#10005;</button></td>
+    <td style="text-align:right;white-space:nowrap;"><button onclick="editCommissionEntry('${r.id}')" class="rm-btn" style="color:var(--cyan);" title="Edit">&#9998;</button> <button onclick="deleteCommissionEntry('${r.id}')" class="rm-btn" title="Delete">&#10005;</button></td>
   </tr>`).join('');
 }
 function populateAgencyDL(){
   const dl=g('agency-dl');if(!dl)return;
-  const names=[...new Set(loadArr(SK9).map(r=>r.agency).filter(Boolean))];
+  const names=[...new Set([...loadArr(SK9).map(r=>r.agency),...loadArr(SK10).map(r=>r.agency)].filter(Boolean))].sort();
   dl.innerHTML=names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
 }
 function exportCommissionCSV(){
@@ -2866,8 +2936,9 @@ let commLastNewlyLocked=new Set(); // keys locked during the most recent sync pa
 
 function loadCommissionData(){
   const d=load(SK13);
-  if(typeof d.rateVita!=='number')d.rateVita=3000;
-  if(typeof d.rateOther!=='number')d.rateOther=2000;
+  if(!d.agencyVitaRates||typeof d.agencyVitaRates!=='object')d.agencyVitaRates={}; // agency name -> Vita-slip rate (৳)
+  if(!d.otherCenterRates||typeof d.otherCenterRates!=='object')d.otherCenterRates={}; // center name -> shared rate (৳)
+  ['Veritas','Kent','KGN','Medipath','Medison'].forEach(c=>{if(typeof d.otherCenterRates[c]!=='number')d.otherCenterRates[c]=2000;});
   if(typeof d.rateUnfit!=='number')d.rateUnfit=7000;
   if(typeof d.rateTestFee!=='number')d.rateTestFee=7000;
   if(!d.ledger||typeof d.ledger!=='object')d.ledger={};
@@ -2877,19 +2948,66 @@ function loadCommissionData(){
 }
 function initCommissionRatesUI(){
   const d=loadCommissionData();
-  if(g('comm-rate-vita'))g('comm-rate-vita').value=d.rateVita;
-  if(g('comm-rate-other'))g('comm-rate-other').value=d.rateOther;
   if(g('comm-rate-unfit'))g('comm-rate-unfit').value=d.rateUnfit;
   if(g('comm-rate-testfee'))g('comm-rate-testfee').value=d.rateTestFee;
+  if(g('other-rate-veritas'))g('other-rate-veritas').value=d.otherCenterRates.Veritas;
+  if(g('other-rate-kent'))g('other-rate-kent').value=d.otherCenterRates.Kent;
+  if(g('other-rate-kgn'))g('other-rate-kgn').value=d.otherCenterRates.KGN;
+  if(g('other-rate-medipath'))g('other-rate-medipath').value=d.otherCenterRates.Medipath;
+  if(g('other-rate-medison'))g('other-rate-medison').value=d.otherCenterRates.Medison;
+  renderAgencyVitaRatesTable();
 }
 function saveCommissionRates(){
   const d=loadCommissionData();
-  d.rateVita=parseFloat(g('comm-rate-vita').value)||0;
-  d.rateOther=parseFloat(g('comm-rate-other').value)||0;
-  d.rateUnfit=parseFloat(g('comm-rate-unfit').value)||0;
-  d.rateTestFee=parseFloat(g('comm-rate-testfee').value)||0;
+  if(g('comm-rate-unfit'))d.rateUnfit=parseFloat(g('comm-rate-unfit').value)||0;
+  if(g('comm-rate-testfee'))d.rateTestFee=parseFloat(g('comm-rate-testfee').value)||0;
+  if(g('other-rate-veritas'))d.otherCenterRates.Veritas=parseFloat(g('other-rate-veritas').value)||0;
+  if(g('other-rate-kent'))d.otherCenterRates.Kent=parseFloat(g('other-rate-kent').value)||0;
+  if(g('other-rate-kgn'))d.otherCenterRates.KGN=parseFloat(g('other-rate-kgn').value)||0;
+  if(g('other-rate-medipath'))d.otherCenterRates.Medipath=parseFloat(g('other-rate-medipath').value)||0;
+  if(g('other-rate-medison'))d.otherCenterRates.Medison=parseFloat(g('other-rate-medison').value)||0;
   save(SK13,d);
   scheduleCommissionPush();
+}
+function renderAgencyVitaRatesTable(){
+  const el=g('agencyVitaRatesTable');if(!el)return;
+  const d=loadCommissionData();
+  const names=Object.keys(d.agencyVitaRates).sort((a,b)=>a.localeCompare(b));
+  if(!names.length){el.innerHTML='<div style="font-size:11.5px;color:var(--tm);padding:8px 0;">No per-agency Vita rates set yet — add one above.</div>';return;}
+  el.innerHTML=`<div class="tw"><table class="dt"><thead><tr><th>Agency</th><th style="text-align:right;">Vita Rate</th><th></th></tr></thead><tbody>
+    ${names.map(n=>{const safe=n.replace(/'/g,"\\'");return`<tr>
+      <td>${escapeHtml(n)}</td>
+      <td style="text-align:right;font-family:var(--mono);color:var(--cyan);font-weight:600;">${fmtExact(d.agencyVitaRates[n])}</td>
+      <td style="text-align:right;white-space:nowrap;"><button class="rm-btn" style="color:var(--cyan);" onclick="editAgencyVitaRate('${safe}')" title="Edit">&#9998;</button> <button class="rm-btn" onclick="deleteAgencyVitaRate('${safe}')" title="Delete">&#10005;</button></td>
+    </tr>`;}).join('')}
+  </tbody></table></div>`;
+}
+function saveAgencyVitaRate(){
+  const name=(g('agency-rate-name').value||'').trim();
+  const amount=parseFloat(g('agency-rate-amount').value)||0;
+  if(!name){toast('Enter an agency name');return;}
+  if(amount<=0){toast('Enter a valid amount');return;}
+  const d=loadCommissionData();
+  d.agencyVitaRates[name]=amount;
+  save(SK13,d);
+  scheduleCommissionPush();
+  toast('Agency rate saved');
+  g('agency-rate-name').value='';g('agency-rate-amount').value='';
+  renderAgencyVitaRatesTable();
+}
+function editAgencyVitaRate(name){
+  const d=loadCommissionData();
+  g('agency-rate-name').value=name;
+  g('agency-rate-amount').value=d.agencyVitaRates[name]||'';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function deleteAgencyVitaRate(name){
+  const d=loadCommissionData();
+  delete d.agencyVitaRates[name];
+  save(SK13,d);
+  scheduleCommissionPush();
+  toast('Agency rate removed');
+  renderAgencyVitaRatesTable();
 }
 function commRowKey(r){
   return[r._year,r._month,r.sl,r.passport,r.reg].map(v=>String(v==null?'':v).trim()).join('|');
@@ -2909,13 +3027,27 @@ function commIsTestPatient(r){
 function commIsPaidFlag(v){
   return/^paid$/i.test(String(v||'').trim());
 }
+// Case-insensitive lookup of a configured Other Center rate by Slip text
+// (e.g. Slip="veritas" matches the "Veritas" rate). Returns null if the
+// Slip doesn't match any configured center — caller must handle that.
+function commOtherCenterRateFor(slip,data){
+  const norm=(slip||'').trim().toLowerCase();
+  const key=Object.keys(data.otherCenterRates).find(k=>k.toLowerCase()===norm);
+  return key?data.otherCenterRates[key]:null;
+}
 // Determine which rate applies to a row right now.
-// - UNFIT status always wins over Slip (Slip is irrelevant for an unfit patient).
-// - Otherwise Slip decides: "Vita" → Vita rate, anything else → Other Center rate.
-// - If Slip is still blank: regular patients get the Vita rate as an unresolved
-//   advance (lockable); TEST patients get NOTHING and are not lockable at all
-//   until a Slip appears — they already paid a discounted test fee up front,
-//   so no advance commission is owed.
+// - UNFIT status always wins over Slip (Slip is irrelevant for an unfit patient);
+//   uses the fixed UNFIT rate.
+// - Otherwise Slip decides: "Vita" → that agency's own configured Vita rate;
+//   any other named center → that center's shared rate (Veritas/Kent/KGN/
+//   Medipath/Medison, set once for all agencies).
+// - If Slip is still blank: regular patients get the agency's own Vita rate as
+//   an unresolved advance (lockable, if that agency has a rate configured);
+//   TEST patients get NOTHING and are not lockable at all until a Slip
+//   appears — they already paid a discounted test fee up front.
+// - If the applicable rate (agency Vita rate, or the matching Other Center
+//   rate) hasn't been configured yet, the row is held back (not lockable)
+//   with reason 'no-rate-configured' so nothing gets locked at a wrong ৳0.
 // - Once a TEST patient's Slip appears, the Test Recovery Fee is deducted from
 //   whatever the normal rate would have been (can go negative — the agency
 //   then owes that amount back, since the test-fee shortfall is being recovered).
@@ -2925,13 +3057,25 @@ function commRateFor(r,data){
     const amount=data.rateUnfit-(isTest?data.rateTestFee:0);
     return{amount,resolved:true,lockable:true,reason:isTest?'unfit-test':'unfit'};
   }
+  const agency=(r.agency||'Unknown').trim()||'Unknown';
+  const agencyVitaRate=data.agencyVitaRates[agency];
+  const hasAgencyRate=typeof agencyVitaRate==='number';
   const slip=(r.slips||'').trim();
   if(!slip){
     if(isTest)return{amount:0,resolved:false,lockable:false,reason:'test-pending'};
-    return{amount:data.rateVita,resolved:false,lockable:true,reason:'provisional'};
+    if(!hasAgencyRate)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
+    return{amount:agencyVitaRate,resolved:false,lockable:true,reason:'provisional'};
   }
   const isVita=commIsVitaSlip(slip);
-  const base=isVita?data.rateVita:data.rateOther;
+  let base;
+  if(isVita){
+    if(!hasAgencyRate)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
+    base=agencyVitaRate;
+  }else{
+    const otherRate=commOtherCenterRateFor(slip,data);
+    if(otherRate==null)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
+    base=otherRate;
+  }
   const amount=isTest?(base-data.rateTestFee):base;
   return{amount,resolved:true,lockable:true,reason:isTest?(isVita?'vita-test':'other-test'):(isVita?'vita':'other')};
 }
@@ -3015,7 +3159,7 @@ function getCommissionRows(){
     const agencyName=(r.agency||'Unknown').trim()||'Unknown';
     let status,delta=0;
     if(!locked){
-      status=(!rate.lockable&&commIsPaidFlag(r.remarks))?'test-pending':'unpaid';
+      status=(!rate.lockable&&commIsPaidFlag(r.remarks))?rate.reason:'unpaid';
     }else if(!rate.resolved){
       status='provisional';
     }else{
@@ -3060,7 +3204,8 @@ const COMM_STATUS_META={
   overpaid:{label:'Overpaid',cls:'comm-badge-pink'},
   underpaid:{label:'Underpaid',cls:'comm-badge-orange'},
   reconciled:{label:'Reconciled',cls:'comm-badge-green'},
-  'test-pending':{label:'Test — Awaiting Slip',cls:'comm-badge-gray'}
+  'test-pending':{label:'Test — Awaiting Slip',cls:'comm-badge-gray'},
+  'no-rate-configured':{label:'No Rate Set',cls:'comm-badge-orange'}
 };
 let commRowLookup={}; // key -> row-item, refreshed on every render, used by the PDF generator
 let commSlugToName={}; // slug -> agency display name, refreshed on every render
@@ -3242,7 +3387,7 @@ function commPdfCopyBlock(agencyName,batchItems,gross,adjustment,net){
     <div class="pdf-calc">
       <div class="pdf-section-title" style="margin-bottom:6px;">Commission</div>
       ${breakdownRows}
-      <div class="pdf-calc-row" style="border-top:1px solid #ccc;margin-top:4px;padding-top:5px;"><span>Gross Commission (${batchItems.length} patient${batchItems.length===1?'':'s'})</span><b>${fmtSigned(gross)}</b></div>
+      <div class="pdf-calc-row" style="border-top:1px solid #ccc;margin-top:4px;padding-top:5px;"><span>Gross Commission</span><b>${fmtSigned(gross)}</b></div>
       <div class="pdf-calc-row"><span>Balance Adjustment${adjustment<0?' (previously overpaid)':adjustment>0?' (previously underpaid)':''}</span><b style="color:${adjustment>=0?'#0a8f4a':'#c0246b'};">${adjustment>=0?'+':'-'}${fmtExact(Math.abs(adjustment))}</b></div>
       <div class="pdf-calc-row pdf-net"><span>Net Payable</span><b>${fmtSigned(net)}</b></div>
     </div>
@@ -3290,7 +3435,7 @@ function generateCommissionAgencyPDF(slug){
   .pdf-calc-row.pdf-net{border-top:1px solid #ccc;margin-top:4px;padding-top:6px;font-size:13px;font-weight:800;color:#1a1a2e;}
   .pdf-sign{display:flex;justify-content:space-between;gap:24px;margin-top:auto;padding-top:8px;}
   .pdf-sign-box{flex:1;text-align:center;}
-  .pdf-sign-line{border-top:1px solid #333;margin-bottom:5px;height:12mm;}
+  .pdf-sign-line{border-bottom:1px dashed #333;margin-bottom:5px;height:12mm;}
   .pdf-sign-box span{font-size:9px;color:#555;}
   .pdf-cutline{border-top:1px dashed #aaa;margin:2mm 0;}
   @media print{body{padding:0;}.pdf-copy{page-break-inside:avoid;}}
@@ -4685,16 +4830,23 @@ async function syncPull(){
         const gi=k=>hdr.indexOf(k);
         const iType=gi('type'),iKey=gi('key'),iAgency=gi('agency'),iDisb=gi('disbursedamount'),
               iLocked=gi('lockedat'),iSlip=gi('slipatlock'),iStatus=gi('statusatlock'),
-              iRV=gi('ratevita'),iRO=gi('rateother'),iRU=gi('rateunfit'),iRT=gi('ratetestfee');
-        const sheetData={rateVita:3000,rateOther:2000,rateUnfit:7000,rateTestFee:7000,ledger:{},batches:{},reconciled:{}};
+              iRU=gi('rateunfit'),iRT=gi('ratetestfee'),
+              iOV=gi('otherveritas'),iOK=gi('otherkent'),iOKgn=gi('otherkgn'),iOM=gi('othermedipath'),iOMs=gi('othermedison');
+        const sheetData={agencyVitaRates:{},otherCenterRates:{Veritas:2000,Kent:2000,KGN:2000,Medipath:2000,Medison:2000},rateUnfit:7000,rateTestFee:7000,ledger:{},batches:{},reconciled:{}};
         for(let i=1;i<commRaw.length;i++){
           const r=commRaw[i];if(!r)continue;
           const type=String(r[iType]||'').trim();
           if(type==='settings'){
-            if(iRV>=0&&r[iRV]!=='')sheetData.rateVita=+r[iRV]||sheetData.rateVita;
-            if(iRO>=0&&r[iRO]!=='')sheetData.rateOther=+r[iRO]||sheetData.rateOther;
             if(iRU>=0&&r[iRU]!=='')sheetData.rateUnfit=+r[iRU]||sheetData.rateUnfit;
             if(iRT>=0&&r[iRT]!=='')sheetData.rateTestFee=+r[iRT]||sheetData.rateTestFee;
+            if(iOV>=0&&r[iOV]!=='')sheetData.otherCenterRates.Veritas=+r[iOV]||sheetData.otherCenterRates.Veritas;
+            if(iOK>=0&&r[iOK]!=='')sheetData.otherCenterRates.Kent=+r[iOK]||sheetData.otherCenterRates.Kent;
+            if(iOKgn>=0&&r[iOKgn]!=='')sheetData.otherCenterRates.KGN=+r[iOKgn]||sheetData.otherCenterRates.KGN;
+            if(iOM>=0&&r[iOM]!=='')sheetData.otherCenterRates.Medipath=+r[iOM]||sheetData.otherCenterRates.Medipath;
+            if(iOMs>=0&&r[iOMs]!=='')sheetData.otherCenterRates.Medison=+r[iOMs]||sheetData.otherCenterRates.Medison;
+          }else if(type==='agency_rate'){
+            const agency=String(r[iAgency]||'');if(!agency)continue;
+            sheetData.agencyVitaRates[agency]=+r[iDisb]||0;
           }else if(type==='ledger'){
             const key=String(r[iKey]||'');if(!key)continue;
             sheetData.ledger[key]={disbursedAmount:+r[iDisb]||0,lockedAt:String(r[iLocked]||''),slipAtLock:String(r[iSlip]||''),statusAtLock:String(r[iStatus]||'')};
@@ -4709,10 +4861,11 @@ async function syncPull(){
           }
         }
         // Sheet is source of truth across devices; only keep local-only additions
-        // (ledger locks/batches/reconciliations made here but not yet confirmed pushed).
+        // (ledger locks/batches/reconciliations/rates made here but not yet confirmed pushed).
         if(pushInFlight.commission){
           const local=loadCommissionData();
           Object.entries(local.ledger).forEach(([k,v])=>{if(!sheetData.ledger[k])sheetData.ledger[k]=v;});
+          Object.entries(local.agencyVitaRates).forEach(([ag,rate])=>{if(!(ag in sheetData.agencyVitaRates))sheetData.agencyVitaRates[ag]=rate;});
           Object.entries(local.batches).forEach(([ag,keys])=>{
             const merged=new Set([...(sheetData.batches[ag]||[]),...keys]);
             sheetData.batches[ag]=[...merged];
@@ -4929,17 +5082,20 @@ async function pushCalcToSheet(){
 // sheet in the same Finance spreadsheet. Read back in syncPull() below.
 function serializeCommissionForPush(){
   const d=loadCommissionData();
-  const header=['type','key','agency','disbursedAmount','lockedAt','slipAtLock','statusAtLock','rateVita','rateOther','rateUnfit','rateTestFee'];
+  const header=['type','key','agency','disbursedAmount','lockedAt','slipAtLock','statusAtLock','rateUnfit','rateTestFee','otherVeritas','otherKent','otherKGN','otherMedipath','otherMedison'];
   const rows=[header];
-  rows.push(['settings','','','','','','',d.rateVita,d.rateOther,d.rateUnfit,d.rateTestFee]);
+  rows.push(['settings','','','','','','',d.rateUnfit,d.rateTestFee,d.otherCenterRates.Veritas,d.otherCenterRates.Kent,d.otherCenterRates.KGN,d.otherCenterRates.Medipath,d.otherCenterRates.Medison]);
+  Object.entries(d.agencyVitaRates).forEach(([agency,rate])=>{
+    rows.push(['agency_rate','',agency,rate,'','','','','','','','','','']);
+  });
   Object.entries(d.ledger).forEach(([key,entry])=>{
-    rows.push(['ledger',key,'',entry.disbursedAmount,entry.lockedAt||'',entry.slipAtLock||'',entry.statusAtLock||'','','','','']);
+    rows.push(['ledger',key,'',entry.disbursedAmount,entry.lockedAt||'',entry.slipAtLock||'',entry.statusAtLock||'','','','','','','','']);
   });
   Object.entries(d.batches).forEach(([agency,keys])=>{
-    (keys||[]).forEach(key=>rows.push(['batch',key,agency,'','','','','','','','']));
+    (keys||[]).forEach(key=>rows.push(['batch',key,agency,'','','','','','','','','','','']));
   });
   Object.entries(d.reconciled).forEach(([agency,keys])=>{
-    (keys||[]).forEach(key=>rows.push(['reconciled',key,agency,'','','','','','','','']));
+    (keys||[]).forEach(key=>rows.push(['reconciled',key,agency,'','','','','','','','','','','']));
   });
   return rows;
 }
@@ -6420,7 +6576,7 @@ function rptDonutRadialCard(el,counts,emptyMsg,centerLabel){
   }).join('');
   const more=rest.length?`<div class="rpt-empty" style="padding:2px 0 0;">+${rest.length} more</div>`:'';
   el.innerHTML=`<div style="display:flex;justify-content:center;">
-    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;">
       <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
       ${arcEls}
       <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${total}</text>
