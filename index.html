@@ -939,7 +939,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- ── SUB-PAGE: Commission Calculation ── -->
   <div id="daily-view-agencycomm" style="display:none;flex-direction:column;gap:14px;">
     <div class="card" style="border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.04);">
-      <div style="font-size:12px;color:var(--tp);">Commission rates (per-agency Vita rate, Other Center rates, UNFIT rate, Test Recovery Fee) are managed on the <b>Agency Management</b> page. Set the <b>Remarks</b> column dropdown to Paid/Unpaid in the Vita Center sheet — everything below calculates automatically from there.</div>
+      <div style="font-size:12px;color:var(--tp);">Each agency's Vita-slip rate comes from its <b>Amount</b> in the Agency Commission Log (Agency Management page) — add or update it there if you see "No Rate Set" below. Other Center rates, UNFIT rate, and Test Recovery Fee are also managed on the <b>Agency Management</b> page. Set the <b>Remarks</b> column dropdown to Paid/Unpaid in the Vita Center sheet — everything below calculates automatically from there.</div>
     </div>
 
     <div class="card">
@@ -1022,17 +1022,9 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <div id="daily-view-commission" style="display:none;flex-direction:column;gap:14px;">
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Commission Rates <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Used by the Commission page — reference only, not counted in income/expense</span></div>
-      <div style="font-size:11px;color:var(--tm);margin-bottom:12px;">Vita slip rate is <b>per agency</b> (set below). Slip from another center uses that center's shared rate. UNFIT status and Test patients (Reg No contains "TEST") use their own fixed rules.</div>
+      <div style="font-size:11px;color:var(--tm);margin-bottom:12px;">Vita slip rate is <b>per agency</b>, taken directly from that agency's <b>Amount</b> in the Agency Commission Log below (most recent entry). Slip from another center uses that center's shared rate here instead. UNFIT status and Test patients (Reg No contains "TEST") use their own fixed rules.</div>
 
-      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin-bottom:8px;">Vita Slip Rate — per Agency</div>
-      <div class="agency-form-grid" style="max-width:520px;align-items:end;">
-        <div class="ff"><label>Agency Name</label><input type="text" id="agency-rate-name" placeholder="e.g. BSL" list="agency-dl"></div>
-        <div class="ff"><label>Vita Rate (৳)</label><input type="number" id="agency-rate-amount" min="0" placeholder="3000"></div>
-        <button class="abtn bcom" style="padding:9px 18px;white-space:nowrap;" onclick="saveAgencyVitaRate()">Save Rate</button>
-      </div>
-      <div id="agencyVitaRatesTable" style="margin-top:10px;"></div>
-
-      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border);">Other Center Slip Rates — shared by all agencies</div>
+      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin-bottom:8px;">Other Center Slip Rates — shared by all agencies</div>
       <div class="oc-group-grid" style="max-width:780px;">
         <div class="ff"><label>Veritas (৳)</label><input type="number" id="other-rate-veritas" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
         <div class="ff"><label>Kent (৳)</label><input type="number" id="other-rate-kent" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
@@ -2839,7 +2831,7 @@ function addCommissionEntry(){
   if(g('dc-mobile'))g('dc-mobile').value='';
   if(g('dc-address'))g('dc-address').value='';
   g('dc-note').value='';
-  renderCommissionLog();pushToSheet();
+  renderCommissionLog();pushToSheet();if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
 }
 function deleteCommissionEntry(id){
   const rec=loadArr(SK9).find(r=>r.id===id);
@@ -2882,7 +2874,7 @@ function saveCommissionEdit(){
   };
   save(SK9,all);toast('Commission entry updated');
   cancelCommissionEdit();
-  renderCommissionLog();pushToSheet();
+  renderCommissionLog();pushToSheet();if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
 }
 function cancelCommissionEdit(){
   editingCommissionId=null;
@@ -2936,7 +2928,6 @@ let commLastNewlyLocked=new Set(); // keys locked during the most recent sync pa
 
 function loadCommissionData(){
   const d=load(SK13);
-  if(!d.agencyVitaRates||typeof d.agencyVitaRates!=='object')d.agencyVitaRates={}; // agency name -> Vita-slip rate (৳)
   if(!d.otherCenterRates||typeof d.otherCenterRates!=='object')d.otherCenterRates={}; // center name -> shared rate (৳)
   ['Veritas','Kent','KGN','Medipath','Medison'].forEach(c=>{if(typeof d.otherCenterRates[c]!=='number')d.otherCenterRates[c]=2000;});
   if(typeof d.rateUnfit!=='number')d.rateUnfit=7000;
@@ -2955,7 +2946,6 @@ function initCommissionRatesUI(){
   if(g('other-rate-kgn'))g('other-rate-kgn').value=d.otherCenterRates.KGN;
   if(g('other-rate-medipath'))g('other-rate-medipath').value=d.otherCenterRates.Medipath;
   if(g('other-rate-medison'))g('other-rate-medison').value=d.otherCenterRates.Medison;
-  renderAgencyVitaRatesTable();
 }
 function saveCommissionRates(){
   const d=loadCommissionData();
@@ -2968,46 +2958,6 @@ function saveCommissionRates(){
   if(g('other-rate-medison'))d.otherCenterRates.Medison=parseFloat(g('other-rate-medison').value)||0;
   save(SK13,d);
   scheduleCommissionPush();
-}
-function renderAgencyVitaRatesTable(){
-  const el=g('agencyVitaRatesTable');if(!el)return;
-  const d=loadCommissionData();
-  const names=Object.keys(d.agencyVitaRates).sort((a,b)=>a.localeCompare(b));
-  if(!names.length){el.innerHTML='<div style="font-size:11.5px;color:var(--tm);padding:8px 0;">No per-agency Vita rates set yet — add one above.</div>';return;}
-  el.innerHTML=`<div class="tw"><table class="dt"><thead><tr><th>Agency</th><th style="text-align:right;">Vita Rate</th><th></th></tr></thead><tbody>
-    ${names.map(n=>{const safe=n.replace(/'/g,"\\'");return`<tr>
-      <td>${escapeHtml(n)}</td>
-      <td style="text-align:right;font-family:var(--mono);color:var(--cyan);font-weight:600;">${fmtExact(d.agencyVitaRates[n])}</td>
-      <td style="text-align:right;white-space:nowrap;"><button class="rm-btn" style="color:var(--cyan);" onclick="editAgencyVitaRate('${safe}')" title="Edit">&#9998;</button> <button class="rm-btn" onclick="deleteAgencyVitaRate('${safe}')" title="Delete">&#10005;</button></td>
-    </tr>`;}).join('')}
-  </tbody></table></div>`;
-}
-function saveAgencyVitaRate(){
-  const name=(g('agency-rate-name').value||'').trim();
-  const amount=parseFloat(g('agency-rate-amount').value)||0;
-  if(!name){toast('Enter an agency name');return;}
-  if(amount<=0){toast('Enter a valid amount');return;}
-  const d=loadCommissionData();
-  d.agencyVitaRates[name]=amount;
-  save(SK13,d);
-  scheduleCommissionPush();
-  toast('Agency rate saved');
-  g('agency-rate-name').value='';g('agency-rate-amount').value='';
-  renderAgencyVitaRatesTable();
-}
-function editAgencyVitaRate(name){
-  const d=loadCommissionData();
-  g('agency-rate-name').value=name;
-  g('agency-rate-amount').value=d.agencyVitaRates[name]||'';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function deleteAgencyVitaRate(name){
-  const d=loadCommissionData();
-  delete d.agencyVitaRates[name];
-  save(SK13,d);
-  scheduleCommissionPush();
-  toast('Agency rate removed');
-  renderAgencyVitaRatesTable();
 }
 function commRowKey(r){
   return[r._year,r._month,r.sl,r.passport,r.reg].map(v=>String(v==null?'':v).trim()).join('|');
@@ -3051,6 +3001,31 @@ function commOtherCenterRateFor(slip,data){
 // - Once a TEST patient's Slip appears, the Test Recovery Fee is deducted from
 //   whatever the normal rate would have been (can go negative — the agency
 //   then owes that amount back, since the test-fee shortfall is being recovered).
+// The Vita-slip rate for an agency comes straight from the Agency Commission
+// Log (SK9) — whatever Amount was most recently saved there for that agency.
+// Returns null if that agency has no log entry yet (nothing to base a rate on).
+// Looks up the Vita-slip rate that was IN EFFECT for this agency as of a
+// given date (the patient's own visit date), not "whatever the latest log
+// entry says right now". The Agency Commission Log's dated entries form a
+// rate history per agency — this finds the most recent entry on or before
+// asOfDate. If the patient visited before any log entry exists at all, the
+// earliest known entry is used as a reasonable fallback rather than blocking.
+function commAgencyVitaRateFromLog(agency,asOfDate){
+  const norm=(agency||'').trim().toLowerCase();
+  if(!norm)return null;
+  const entries=loadArr(SK9).filter(r=>(r.agency||'').trim().toLowerCase()===norm);
+  if(!entries.length)return null;
+  entries.sort((a,b)=>(a.date||'').localeCompare(b.date||'')||String(a.id).localeCompare(String(b.id)));
+  let chosen=null;
+  if(asOfDate){
+    for(const e of entries){if((e.date||'')<=asOfDate)chosen=e;else break;}
+    if(!chosen)chosen=entries[0]; // patient visited before any log entry — use the earliest known rate
+  }else{
+    chosen=entries[entries.length-1];
+  }
+  const amt=chosen.amount;
+  return typeof amt==='number'?amt:(parseFloat(amt)||null);
+}
 function commRateFor(r,data){
   const isTest=commIsTestPatient(r);
   if(commIsUnfit(r.status)){
@@ -3058,7 +3033,7 @@ function commRateFor(r,data){
     return{amount,resolved:true,lockable:true,reason:isTest?'unfit-test':'unfit'};
   }
   const agency=(r.agency||'Unknown').trim()||'Unknown';
-  const agencyVitaRate=data.agencyVitaRates[agency];
+  const agencyVitaRate=commAgencyVitaRateFromLog(agency,r.date);
   const hasAgencyRate=typeof agencyVitaRate==='number';
   const slip=(r.slips||'').trim();
   if(!slip){
@@ -3090,19 +3065,42 @@ function commRateFor(r,data){
 function commSyncLedger(allRows){
   const d=loadCommissionData();
   const newlyLocked=new Set();
+  let changed=false;
   allRows.forEach(r=>{
     const key=commRowKey(r);
     if(commIsPaidFlag(r.remarks)&&!d.ledger[key]){
       const rate=commRateFor(r,d);
       if(!rate.lockable)return; // TEST patient, no Slip yet — hold off
-      d.ledger[key]={disbursedAmount:rate.amount,lockedAt:new Date().toISOString(),slipAtLock:(r.slips||'').trim(),statusAtLock:(r.status||'').trim()};
+      // resolvedAmount freezes the "correct" commission the moment it's first
+      // knowable (immediately if the Slip is already known, or later once a
+      // provisional advance resolves — see below). Once frozen it never moves
+      // again, so a rate correction made afterward only affects NEW rows going
+      // forward, never rewrites this row's already-settled delta.
+      d.ledger[key]={disbursedAmount:rate.amount,lockedAt:new Date().toISOString(),slipAtLock:(r.slips||'').trim(),statusAtLock:(r.status||'').trim(),resolvedAmount:rate.resolved?rate.amount:null};
       newlyLocked.add(key);
+      changed=true;
       const agency=(r.agency||'Unknown').trim()||'Unknown';
       if(!d.batches[agency])d.batches[agency]=[];
       if(!d.batches[agency].includes(key))d.batches[agency].push(key);
     }
   });
-  if(newlyLocked.size){save(SK13,d);scheduleCommissionPush();}
+  // Freeze resolvedAmount for already-locked provisional rows the FIRST time
+  // they become resolvable (Slip/Status finally known) — using whichever rate
+  // is in effect at that exact moment. Never touched again after that.
+  allRows.forEach(r=>{
+    const key=commRowKey(r);
+    const entry=d.ledger[key];
+    if(!entry||entry.resolvedAmount!=null)return;
+    if(entry.slipAtLock){
+      // Entry from before this field existed, but the Slip was already known
+      // at lock time — backfill from its own disbursedAmount (already-settled
+      // history), never from today's live rate.
+      entry.resolvedAmount=entry.disbursedAmount;changed=true;return;
+    }
+    const rate=commRateFor(r,d);
+    if(rate.resolved){entry.resolvedAmount=rate.amount;changed=true;}
+  });
+  if(changed){save(SK13,d);scheduleCommissionPush();}
   return newlyLocked;
 }
 function commUnlockRow(key){
@@ -3152,15 +3150,22 @@ function getCommissionRows(){
     const hasSlip=!!slip;
     const isVita=commIsVitaSlip(slip);
     const rate=commRateFor(r,data);
-    const actualAmount=rate.resolved?rate.amount:null;
     const entry=data.ledger[key];
     const locked=!!entry;
+    // For an already-locked row, the "actual" amount is whatever got frozen
+    // into entry.resolvedAmount the moment it first became resolvable — NOT
+    // a live recompute from today's rates. This is what makes a later rate
+    // correction apply only to new rows, never rewrite an old settled one.
+    // (Entries locked before this field existed: if a Slip was already known
+    // at lock time, treat disbursedAmount itself as already-settled; if it
+    // was a provisional advance, leave it null so the next sync freezes it.)
+    const actualAmount=locked?(entry.resolvedAmount!=null?entry.resolvedAmount:(entry.slipAtLock?entry.disbursedAmount:null)):(rate.resolved?rate.amount:null);
     const isNew=commLastNewlyLocked.has(key);
     const agencyName=(r.agency||'Unknown').trim()||'Unknown';
     let status,delta=0;
     if(!locked){
       status=(!rate.lockable&&commIsPaidFlag(r.remarks))?rate.reason:'unpaid';
-    }else if(!rate.resolved){
+    }else if(actualAmount==null){
       status='provisional';
     }else{
       delta=entry.disbursedAmount-actualAmount;
@@ -3352,19 +3357,22 @@ function commPdfCopyBlock(agencyName,batchItems,gross,adjustment,net){
   // actual Slip text (Vita / Veritas / Kent / ...), or "No Slip Yet" for the advance rate.
   // Test-patient rows (Test Recovery Fee already deducted) get their own labeled bucket
   // so the negative/reduced rate isn't confused with a regular patient's rate.
-  const groups={}; // label -> {rate, count}
+  const groups={}; // label -> {total, count, uniformRate|null}
   batchItems.forEach(x=>{
-    let label,rate;
-    if(x.rateReason==='unfit'){label='UNFIT';rate=x.advanceAmount;}
-    else if(x.rateReason==='unfit-test'){label='UNFIT (Test, net of recovery fee)';rate=x.advanceAmount;}
-    else if(x.rateReason==='vita-test'){label='Vita (Test, net of recovery fee)';rate=x.advanceAmount;}
-    else if(x.rateReason==='other-test'){label=x.slip+' (Test, net of recovery fee)';rate=x.advanceAmount;}
-    else if(x.hasSlip){label=x.slip;rate=x.advanceAmount;}
-    else{label='No Slip Yet (Advance)';rate=x.advanceAmount;}
-    if(!groups[label])groups[label]={rate,count:0};
+    let label;
+    const amt=x.entry.disbursedAmount;
+    if(x.rateReason==='unfit')label='UNFIT';
+    else if(x.rateReason==='unfit-test')label='UNFIT (Test, net of recovery fee)';
+    else if(x.rateReason==='vita-test')label='Vita (Test, net of recovery fee)';
+    else if(x.rateReason==='other-test')label=x.slip+' (Test, net of recovery fee)';
+    else if(x.hasSlip)label=x.slip;
+    else label='No Slip Yet (Advance)';
+    if(!groups[label])groups[label]={total:0,count:0,uniformRate:amt};
+    if(groups[label].uniformRate!==amt)groups[label].uniformRate=null; // rate changed mid-batch — show total only
+    groups[label].total+=amt;
     groups[label].count++;
   });
-  const breakdownRows=Object.entries(groups).map(([label,{rate,count}])=>`<div class="pdf-calc-row"><span>${escapeHtml(label)} &nbsp;${count} &times; ${fmtSigned(rate)}</span><b>${fmtSigned(rate*count)}</b></div>`).join('');
+  const breakdownRows=Object.entries(groups).map(([label,{total,count,uniformRate}])=>`<div class="pdf-calc-row"><span>${escapeHtml(label)} &nbsp;${count}${uniformRate!=null?` &times; ${fmtSigned(uniformRate)}`:' patients'}</span><b>${fmtSigned(total)}</b></div>`).join('');
   return`<div class="pdf-copy">
     <div class="pdf-header">
       <div class="pdf-logo">VITA-<span>HEALTH</span> MEDICAL CENTER</div>
@@ -4828,11 +4836,11 @@ async function syncPull(){
       if(commRaw&&commRaw.length>1){
         const hdr=commRaw[0].map(h=>String(h||'').toLowerCase().trim());
         const gi=k=>hdr.indexOf(k);
-        const iType=gi('type'),iKey=gi('key'),iAgency=gi('agency'),iDisb=gi('disbursedamount'),
+        const iType=gi('type'),iKey=gi('key'),iAgency=gi('agency'),iDisb=gi('disbursedamount'),iResolved=gi('resolvedamount'),
               iLocked=gi('lockedat'),iSlip=gi('slipatlock'),iStatus=gi('statusatlock'),
               iRU=gi('rateunfit'),iRT=gi('ratetestfee'),
               iOV=gi('otherveritas'),iOK=gi('otherkent'),iOKgn=gi('otherkgn'),iOM=gi('othermedipath'),iOMs=gi('othermedison');
-        const sheetData={agencyVitaRates:{},otherCenterRates:{Veritas:2000,Kent:2000,KGN:2000,Medipath:2000,Medison:2000},rateUnfit:7000,rateTestFee:7000,ledger:{},batches:{},reconciled:{}};
+        const sheetData={otherCenterRates:{Veritas:2000,Kent:2000,KGN:2000,Medipath:2000,Medison:2000},rateUnfit:7000,rateTestFee:7000,ledger:{},batches:{},reconciled:{}};
         for(let i=1;i<commRaw.length;i++){
           const r=commRaw[i];if(!r)continue;
           const type=String(r[iType]||'').trim();
@@ -4844,12 +4852,10 @@ async function syncPull(){
             if(iOKgn>=0&&r[iOKgn]!=='')sheetData.otherCenterRates.KGN=+r[iOKgn]||sheetData.otherCenterRates.KGN;
             if(iOM>=0&&r[iOM]!=='')sheetData.otherCenterRates.Medipath=+r[iOM]||sheetData.otherCenterRates.Medipath;
             if(iOMs>=0&&r[iOMs]!=='')sheetData.otherCenterRates.Medison=+r[iOMs]||sheetData.otherCenterRates.Medison;
-          }else if(type==='agency_rate'){
-            const agency=String(r[iAgency]||'');if(!agency)continue;
-            sheetData.agencyVitaRates[agency]=+r[iDisb]||0;
           }else if(type==='ledger'){
             const key=String(r[iKey]||'');if(!key)continue;
-            sheetData.ledger[key]={disbursedAmount:+r[iDisb]||0,lockedAt:String(r[iLocked]||''),slipAtLock:String(r[iSlip]||''),statusAtLock:String(r[iStatus]||'')};
+            const resolvedRaw=iResolved>=0?r[iResolved]:'';
+            sheetData.ledger[key]={disbursedAmount:+r[iDisb]||0,resolvedAmount:(resolvedRaw!==''&&resolvedRaw!=null)?+resolvedRaw:null,lockedAt:String(r[iLocked]||''),slipAtLock:String(r[iSlip]||''),statusAtLock:String(r[iStatus]||'')};
           }else if(type==='batch'){
             const key=String(r[iKey]||''),agency=String(r[iAgency]||'');if(!key||!agency)continue;
             if(!sheetData.batches[agency])sheetData.batches[agency]=[];
@@ -4861,11 +4867,10 @@ async function syncPull(){
           }
         }
         // Sheet is source of truth across devices; only keep local-only additions
-        // (ledger locks/batches/reconciliations/rates made here but not yet confirmed pushed).
+        // (ledger locks/batches/reconciliations made here but not yet confirmed pushed).
         if(pushInFlight.commission){
           const local=loadCommissionData();
           Object.entries(local.ledger).forEach(([k,v])=>{if(!sheetData.ledger[k])sheetData.ledger[k]=v;});
-          Object.entries(local.agencyVitaRates).forEach(([ag,rate])=>{if(!(ag in sheetData.agencyVitaRates))sheetData.agencyVitaRates[ag]=rate;});
           Object.entries(local.batches).forEach(([ag,keys])=>{
             const merged=new Set([...(sheetData.batches[ag]||[]),...keys]);
             sheetData.batches[ag]=[...merged];
@@ -5082,14 +5087,11 @@ async function pushCalcToSheet(){
 // sheet in the same Finance spreadsheet. Read back in syncPull() below.
 function serializeCommissionForPush(){
   const d=loadCommissionData();
-  const header=['type','key','agency','disbursedAmount','lockedAt','slipAtLock','statusAtLock','rateUnfit','rateTestFee','otherVeritas','otherKent','otherKGN','otherMedipath','otherMedison'];
+  const header=['type','key','agency','disbursedAmount','resolvedAmount','lockedAt','slipAtLock','statusAtLock','rateUnfit','rateTestFee','otherVeritas','otherKent','otherKGN','otherMedipath','otherMedison'];
   const rows=[header];
-  rows.push(['settings','','','','','','',d.rateUnfit,d.rateTestFee,d.otherCenterRates.Veritas,d.otherCenterRates.Kent,d.otherCenterRates.KGN,d.otherCenterRates.Medipath,d.otherCenterRates.Medison]);
-  Object.entries(d.agencyVitaRates).forEach(([agency,rate])=>{
-    rows.push(['agency_rate','',agency,rate,'','','','','','','','','','']);
-  });
+  rows.push(['settings','','','','','','','',d.rateUnfit,d.rateTestFee,d.otherCenterRates.Veritas,d.otherCenterRates.Kent,d.otherCenterRates.KGN,d.otherCenterRates.Medipath,d.otherCenterRates.Medison]);
   Object.entries(d.ledger).forEach(([key,entry])=>{
-    rows.push(['ledger',key,'',entry.disbursedAmount,entry.lockedAt||'',entry.slipAtLock||'',entry.statusAtLock||'','','','','','','','']);
+    rows.push(['ledger',key,'',entry.disbursedAmount,entry.resolvedAmount!=null?entry.resolvedAmount:'',entry.lockedAt||'',entry.slipAtLock||'',entry.statusAtLock||'','','','','','','']);
   });
   Object.entries(d.batches).forEach(([agency,keys])=>{
     (keys||[]).forEach(key=>rows.push(['batch',key,agency,'','','','','','','','','','','']));
