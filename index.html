@@ -1022,21 +1022,35 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <div id="daily-view-commission" style="display:none;flex-direction:column;gap:14px;">
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Commission Rates <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Used by the Commission page — reference only, not counted in income/expense</span></div>
-      <div style="font-size:11px;color:var(--tm);margin-bottom:12px;">Vita slip rate is <b>per agency</b>, taken directly from that agency's <b>Amount</b> in the Agency Commission Log below (most recent entry). Slip from another center uses that center's shared rate here instead. UNFIT status and Test patients (Reg No contains "TEST") use their own fixed rules.</div>
-
-      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin-bottom:8px;">Other Center Slip Rates — shared by all agencies</div>
-      <div class="oc-group-grid" style="max-width:780px;">
-        <div class="ff"><label>Veritas (৳)</label><input type="number" id="other-rate-veritas" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
-        <div class="ff"><label>Kent (৳)</label><input type="number" id="other-rate-kent" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
-        <div class="ff"><label>KGN (৳)</label><input type="number" id="other-rate-kgn" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
-        <div class="ff"><label>Medipath (৳)</label><input type="number" id="other-rate-medipath" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
-        <div class="ff"><label>Medison (৳)</label><input type="number" id="other-rate-medison" min="0" style="font-size:15px;" oninput="saveCommissionRates();"></div>
-      </div>
+      <div style="font-size:11px;color:var(--tm);">Both the Vita rate (per agency, below) and the Other Center rates (per center, further down) work the same way: whatever amount was in effect <b>on the patient's own visit date</b> is what gets used — updating an amount only changes what applies from that date forward, past entries are never rewritten. UNFIT status and Test patients (Reg No contains "TEST") use their own fixed rules.</div>
 
       <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border);">Fixed Rates</div>
       <div class="oc-group-grid" style="max-width:520px;">
         <div class="ff"><label>UNFIT Patient Rate (৳)</label><input type="number" id="comm-rate-unfit" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();"></div>
         <div class="ff"><label>Test Patient Recovery Fee (৳)</label><input type="number" id="comm-rate-testfee" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Add Center Commission <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Shared rate per center — applies to every agency's Slip from that center</span></div>
+      <div class="agency-form-grid">
+        <div class="ff"><label>Date</label><input type="date" id="cr-date" style="font-size:15px;"></div>
+        <div class="ff"><label>Center</label><input type="text" id="cr-center" placeholder="e.g. Veritas" list="center-dl" style="font-size:15px;"><datalist id="center-dl"></datalist></div>
+        <div class="ff"><label>Amount (৳)</label><input type="number" id="cr-amount" min="0" placeholder="0" style="font-size:15px;"></div>
+      </div>
+      <div style="margin-top:9px;display:flex;gap:8px;">
+        <button class="abtn bcom" id="cr-submit-btn" style="padding:9px 22px;white-space:nowrap;" onclick="addCenterCommissionEntry()">+ Add Center Rate</button>
+        <button class="abtn" id="cr-cancel-btn" style="padding:9px 22px;white-space:nowrap;display:none;background:var(--bg-card2);color:var(--ts);" onclick="cancelCenterCommissionEdit()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Center Commission Log</div>
+      <div class="tw">
+        <table class="dt">
+          <thead><tr><th>Date</th><th>Center</th><th style="text-align:right;">Amount</th><th></th></tr></thead>
+          <tbody id="centerCommissionTbody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -2890,7 +2904,7 @@ function cancelCommissionEdit(){
 function renderCommissionLog(){
   const tbody=g('commissionTbody');if(!tbody)return;
   const kw=g('dc-search')?g('dc-search').value.toLowerCase().trim():'';
-  let rows=loadArr(SK9).slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
+  let rows=loadArr(SK9).filter(r=>r.type!=='center').sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
   if(kw)rows=rows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.agency||'').toLowerCase().includes(kw)||(r.date||'').includes(kw)||(r.contactName||'').toLowerCase().includes(kw));
   if(!rows.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--tm);">No agency records yet.</td></tr>';return;}
   tbody.innerHTML=rows.map(r=>`<tr>
@@ -2909,9 +2923,87 @@ function populateAgencyDL(){
   const names=[...new Set([...loadArr(SK9).map(r=>r.agency),...loadArr(SK10).map(r=>r.agency)].filter(Boolean))].sort();
   dl.innerHTML=names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
 }
+const CENTER_DEFAULTS=['Veritas','Kent','KGN','Medipath','Medison'];
+function populateCenterDL(){
+  const dl=g('center-dl');if(!dl)return;
+  const names=[...new Set([...CENTER_DEFAULTS,...loadArr(SK9).filter(r=>r.type==='center').map(r=>r.center)].filter(Boolean))].sort();
+  dl.innerHTML=names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
+}
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function addCenterCommissionEntry(){
+  if(addLock)return;
+  const amount=parseFloat(g('cr-amount').value)||0;
+  const center=(g('cr-center').value||'').trim();
+  const date=(g('cr-date').value||'').trim()||todayStr();
+  if(!center){toast('Enter a center name');return;}
+  if(amount<=0){toast('Enter a valid amount');return;}
+  addLock=true;setTimeout(()=>{addLock=false;},700);
+  const all=loadArr(SK9);
+  all.push({id:genId('com'),type:'center',date,center,amount});
+  save(SK9,all);toast('Center rate saved');
+  g('cr-amount').value='';g('cr-center').value='';g('cr-date').value='';
+  renderCenterCommissionLog();populateCenterDL();pushToSheet();
+  if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
+}
+let editingCenterCommissionId=null;
+function editCenterCommissionEntry(id){
+  const rec=loadArr(SK9).find(r=>r.id===id);if(!rec)return;
+  editingCenterCommissionId=id;
+  g('cr-date').value=rec.date||'';
+  g('cr-center').value=rec.center||'';
+  g('cr-amount').value=rec.amount;
+  const btn=g('cr-submit-btn');
+  if(btn){btn.textContent='Update Center Rate';btn.setAttribute('onclick','saveCenterCommissionEdit()');}
+  const cancelBtn=g('cr-cancel-btn');if(cancelBtn)cancelBtn.style.display='inline-block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function saveCenterCommissionEdit(){
+  if(!editingCenterCommissionId)return;
+  const amount=parseFloat(g('cr-amount').value)||0;
+  const center=(g('cr-center').value||'').trim();
+  const date=(g('cr-date').value||'').trim()||todayStr();
+  if(!center){toast('Enter a center name');return;}
+  if(amount<=0){toast('Enter a valid amount');return;}
+  const all=loadArr(SK9);
+  const idx=all.findIndex(r=>r.id===editingCenterCommissionId);
+  if(idx<0){cancelCenterCommissionEdit();return;}
+  all[idx]={...all[idx],type:'center',date,center,amount};
+  save(SK9,all);toast('Center rate updated');
+  cancelCenterCommissionEdit();
+  renderCenterCommissionLog();populateCenterDL();pushToSheet();
+  if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
+}
+function cancelCenterCommissionEdit(){
+  editingCenterCommissionId=null;
+  g('cr-amount').value='';g('cr-center').value='';g('cr-date').value='';
+  const btn=g('cr-submit-btn');
+  if(btn){btn.textContent='+ Add Center Rate';btn.setAttribute('onclick','addCenterCommissionEntry()');}
+  const cancelBtn=g('cr-cancel-btn');if(cancelBtn)cancelBtn.style.display='none';
+}
+function deleteCenterCommissionEntry(id){
+  const rec=loadArr(SK9).find(r=>r.id===id);
+  save(SK9,loadArr(SK9).filter(r=>r.id!==id));renderCenterCommissionLog();pushToSheet();
+  if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
+  toastUndo('Center rate deleted',()=>{
+    if(!rec)return;
+    const all=loadArr(SK9);
+    if(!all.find(r=>r.id===rec.id)){all.push(rec);save(SK9,all);renderCenterCommissionLog();pushToSheet();toast('Restored');}
+  });
+}
+function renderCenterCommissionLog(){
+  const tbody=g('centerCommissionTbody');if(!tbody)return;
+  const rows=loadArr(SK9).filter(r=>r.type==='center').slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--tm);">No center rates yet.</td></tr>';return;}
+  tbody.innerHTML=rows.map(r=>`<tr>
+    <td style="white-space:nowrap;font-size:12px;">${r.date||'-'}</td>
+    <td style="color:var(--purple);font-weight:500;">${escapeHtml(r.center||'-')}</td>
+    <td style="font-family:var(--mono);text-align:right;color:var(--yellow);font-weight:600;">${fmtExact(r.amount)}</td>
+    <td style="text-align:right;white-space:nowrap;"><button onclick="editCenterCommissionEntry('${r.id}')" class="rm-btn" style="color:var(--cyan);" title="Edit">&#9998;</button> <button onclick="deleteCenterCommissionEntry('${r.id}')" class="rm-btn" title="Delete">&#10005;</button></td>
+  </tr>`).join('');
+}
 function exportCommissionCSV(){
   const rows=[['Date','Agency','Contact Name','Mobile','Address','Note','Amount']];
-  loadArr(SK9).forEach(r=>rows.push([r.date,r.agency||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount]));
+  loadArr(SK9).filter(r=>r.type!=='center').forEach(r=>rows.push([r.date,r.agency||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount]));
   dlCSV(rows,'agency_commission_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
 }
 
@@ -2928,8 +3020,6 @@ let commLastNewlyLocked=new Set(); // keys locked during the most recent sync pa
 
 function loadCommissionData(){
   const d=load(SK13);
-  if(!d.otherCenterRates||typeof d.otherCenterRates!=='object')d.otherCenterRates={}; // center name -> shared rate (৳)
-  ['Veritas','Kent','KGN','Medipath','Medison'].forEach(c=>{if(typeof d.otherCenterRates[c]!=='number')d.otherCenterRates[c]=2000;});
   if(typeof d.rateUnfit!=='number')d.rateUnfit=7000;
   if(typeof d.rateTestFee!=='number')d.rateTestFee=7000;
   if(!d.ledger||typeof d.ledger!=='object')d.ledger={};
@@ -2941,21 +3031,14 @@ function initCommissionRatesUI(){
   const d=loadCommissionData();
   if(g('comm-rate-unfit'))g('comm-rate-unfit').value=d.rateUnfit;
   if(g('comm-rate-testfee'))g('comm-rate-testfee').value=d.rateTestFee;
-  if(g('other-rate-veritas'))g('other-rate-veritas').value=d.otherCenterRates.Veritas;
-  if(g('other-rate-kent'))g('other-rate-kent').value=d.otherCenterRates.Kent;
-  if(g('other-rate-kgn'))g('other-rate-kgn').value=d.otherCenterRates.KGN;
-  if(g('other-rate-medipath'))g('other-rate-medipath').value=d.otherCenterRates.Medipath;
-  if(g('other-rate-medison'))g('other-rate-medison').value=d.otherCenterRates.Medison;
+  if(g('cr-date')&&!g('cr-date').value)g('cr-date').value=todayStr();
+  renderCenterCommissionLog();
+  populateCenterDL();
 }
 function saveCommissionRates(){
   const d=loadCommissionData();
   if(g('comm-rate-unfit'))d.rateUnfit=parseFloat(g('comm-rate-unfit').value)||0;
   if(g('comm-rate-testfee'))d.rateTestFee=parseFloat(g('comm-rate-testfee').value)||0;
-  if(g('other-rate-veritas'))d.otherCenterRates.Veritas=parseFloat(g('other-rate-veritas').value)||0;
-  if(g('other-rate-kent'))d.otherCenterRates.Kent=parseFloat(g('other-rate-kent').value)||0;
-  if(g('other-rate-kgn'))d.otherCenterRates.KGN=parseFloat(g('other-rate-kgn').value)||0;
-  if(g('other-rate-medipath'))d.otherCenterRates.Medipath=parseFloat(g('other-rate-medipath').value)||0;
-  if(g('other-rate-medison'))d.otherCenterRates.Medison=parseFloat(g('other-rate-medison').value)||0;
   save(SK13,d);
   scheduleCommissionPush();
 }
@@ -2977,20 +3060,49 @@ function commIsTestPatient(r){
 function commIsPaidFlag(v){
   return/^paid$/i.test(String(v||'').trim());
 }
-// Case-insensitive lookup of a configured Other Center rate by Slip text
-// (e.g. Slip="veritas" matches the "Veritas" rate). Returns null if the
-// Slip doesn't match any configured center — caller must handle that.
-function commOtherCenterRateFor(slip,data){
+// Shared date-history resolver: given a set of dated {date, amount} log
+// entries, finds whichever amount was IN EFFECT as of a given date (the
+// patient's own visit date) — not just "whatever the latest entry says
+// right now". Used identically for both per-agency Vita rates and per-center
+// Other Center rates, so updating either only affects patients going forward
+// from that date; past entries are never rewritten.
+function commRateFromLogHistory(entries,asOfDate){
+  if(!entries.length)return null;
+  const sorted=entries.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||String(a.id).localeCompare(String(b.id)));
+  let chosen=null;
+  if(asOfDate){
+    for(const e of sorted){if((e.date||'')<=asOfDate)chosen=e;else break;}
+    if(!chosen)chosen=sorted[0]; // patient visited before any log entry — use the earliest known rate
+  }else{
+    chosen=sorted[sorted.length-1];
+  }
+  const amt=chosen.amount;
+  return typeof amt==='number'?amt:(parseFloat(amt)||null);
+}
+// The Vita-slip rate for an agency comes straight from the Agency Commission
+// Log (SK9) — whichever Amount was in effect for that agency as of the
+// patient's own visit date.
+function commAgencyVitaRateFromLog(agency,asOfDate){
+  const norm=(agency||'').trim().toLowerCase();
+  if(!norm)return null;
+  const entries=loadArr(SK9).filter(r=>r.type!=='center'&&(r.agency||'').trim().toLowerCase()===norm);
+  return commRateFromLogHistory(entries,asOfDate);
+}
+// The Other Center rate (Veritas/Kent/KGN/Medipath/Medison, or any other
+// center name) comes from the Center Commission Log (SK9, type='center') —
+// shared by every agency, also resolved as of the patient's own visit date.
+function commOtherCenterRateFor(slip,asOfDate){
   const norm=(slip||'').trim().toLowerCase();
-  const key=Object.keys(data.otherCenterRates).find(k=>k.toLowerCase()===norm);
-  return key?data.otherCenterRates[key]:null;
+  if(!norm)return null;
+  const entries=loadArr(SK9).filter(r=>r.type==='center'&&(r.center||'').trim().toLowerCase()===norm);
+  return commRateFromLogHistory(entries,asOfDate);
 }
 // Determine which rate applies to a row right now.
 // - UNFIT status always wins over Slip (Slip is irrelevant for an unfit patient);
 //   uses the fixed UNFIT rate.
-// - Otherwise Slip decides: "Vita" → that agency's own configured Vita rate;
-//   any other named center → that center's shared rate (Veritas/Kent/KGN/
-//   Medipath/Medison, set once for all agencies).
+// - Otherwise Slip decides: "Vita" → that agency's own Vita rate (Agency
+//   Commission Log); any other named center → that center's shared rate
+//   (Center Commission Log) — both resolved as of the patient's visit date.
 // - If Slip is still blank: regular patients get the agency's own Vita rate as
 //   an unresolved advance (lockable, if that agency has a rate configured);
 //   TEST patients get NOTHING and are not lockable at all until a Slip
@@ -3001,31 +3113,6 @@ function commOtherCenterRateFor(slip,data){
 // - Once a TEST patient's Slip appears, the Test Recovery Fee is deducted from
 //   whatever the normal rate would have been (can go negative — the agency
 //   then owes that amount back, since the test-fee shortfall is being recovered).
-// The Vita-slip rate for an agency comes straight from the Agency Commission
-// Log (SK9) — whatever Amount was most recently saved there for that agency.
-// Returns null if that agency has no log entry yet (nothing to base a rate on).
-// Looks up the Vita-slip rate that was IN EFFECT for this agency as of a
-// given date (the patient's own visit date), not "whatever the latest log
-// entry says right now". The Agency Commission Log's dated entries form a
-// rate history per agency — this finds the most recent entry on or before
-// asOfDate. If the patient visited before any log entry exists at all, the
-// earliest known entry is used as a reasonable fallback rather than blocking.
-function commAgencyVitaRateFromLog(agency,asOfDate){
-  const norm=(agency||'').trim().toLowerCase();
-  if(!norm)return null;
-  const entries=loadArr(SK9).filter(r=>(r.agency||'').trim().toLowerCase()===norm);
-  if(!entries.length)return null;
-  entries.sort((a,b)=>(a.date||'').localeCompare(b.date||'')||String(a.id).localeCompare(String(b.id)));
-  let chosen=null;
-  if(asOfDate){
-    for(const e of entries){if((e.date||'')<=asOfDate)chosen=e;else break;}
-    if(!chosen)chosen=entries[0]; // patient visited before any log entry — use the earliest known rate
-  }else{
-    chosen=entries[entries.length-1];
-  }
-  const amt=chosen.amount;
-  return typeof amt==='number'?amt:(parseFloat(amt)||null);
-}
 function commRateFor(r,data){
   const isTest=commIsTestPatient(r);
   if(commIsUnfit(r.status)){
@@ -3047,7 +3134,7 @@ function commRateFor(r,data){
     if(!hasAgencyRate)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
     base=agencyVitaRate;
   }else{
-    const otherRate=commOtherCenterRateFor(slip,data);
+    const otherRate=commOtherCenterRateFor(slip,r.date);
     if(otherRate==null)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
     base=otherRate;
   }
@@ -4789,21 +4876,39 @@ async function syncPull(){
         const cmerged=new Map();
         for(let i=1;i<data.commission.length;i++){
           const r=data.commission[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);
-          // Support both old (5-col) and new (8-col) formats
-          const is8=r.length>=8;
-          const is5=r.length>=5&&!is8;
+          // Support old (5-col), old (8-col), and new (10-col, with type/center) formats
+          const is10=r.length>=10;
+          const is8=r.length>=8&&!is10;
+          const is5=r.length>=5&&!is8&&!is10;
           // Normalize date: Sheets sometimes returns an Excel serial number (e.g. 46196)
           // instead of a string when a cell was manually typed without explicit date format.
-          cmerged.set(id,{
-            id,
-            date:parseSheetDate(r[1]),
-            agency:String(r[2]||''),
-            contactName:is8?String(r[3]||''):'',
-            mobile:is8?String(r[4]||''):'',
-            address:is8?String(r[5]||''):'',
-            note:is8?String(r[6]||''):(is5?String(r[3]||''):String(r[2]||'')),
-            amount:is8?(+r[7]||0):(is5?+r[4]||0:+r[3]||0)
-          });
+          if(is10){
+            cmerged.set(id,{
+              id,
+              type:String(r[1]||'agency'),
+              date:parseSheetDate(r[2]),
+              agency:String(r[3]||''),
+              center:String(r[4]||''),
+              contactName:String(r[5]||''),
+              mobile:String(r[6]||''),
+              address:String(r[7]||''),
+              note:String(r[8]||''),
+              amount:+r[9]||0
+            });
+          }else{
+            cmerged.set(id,{
+              id,
+              type:'agency',
+              date:parseSheetDate(r[1]),
+              agency:String(r[2]||''),
+              center:'',
+              contactName:is8?String(r[3]||''):'',
+              mobile:is8?String(r[4]||''):'',
+              address:is8?String(r[5]||''):'',
+              note:is8?String(r[6]||''):(is5?String(r[3]||''):String(r[2]||'')),
+              amount:is8?(+r[7]||0):(is5?+r[4]||0:+r[3]||0)
+            });
+          }
         }
         // Sheet is source of truth (see Daily block above for rationale); only keep
         // local-only commission entries if a push is still pending for this device.
@@ -4838,20 +4943,14 @@ async function syncPull(){
         const gi=k=>hdr.indexOf(k);
         const iType=gi('type'),iKey=gi('key'),iAgency=gi('agency'),iDisb=gi('disbursedamount'),iResolved=gi('resolvedamount'),
               iLocked=gi('lockedat'),iSlip=gi('slipatlock'),iStatus=gi('statusatlock'),
-              iRU=gi('rateunfit'),iRT=gi('ratetestfee'),
-              iOV=gi('otherveritas'),iOK=gi('otherkent'),iOKgn=gi('otherkgn'),iOM=gi('othermedipath'),iOMs=gi('othermedison');
-        const sheetData={otherCenterRates:{Veritas:2000,Kent:2000,KGN:2000,Medipath:2000,Medison:2000},rateUnfit:7000,rateTestFee:7000,ledger:{},batches:{},reconciled:{}};
+              iRU=gi('rateunfit'),iRT=gi('ratetestfee');
+        const sheetData={rateUnfit:7000,rateTestFee:7000,ledger:{},batches:{},reconciled:{}};
         for(let i=1;i<commRaw.length;i++){
           const r=commRaw[i];if(!r)continue;
           const type=String(r[iType]||'').trim();
           if(type==='settings'){
             if(iRU>=0&&r[iRU]!=='')sheetData.rateUnfit=+r[iRU]||sheetData.rateUnfit;
             if(iRT>=0&&r[iRT]!=='')sheetData.rateTestFee=+r[iRT]||sheetData.rateTestFee;
-            if(iOV>=0&&r[iOV]!=='')sheetData.otherCenterRates.Veritas=+r[iOV]||sheetData.otherCenterRates.Veritas;
-            if(iOK>=0&&r[iOK]!=='')sheetData.otherCenterRates.Kent=+r[iOK]||sheetData.otherCenterRates.Kent;
-            if(iOKgn>=0&&r[iOKgn]!=='')sheetData.otherCenterRates.KGN=+r[iOKgn]||sheetData.otherCenterRates.KGN;
-            if(iOM>=0&&r[iOM]!=='')sheetData.otherCenterRates.Medipath=+r[iOM]||sheetData.otherCenterRates.Medipath;
-            if(iOMs>=0&&r[iOMs]!=='')sheetData.otherCenterRates.Medison=+r[iOMs]||sheetData.otherCenterRates.Medison;
           }else if(type==='ledger'){
             const key=String(r[iKey]||'');if(!key)continue;
             const resolvedRaw=iResolved>=0?r[iResolved]:'';
@@ -5087,17 +5186,17 @@ async function pushCalcToSheet(){
 // sheet in the same Finance spreadsheet. Read back in syncPull() below.
 function serializeCommissionForPush(){
   const d=loadCommissionData();
-  const header=['type','key','agency','disbursedAmount','resolvedAmount','lockedAt','slipAtLock','statusAtLock','rateUnfit','rateTestFee','otherVeritas','otherKent','otherKGN','otherMedipath','otherMedison'];
+  const header=['type','key','agency','disbursedAmount','resolvedAmount','lockedAt','slipAtLock','statusAtLock','rateUnfit','rateTestFee'];
   const rows=[header];
-  rows.push(['settings','','','','','','','',d.rateUnfit,d.rateTestFee,d.otherCenterRates.Veritas,d.otherCenterRates.Kent,d.otherCenterRates.KGN,d.otherCenterRates.Medipath,d.otherCenterRates.Medison]);
+  rows.push(['settings','','','','','','','',d.rateUnfit,d.rateTestFee]);
   Object.entries(d.ledger).forEach(([key,entry])=>{
-    rows.push(['ledger',key,'',entry.disbursedAmount,entry.resolvedAmount!=null?entry.resolvedAmount:'',entry.lockedAt||'',entry.slipAtLock||'',entry.statusAtLock||'','','','','','','']);
+    rows.push(['ledger',key,'',entry.disbursedAmount,entry.resolvedAmount!=null?entry.resolvedAmount:'',entry.lockedAt||'',entry.slipAtLock||'',entry.statusAtLock||'','','']);
   });
   Object.entries(d.batches).forEach(([agency,keys])=>{
-    (keys||[]).forEach(key=>rows.push(['batch',key,agency,'','','','','','','','','','','']));
+    (keys||[]).forEach(key=>rows.push(['batch',key,agency,'','','','','','','']));
   });
   Object.entries(d.reconciled).forEach(([agency,keys])=>{
-    (keys||[]).forEach(key=>rows.push(['reconciled',key,agency,'','','','','','','','','','','']));
+    (keys||[]).forEach(key=>rows.push(['reconciled',key,agency,'','','','','','','']));
   });
   return rows;
 }
@@ -6885,7 +6984,7 @@ function serializeForPush(){
       d.ocACount||0,d.ocARate!=null?d.ocARate:4000,d.ocAMonth!=null?d.ocAMonth:new Date().getMonth(),
       d.ocBCount||0,d.ocBRate!=null?d.ocBRate:3000,d.ocBMonth!=null?d.ocBMonth:new Date().getMonth()]);
   });
-  const base={finance:[['key','patients','otherPts','income','expense','profit','margin','otherIncome','dailyExpense','saved'],...Object.entries(load(SK)).map(([k,d])=>[k,d.patients||0,d.otherPts||0,d.income||0,d.expense||0,d.profit||0,d.margin||0,d.otherIncome||0,d.dailyExpense||0,d.saved||''])],daily:[['id','type','date','patients','amount','status','note','year','month'],...loadArr(SK4).map(r=>[r.id||'',r.type||'expense',r.date||'',r.patients||0,r.amount||0,r.status||'',r.note||'',r.year||'',r.month||0])],other_exp:[['id','label','amount'],...loadArr(SK5).map(e=>[e.id||0,e.label||'',e.amount||0])],commission:[['id','date','agency','contactName','mobile','address','note','amount'],...loadArr(SK9).map(r=>[r.id||'',r.date||'',r.agency||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount||0])],attendance:serializeAttendanceForSheet(),users:[['username','password','role','name'],...loadUsers().map(u=>[u.username,u.password,u.role,u.name||u.username])],calc_data:calcRows,salary_advance:serializeSalaryAdvanceForSheet(),salary_history:serializeSalaryHistoryForSheet()};
+  const base={finance:[['key','patients','otherPts','income','expense','profit','margin','otherIncome','dailyExpense','saved'],...Object.entries(load(SK)).map(([k,d])=>[k,d.patients||0,d.otherPts||0,d.income||0,d.expense||0,d.profit||0,d.margin||0,d.otherIncome||0,d.dailyExpense||0,d.saved||''])],daily:[['id','type','date','patients','amount','status','note','year','month'],...loadArr(SK4).map(r=>[r.id||'',r.type||'expense',r.date||'',r.patients||0,r.amount||0,r.status||'',r.note||'',r.year||'',r.month||0])],other_exp:[['id','label','amount'],...loadArr(SK5).map(e=>[e.id||0,e.label||'',e.amount||0])],commission:[['id','type','date','agency','center','contactName','mobile','address','note','amount'],...loadArr(SK9).map(r=>[r.id||'',r.type||'agency',r.date||'',r.agency||'',r.center||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount||0])],attendance:serializeAttendanceForSheet(),users:[['username','password','role','name'],...loadUsers().map(u=>[u.username,u.password,u.role,u.name||u.username])],calc_data:calcRows,salary_advance:serializeSalaryAdvanceForSheet(),salary_history:serializeSalaryHistoryForSheet()};
   // NOTE: salary is pushed separately via pushSalaryToSheet() — not included here
   // to prevent accidental overwrites during general sync
   return base;
