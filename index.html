@@ -895,7 +895,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         <div class="ff" style="align-self:end;"><button class="abtn bexp" style="width:100%;padding:9px;white-space:nowrap;" onclick="addExpenseEntry()">+ Add Expense</button></div>
       </div>
 
-      <div class="daily-summary-grid cols-4">
+      <div class="daily-summary-grid cols-4" id="daily-summary-stats">
         <div class="daily-sum-card dsc-green"><div class="dsc-label">Month Income</div><div class="dsc-val" id="d-total-income" style="color:var(--green);">৳0</div></div>
         <div class="daily-sum-card dsc-yellow"><div class="dsc-label">Month Due</div><div class="dsc-val" id="d-total-due" style="color:var(--yellow);">৳0</div></div>
         <div class="daily-sum-card dsc-pink"><div class="dsc-label">Month Expense</div><div class="dsc-val" id="d-total-expense" style="color:var(--pink);">৳0</div></div>
@@ -2408,8 +2408,8 @@ function applyRoleUI(){
   // Define which pages each role can access
   // page keyword must match showPage() names and onclick attribute text
   const ACCESS={
-    accountant:['dashboard','report','daily','patients','others'],
-    staff:['operations']
+    accountant:['daily','patients','others'],
+    staff:['operations','report']
   };
   const allowed=ACCESS[role]||[];
 
@@ -2453,6 +2453,12 @@ function applyRoleUI(){
   if(role==='staff'){
     const sb=document.querySelector('.sb-col');
     if(sb)sb.style.display='none';
+  }
+
+  // --- HIDE MONTH INCOME/DUE/EXPENSE/NET SUMMARY IN FINANCE FOR ACCOUNTANT ---
+  if(role==='accountant'){
+    const dsg=g('daily-summary-stats');
+    if(dsg)dsg.style.display='none';
   }
 
   // --- HIDE HISTORY & SETTINGS FOR ACCOUNTANT ---
@@ -3024,7 +3030,12 @@ function loadCommissionData(){
   if(typeof d.rateTestFee!=='number')d.rateTestFee=7000;
   if(!d.ledger||typeof d.ledger!=='object')d.ledger={};
   if(!d.batches||typeof d.batches!=='object')d.batches={}; // agency name -> [row keys] pending PDF/print
-  if(!d.reconciled||typeof d.reconciled!=='object')d.reconciled={}; // agency name -> [row keys] whose delta has already been absorbed into a past net-payment
+  if(!d.reconciled||typeof d.reconciled!=='object')d.reconciled={}; // agency name -> {row key: date cleared}
+  Object.keys(d.reconciled).forEach(ag=>{
+    if(Array.isArray(d.reconciled[ag])){ // migrate from the old array-of-keys format (no date recorded)
+      const obj={};d.reconciled[ag].forEach(k=>{obj[k]='';});d.reconciled[ag]=obj;
+    }
+  });
   return d;
 }
 function initCommissionRatesUI(){
@@ -3206,12 +3217,13 @@ function commClearBatch(slug){
   const d=loadCommissionData();
   if(!d.batches[agency]||!d.batches[agency].length)return;
   if(!confirm('Clear this agency\'s pending batch? Do this after you have printed and paid it. Any overpaid/underpaid balance shown just now was already folded into that Net Payable amount, so it will be settled and the running Balance will reset to 0.'))return;
-  if(!d.reconciled[agency])d.reconciled[agency]=[];
+  if(!d.reconciled[agency])d.reconciled[agency]={};
+  const clearedOn=todayStr();
   Object.values(commRowLookup).forEach(x=>{
     const a=(x.r.agency||'Unknown').trim()||'Unknown';
     if(a!==agency)return;
-    if((x.status==='overpaid'||x.status==='underpaid'||x.status==='settled')&&!d.reconciled[agency].includes(x.key)){
-      d.reconciled[agency].push(x.key);
+    if((x.status==='overpaid'||x.status==='underpaid'||x.status==='settled')&&!(x.key in d.reconciled[agency])){
+      d.reconciled[agency][x.key]=clearedOn;
     }
   });
   delete d.batches[agency];
@@ -3262,9 +3274,10 @@ function getCommissionRows(){
     // into that payment's Net amount — mark it reconciled so it stops counting
     // toward the agency's live outstanding Balance, while the Delta value itself
     // stays visible on the row as a historical record of what happened.
-    const reconciled=locked&&data.reconciled[agencyName]&&data.reconciled[agencyName].includes(key);
+    const reconciled=locked&&!!data.reconciled[agencyName]&&(key in data.reconciled[agencyName]);
+    const reconciledAt=reconciled?(data.reconciled[agencyName][key]||null):null;
     if(reconciled&&status!=='provisional'&&status!=='unpaid')status='reconciled';
-    return{r,key,slip,hasSlip,isVita,rateReason:rate.reason,advanceAmount:rate.amount,actualAmount,entry,locked,isNew,status,delta};
+    return{r,key,slip,hasSlip,isVita,rateReason:rate.reason,advanceAmount:rate.amount,actualAmount,entry,locked,isNew,status,delta,reconciledAt};
   });
   commRowLookup={};
   allItems.forEach(x=>{commRowLookup[x.key]=x;});
@@ -3350,12 +3363,13 @@ function renderCommissionCalc(){
     commSlugToName[slug]=agency;
     // Disbursed/Balance/Unpaid are always computed across ALL months for this agency —
     // a running ledger shouldn't reset just because the on-screen filter changed.
-    let agDisbursed=0,agBalance=0,agUnpaid=0,agTestPending=0;
+    let agDisbursed=0,agBalance=0,agUnpaid=0,agTestPending=0,agLastReconciled=null;
     (allByAgency[agency]||[]).forEach(x=>{
       if(x.locked)agDisbursed+=x.entry.disbursedAmount;
       if(x.status==='overpaid'||x.status==='underpaid'||x.status==='settled')agBalance+=x.delta;
       if(x.status==='unpaid')agUnpaid++;
       if(x.status==='test-pending')agTestPending++;
+      if(x.reconciledAt&&(!agLastReconciled||x.reconciledAt>agLastReconciled))agLastReconciled=x.reconciledAt;
     });
     if(!(slug in commOpenState))commOpenState[slug]=true; // default expanded
     const open=commOpenState[slug];
@@ -3386,7 +3400,7 @@ function renderCommissionCalc(){
         :(x.rateReason==='vita-test'||x.rateReason==='other-test')?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(− Test Fee)</span>'
         :'';
       const meta=COMM_STATUS_META[x.status];
-      const badge=`<span class="comm-badge ${meta.cls}">${x.isNew?'&#10024; New — ':''}${meta.label}</span>`;
+      const badge=`<span class="comm-badge ${meta.cls}">${x.isNew?'&#10024; New — ':''}${meta.label}</span>${x.status==='reconciled'&&x.reconciledAt?`<div style="font-size:9px;color:var(--tm);margin-top:2px;">on ${x.reconciledAt}</div>`:''}`;
       const amtCell=x.locked?fmtSigned(x.entry.disbursedAmount):'<span style="color:var(--tm);">—</span>';
       // Delta always reflects the true historical over/underpay amount, regardless of
       // whether it's since been reconciled — reconciliation only changes the Comm.
@@ -3415,6 +3429,7 @@ function renderCommissionCalc(){
           ${agTestPending?`<div class="cst"><span class="cst-label">Test — Awaiting Slip</span><span class="cst-val" style="color:var(--ts);">${agTestPending}</span></div>`:''}
           <div class="cst"><span class="cst-label">Balance</span><span class="cst-val" style="color:${agBalance>0?'var(--pink)':agBalance<0?'var(--orange)':'var(--ts)'};">${agBalance>=0?'':'-'}${fmtExact(Math.abs(agBalance))}</span></div>
           <div class="cst"><span class="cst-label">Unpaid Left</span><span class="cst-val" style="color:var(--yellow);">${agUnpaid}</span></div>
+          ${agLastReconciled?`<div class="cst"><span class="cst-label">Last Cleared</span><span class="cst-val" style="color:var(--ts);font-size:12px;">${agLastReconciled}</span></div>`:''}
         </div>
         <svg class="comm-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
@@ -3569,7 +3584,7 @@ function addIncomeEntry(){
   if(amount<=0&&status!=='free'){showFieldError(amountEl,'Enter a valid amount');toast('Enter a valid amount');return;}
   addLock=true;setTimeout(()=>{addLock=false;},700);
   const _dp=date.split('-');const yr=_dp[0],mi=parseInt(_dp[1],10)-1,all=loadArr(SK4);
-  all.push({id:genId('inc'),type:'income',date,patients:pts,amount,status,note,year:yr,month:mi});
+  all.push({id:genId('inc'),type:'income',date,patients:pts,amount,status,note,year:yr,month:mi,addedBy:currentName(),addedByRole:currentRole()});
   save(SK4,all);toast(status==='due'?'Due income added':status==='free'?'Free entry added':'Income added');
   logAudit('Income Added',date+' — ৳'+amount+' ('+status+')');
   g('di-patients').value=1;setAmountField(g('di-amount'),INCOME_RATE);g('di-status').value='paid';g('di-note').value='';incomeManualAmt=false;
@@ -3590,7 +3605,7 @@ function addExpenseEntry(){
   addLock=true;setTimeout(()=>{addLock=false;},700);
   const note=g('de-note').value.trim();
   const _dp2=date.split('-');const yr=_dp2[0],mi=parseInt(_dp2[1],10)-1,all=loadArr(SK4);
-  all.push({id:genId('exp'),type:'expense',date,patients:0,amount,status:'',note,year:yr,month:mi});
+  all.push({id:genId('exp'),type:'expense',date,patients:0,amount,status:'',note,year:yr,month:mi,addedBy:currentName(),addedByRole:currentRole()});
   save(SK4,all);toast('Expense added');
   logAudit('Expense Added',date+' — ৳'+amount);
   g('de-amount').value='';g('de-amount').dataset.raw='';g('de-note').value='';
@@ -3664,14 +3679,15 @@ function renderDailyTable(){
     const amtColor=isIncome?(isDue?'var(--yellow)':isFree?'var(--cyan)':'var(--green)'):'var(--pink)';
     const amtSign=isIncome?'+':'-';
     const markPaidBtn=isDue?`<button onclick="markEntryPaid('${r.id}')" class="paid-btn" title="Mark as Paid">&#10003; Paid</button>`:'';
-    return`<tr><td style="font-weight:500;white-space:nowrap;">${r.date}</td><td>${typeBadge}</td><td style="font-family:var(--mono);color:var(--cyan);">${isIncome?(r.patients||0):'-'}</td><td style="font-family:var(--mono);text-align:right;color:${amtColor};font-weight:500;">${amtSign}${fmtExact(r.amount)}</td><td>${statusBadge}</td><td style="color:var(--ts);font-size:12px;max-width:240px;">${r.note?escapeHtml(r.note):'-'}</td><td style="text-align:right;white-space:nowrap;">${markPaidBtn}<button onclick="deleteDailyEntry('${r.id}')" class="rm-btn">&#10005;</button></td></tr>`;
+    const addedByTag=r.addedByRole?`<span class="sb" style="background:${r.addedByRole==='admin'?'rgba(0,212,255,.12)':r.addedByRole==='accountant'?'rgba(157,78,221,.12)':'rgba(148,163,184,.12)'};color:${r.addedByRole==='admin'?'var(--cyan)':r.addedByRole==='accountant'?'var(--purple)':'var(--ts)'};font-size:9.5px;margin-left:6px;vertical-align:middle;">${escapeHtml(r.addedBy||r.addedByRole)}</span>`:'';
+    return`<tr><td style="font-weight:500;white-space:nowrap;">${r.date}${addedByTag}</td><td>${typeBadge}</td><td style="font-family:var(--mono);color:var(--cyan);">${isIncome?(r.patients||0):'-'}</td><td style="font-family:var(--mono);text-align:right;color:${amtColor};font-weight:500;">${amtSign}${fmtExact(r.amount)}</td><td>${statusBadge}</td><td style="color:var(--ts);font-size:12px;max-width:240px;">${r.note?escapeHtml(r.note):'-'}</td><td style="text-align:right;white-space:nowrap;">${markPaidBtn}<button onclick="deleteDailyEntry('${r.id}')" class="rm-btn">&#10005;</button></td></tr>`;
   }).join('');
 }
 function exportDailyCSV(){
   const yr=g('d-year-filter').value;
   const miArr=mselValues('d-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
-  const rows=[['Date','Type','Patients','Amount','Status','Note']];
-  loadArr(SK4).filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month))).sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>rows.push([r.date,r.type,r.patients||'',r.amount,r.status||'',r.note||'']));
+  const rows=[['Date','Type','Patients','Amount','Status','Note','Added By']];
+  loadArr(SK4).filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month))).sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>rows.push([r.date,r.type,r.patients||'',r.amount,r.status||'',r.note||'',r.addedBy||'']));
   dlCSV(rows,'vitahealth_daily_'+yr+'_'+(miArr.length===1?MN_EN[miArr[0]]:miArr.length?'multi':'all')+'.csv');toast('Exported');
 }
 function getFilteredDailyRows(){
@@ -4857,7 +4873,7 @@ async function syncPull(){
     try{
       if(data.daily&&data.daily.length>1){
         const merged=new Map();
-        for(let i=1;i<data.daily.length;i++){const r=data.daily[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);const parsedDate=parseSheetDate(r[2]||'');const dp=parsedDate.split('-');merged.set(id,{id,type:r[1]||'expense',date:parsedDate,patients:+r[3]||0,amount:+r[4]||0,status:r[5]||'',note:r[6]||'',year:dp[0]||String(r[7]||''),month:dp[1]?parseInt(dp[1],10)-1:+r[8]||0});}
+        for(let i=1;i<data.daily.length;i++){const r=data.daily[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);const parsedDate=parseSheetDate(r[2]||'');const dp=parsedDate.split('-');merged.set(id,{id,type:r[1]||'expense',date:parsedDate,patients:+r[3]||0,amount:+r[4]||0,status:r[5]||'',note:r[6]||'',year:dp[0]||String(r[7]||''),month:dp[1]?parseInt(dp[1],10)-1:+r[8]||0,addedBy:r[9]||'',addedByRole:r[10]||''});}
         // The Sheet is the source of truth: a local record missing from the Sheet means it
         // was deleted on another device, so it should NOT be kept around here. The one
         // exception is if THIS device has a push still pending/failed (queued for retry) —
@@ -4961,8 +4977,8 @@ async function syncPull(){
             sheetData.batches[agency].push(key);
           }else if(type==='reconciled'){
             const key=String(r[iKey]||''),agency=String(r[iAgency]||'');if(!key||!agency)continue;
-            if(!sheetData.reconciled[agency])sheetData.reconciled[agency]=[];
-            sheetData.reconciled[agency].push(key);
+            if(!sheetData.reconciled[agency])sheetData.reconciled[agency]={};
+            sheetData.reconciled[agency][key]=String(r[iLocked]||'');
           }
         }
         // Sheet is source of truth across devices; only keep local-only additions
@@ -4974,9 +4990,9 @@ async function syncPull(){
             const merged=new Set([...(sheetData.batches[ag]||[]),...keys]);
             sheetData.batches[ag]=[...merged];
           });
-          Object.entries(local.reconciled).forEach(([ag,keys])=>{
-            const merged=new Set([...(sheetData.reconciled[ag]||[]),...keys]);
-            sheetData.reconciled[ag]=[...merged];
+          Object.entries(local.reconciled).forEach(([ag,keyDates])=>{
+            if(!sheetData.reconciled[ag])sheetData.reconciled[ag]={};
+            Object.entries(keyDates).forEach(([k,dt])=>{if(!(k in sheetData.reconciled[ag]))sheetData.reconciled[ag][k]=dt;});
           });
         }
         save(SK13,sheetData);
@@ -5195,8 +5211,8 @@ function serializeCommissionForPush(){
   Object.entries(d.batches).forEach(([agency,keys])=>{
     (keys||[]).forEach(key=>rows.push(['batch',key,agency,'','','','','','','']));
   });
-  Object.entries(d.reconciled).forEach(([agency,keys])=>{
-    (keys||[]).forEach(key=>rows.push(['reconciled',key,agency,'','','','','','','']));
+  Object.entries(d.reconciled).forEach(([agency,keyDates])=>{
+    Object.entries(keyDates).forEach(([key,dt])=>rows.push(['reconciled',key,agency,'','',dt||'','','','','']));
   });
   return rows;
 }
@@ -6984,7 +7000,7 @@ function serializeForPush(){
       d.ocACount||0,d.ocARate!=null?d.ocARate:4000,d.ocAMonth!=null?d.ocAMonth:new Date().getMonth(),
       d.ocBCount||0,d.ocBRate!=null?d.ocBRate:3000,d.ocBMonth!=null?d.ocBMonth:new Date().getMonth()]);
   });
-  const base={finance:[['key','patients','otherPts','income','expense','profit','margin','otherIncome','dailyExpense','saved'],...Object.entries(load(SK)).map(([k,d])=>[k,d.patients||0,d.otherPts||0,d.income||0,d.expense||0,d.profit||0,d.margin||0,d.otherIncome||0,d.dailyExpense||0,d.saved||''])],daily:[['id','type','date','patients','amount','status','note','year','month'],...loadArr(SK4).map(r=>[r.id||'',r.type||'expense',r.date||'',r.patients||0,r.amount||0,r.status||'',r.note||'',r.year||'',r.month||0])],other_exp:[['id','label','amount'],...loadArr(SK5).map(e=>[e.id||0,e.label||'',e.amount||0])],commission:[['id','type','date','agency','center','contactName','mobile','address','note','amount'],...loadArr(SK9).map(r=>[r.id||'',r.type||'agency',r.date||'',r.agency||'',r.center||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount||0])],attendance:serializeAttendanceForSheet(),users:[['username','password','role','name'],...loadUsers().map(u=>[u.username,u.password,u.role,u.name||u.username])],calc_data:calcRows,salary_advance:serializeSalaryAdvanceForSheet(),salary_history:serializeSalaryHistoryForSheet()};
+  const base={finance:[['key','patients','otherPts','income','expense','profit','margin','otherIncome','dailyExpense','saved'],...Object.entries(load(SK)).map(([k,d])=>[k,d.patients||0,d.otherPts||0,d.income||0,d.expense||0,d.profit||0,d.margin||0,d.otherIncome||0,d.dailyExpense||0,d.saved||''])],daily:[['id','type','date','patients','amount','status','note','year','month','addedBy','addedByRole'],...loadArr(SK4).map(r=>[r.id||'',r.type||'expense',r.date||'',r.patients||0,r.amount||0,r.status||'',r.note||'',r.year||'',r.month||0,r.addedBy||'',r.addedByRole||''])],other_exp:[['id','label','amount'],...loadArr(SK5).map(e=>[e.id||0,e.label||'',e.amount||0])],commission:[['id','type','date','agency','center','contactName','mobile','address','note','amount'],...loadArr(SK9).map(r=>[r.id||'',r.type||'agency',r.date||'',r.agency||'',r.center||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount||0])],attendance:serializeAttendanceForSheet(),users:[['username','password','role','name'],...loadUsers().map(u=>[u.username,u.password,u.role,u.name||u.username])],calc_data:calcRows,salary_advance:serializeSalaryAdvanceForSheet(),salary_history:serializeSalaryHistoryForSheet()};
   // NOTE: salary is pushed separately via pushSalaryToSheet() — not included here
   // to prevent accidental overwrites during general sync
   return base;
@@ -7092,6 +7108,9 @@ function initApp(){
       startAutoSync();
     }
   } else {
+    if(currentRole()==='accountant'){
+      showPage('daily', null, null);
+    }
     {
       const hasDaily=s.scriptUrl||(s.dailyUrls&&s.dailyUrls.length);
       const hasVita=s.vitaScriptUrl||(s.vitaUrls&&s.vitaUrls.length);
