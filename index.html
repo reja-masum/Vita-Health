@@ -203,10 +203,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .pdot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
 
 /* METRICS */
-.mrow{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;}
-@media(max-width:1280px){.mrow{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:768px){.mrow{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:480px){.mrow{grid-template-columns:repeat(2,1fr);}}
+.mrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:11px;}
 .mc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;}
 .mc:hover{border-color:var(--border-bright);transform:translateY(-1px);}
 .mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac);}
@@ -803,10 +800,9 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   </div>
   <div class="mrow">
     <div class="mc mpu"><div class="mic">&#128200;</div><div class="mlb">Net Profit</div><div class="mv" id="m-profit">৳0</div><div class="ms" id="m-profit-sub"></div></div>
-    <div class="mc mg"><div class="mic">&#128176;</div><div class="mlb">Total Income</div><div class="mv" id="m-income">৳0</div><div class="ms">Vita + Other Center</div></div>
+    <div class="mc mg"><div class="mic">&#128176;</div><div class="mlb">Total Income</div><div class="mv" id="m-income">৳0</div><div class="ms">This month</div></div>
     <div class="mc mp"><div class="mic">&#128184;</div><div class="mlb">Total Expense</div><div class="mv" id="m-expense">৳0</div><div class="ms" id="m-expense-sub">Variable: ৳0</div></div>
     <div class="mc mvc"><div class="mic">&#127973;</div><div class="mlb">Vita Center Income</div><div class="mv" id="m-vita">৳0</div><div class="ms" id="m-vita-sub"></div></div>
-    <div class="mc mcy"><div class="mic">&#127970;</div><div class="mlb">Other Center Income</div><div class="mv" id="m-other">৳0</div><div class="ms" id="m-other-sub"></div></div>
     <div class="mc md"><div class="mic">&#128203;</div><div class="mlb">Total Due</div><div class="mv" id="m-due">৳0</div><div class="ms" id="m-due-sub">0 patients pending</div></div>
   </div>
   <div class="cgrid">
@@ -843,12 +839,10 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <div class="srow">
     <div class="si"><div class="slb">Month</div><div class="sv" style="font-size:12px;font-family:var(--font);" id="s-month">-</div></div><div class="dv2"></div>
     <div class="si"><div class="slb">Patients</div><div class="sv" id="s-patients" style="color:var(--cyan);">0</div></div><div class="dv2"></div>
-    <div class="si"><div class="slb">Other Ctr Pts</div><div class="sv" id="s-other-pts" style="color:var(--yellow);">0</div></div><div class="dv2"></div>
     <div class="si"><div class="slb">Net Profit</div><div class="sv" id="s-profit">৳0</div></div><div class="dv2"></div>
     <div class="si"><div class="slb">Total Income</div><div class="sv" id="s-income" style="color:var(--green);">৳0</div></div><div class="dv2"></div>
     <div class="si"><div class="slb">Total Expense</div><div class="sv" id="s-expense" style="color:var(--pink);">৳0</div></div><div class="dv2"></div>
     <div class="si"><div class="slb">Vita Income</div><div class="sv" id="s-vita-inc" style="color:var(--cyan);">৳0</div></div><div class="dv2"></div>
-    <div class="si"><div class="slb">Other Ctr Income</div><div class="sv" id="s-other" style="color:var(--orange);">৳0</div></div><div class="dv2"></div>
     <div class="si"><div class="slb">Margin</div><div class="sv" id="s-margin" style="color:var(--purple);">0%</div></div>
   </div>
 </div>
@@ -859,7 +853,6 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- Sub-page nav -->
   <div class="daily-subnav">
     <button class="daily-subnav-btn active" id="dsub-records" onclick="switchDailySubPage('records',this)">&#128200; Income &amp; Expenses</button>
-    <button class="daily-subnav-btn" id="dsub-calc" onclick="switchDailySubPage('calc',this)">&#129518; Patient Calculation</button>
     <button class="daily-subnav-btn" id="dsub-commission" onclick="switchDailySubPage('commission',this)">&#129309; Agency Management</button>
     <button class="daily-subnav-btn" id="dsub-agencycomm" onclick="switchDailySubPage('agencycomm',this)">&#128176; Commission</button>
   </div>
@@ -874,7 +867,8 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
       </div>
 
       <div class="dt-form dt-form-inc show" id="dt-form-income">
-        <div class="ff"><label>Date</label><input type="date" id="di-date"></div>
+        <div class="ff"><label>Date</label><input type="date" id="di-date" oninput="calcIncomeAmount()"></div>
+        <div class="ff"><label>Agency</label><input type="text" id="di-agency" placeholder="Leave blank for other income" list="income-agency-dl" oninput="calcIncomeAmount()"><datalist id="income-agency-dl"></datalist></div>
         <div class="ff"><label>Patients</label><input type="number" id="di-patients" value="1" min="0" oninput="calcIncomeAmount()"></div>
         <div class="ff"><label>Amount (৳)</label><input type="text" inputmode="decimal" id="di-amount" value="8,500" data-raw="8500" oninput="onIncomeAmountEdited();formatNumberLive(this);"></div>
         <div class="ff"><label>Payment Status</label>
@@ -928,7 +922,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
       </div>
       <div class="tw">
         <table class="dt">
-          <thead><tr><th>Date</th><th>Type</th><th>Patients</th><th style="text-align:right;">Amount</th><th>Status</th><th>Note</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>Type</th><th>Patients</th><th>Agency</th><th style="text-align:right;">Amount</th><th>Status</th><th>Note</th><th></th></tr></thead>
           <tbody id="dailyTbody"></tbody>
         </table>
       </div>
@@ -939,7 +933,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- ── SUB-PAGE: Commission Calculation ── -->
   <div id="daily-view-agencycomm" style="display:none;flex-direction:column;gap:14px;">
     <div class="card" style="border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.04);">
-      <div style="font-size:12px;color:var(--tp);">Each agency's Vita-slip rate comes from its <b>Amount</b> in the Agency Commission Log (Agency Management page) — add or update it there if you see "No Rate Set" below. Other Center rates, UNFIT rate, and Test Recovery Fee are also managed on the <b>Agency Management</b> page. Set the <b>Remarks</b> column dropdown to Paid/Unpaid in the Vita Center sheet — everything below calculates automatically from there.</div>
+      <div style="font-size:12px;color:var(--tp);">Each agency's Vita-slip commission comes from its own <b>VITA Commission</b>, and any other center's slip from its own <b>Others Commission</b>, both set in the Agency Commission Log (Agency Management page) — add or update them there if you see "No Rate Set" below. Unfit Refund is calculated automatically as that agency's Per Patient Fee minus the Test Fee (fixed, ৳1500 for everyone). Set the <b>Remarks</b> column dropdown to Paid/Unpaid in the Vita Center sheet — everything below calculates automatically from there.</div>
     </div>
 
     <div class="card">
@@ -981,88 +975,31 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   </div>
 
 
-  <!-- ── SUB-PAGE: Patient Calculation ── -->
-  <div id="daily-view-calc" style="display:none;flex-direction:column;gap:14px;">
-    <div class="card">
-      <div class="ctitle"><span class="dot"></span>Other Center Patient Revenue</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-        <span style="font-size:12px;color:var(--ts);white-space:nowrap;">Viewing:</span>
-        <select class="sel" id="calc-year-filter" onchange="onCalcFilterChange()"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select>
-        <select class="sel" id="calc-month-filter" onchange="onCalcFilterChange()"></select>
-      </div>
-      <div style="font-size:12px;color:var(--ts);margin-bottom:14px;">Patient counts below are pulled automatically from Others Center Patients — Medipath entries go to the Medipath group, every other center (Kent, Sadiq, Ready-Health, etc.) goes to the Kent group. No manual entry or apply needed.</div>
-      <!-- Group A: Kent (catch-all for all non-Medipath centers) -->
-      <div style="margin-bottom:14px;padding:13px;background:rgba(0,229,160,.04);border:1px solid rgba(0,229,160,.18);border-radius:var(--rs);">
-        <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:10px;">Kent — ৳4,000 / Patient <span style="font-weight:400;color:var(--tm);">(all other centers)</span></div>
-        <div class="oc-group-grid">
-          <div class="ff"><label>Patients Count</label><div style="display:flex;align-items:center;gap:6px;"><input type="number" id="oc-a-count" value="0" readonly style="font-size:15px;cursor:default;opacity:.85;"><span class="auto-badge" style="display:inline;">AUTO</span></div></div>
-          <div class="ff"><label>Rate Per Patient (৳)</label><input type="number" id="oc-a-rate" value="4000" min="0" style="font-size:15px;" oninput="savePerPatientInputs();updateOcGroupTotal()"></div>
-        </div>
-        <div style="margin-top:8px;font-size:12px;color:var(--green);">Total: <span style="font-family:var(--mono);font-weight:700;" id="oc-a-total">৳0</span></div>
-      </div>
-      <!-- Group B: Medipath -->
-      <div style="margin-bottom:14px;padding:13px;background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.18);border-radius:var(--rs);">
-        <div style="font-size:12px;font-weight:600;color:var(--cyan);margin-bottom:10px;">Medipath — ৳3,000 / Patient</div>
-        <div class="oc-group-grid">
-          <div class="ff"><label>Patients Count</label><div style="display:flex;align-items:center;gap:6px;"><input type="number" id="oc-b-count" value="0" readonly style="font-size:15px;cursor:default;opacity:.85;"><span class="auto-badge" style="display:inline;">AUTO</span></div></div>
-          <div class="ff"><label>Rate Per Patient (৳)</label><input type="number" id="oc-b-rate" value="3000" min="0" style="font-size:15px;" oninput="savePerPatientInputs();updateOcGroupTotal()"></div>
-        </div>
-        <div style="margin-top:8px;font-size:12px;color:var(--cyan);">Total: <span style="font-family:var(--mono);font-weight:700;" id="oc-b-total">৳0</span></div>
-      </div>
-      <!-- Combined total -->
-      <div class="combined-total-row" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg-card2);border-radius:var(--rs);border:1px solid var(--border);">
-        <span style="font-size:13px;color:var(--ts);font-weight:600;">Combined Other Center Revenue</span>
-        <span style="font-family:var(--mono);font-size:21px;font-weight:700;color:var(--green);" id="calc-other-total">৳0</span>
-      </div>
-      <div style="font-size:11px;color:var(--tm);margin-top:8px;">Automatically applied to this month's Dashboard figures — no action needed.</div>
-    </div>
-  </div>
-
   <!-- ── SUB-PAGE 2: Agency Management ── -->
   <div id="daily-view-commission" style="display:none;flex-direction:column;gap:14px;">
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Commission Rates <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Used by the Commission page — reference only, not counted in income/expense</span></div>
-      <div style="font-size:11px;color:var(--tm);">Both the Vita rate (per agency, below) and the Other Center rates (per center, further down) work the same way: whatever amount was in effect <b>on the patient's own visit date</b> is what gets used — updating an amount only changes what applies from that date forward, past entries are never rewritten. UNFIT status and Test patients (Reg No contains "TEST") use their own fixed rules.</div>
+      <div style="font-size:11px;color:var(--tm);">The Per Patient Fee, VITA Commission, and Others Commission (all per agency, in Add Agency Commission below) work the same way: whatever amount was in effect <b>on the patient's own visit date</b> is what gets used — updating an amount only changes what applies from that date forward, past entries are never rewritten. Unfit Refund is never set manually — it's always this agency's own Per Patient Fee minus the Test Fee below.</div>
 
-      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border);">Fixed Rates</div>
+      <div style="font-size:11.5px;font-weight:600;color:var(--tp);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border);">Test Fee <span style="font-weight:400;color:var(--tm);">— fixed, same for everyone; also used to auto-calculate each agency's Unfit Refund</span></div>
       <div class="oc-group-grid" style="max-width:520px;">
-        <div class="ff"><label>UNFIT Patient Rate (৳)</label><input type="number" id="comm-rate-unfit" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();"></div>
-        <div class="ff"><label>Test Patient Recovery Fee (৳)</label><input type="number" id="comm-rate-testfee" min="0" value="7000" style="font-size:15px;" oninput="saveCommissionRates();"></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="ctitle"><span class="dot"></span>Add Center Commission <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Shared rate per center — applies to every agency's Slip from that center</span></div>
-      <div class="agency-form-grid">
-        <div class="ff"><label>Date</label><input type="date" id="cr-date" style="font-size:15px;"></div>
-        <div class="ff"><label>Center</label><input type="text" id="cr-center" placeholder="e.g. Veritas" list="center-dl" style="font-size:15px;"><datalist id="center-dl"></datalist></div>
-        <div class="ff"><label>Amount (৳)</label><input type="number" id="cr-amount" min="0" placeholder="0" style="font-size:15px;"></div>
-      </div>
-      <div style="margin-top:9px;display:flex;gap:8px;">
-        <button class="abtn bcom" id="cr-submit-btn" style="padding:9px 22px;white-space:nowrap;" onclick="addCenterCommissionEntry()">+ Add Center Rate</button>
-        <button class="abtn" id="cr-cancel-btn" style="padding:9px 22px;white-space:nowrap;display:none;background:var(--bg-card2);color:var(--ts);" onclick="cancelCenterCommissionEdit()">Cancel</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="ctitle"><span class="dot"></span>Center Commission Log</div>
-      <div class="tw">
-        <table class="dt">
-          <thead><tr><th>Date</th><th>Center</th><th style="text-align:right;">Amount</th><th></th></tr></thead>
-          <tbody id="centerCommissionTbody"></tbody>
-        </table>
+        <div class="ff"><label>Test Fee (৳)</label><input type="number" id="comm-rate-testfee" min="0" value="1500" style="font-size:15px;" oninput="saveCommissionRates();"></div>
       </div>
     </div>
 
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Add Agency Commission <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Reference only — not counted in income or expense</span></div>
+      <div style="font-size:11px;color:var(--tm);margin-bottom:2px;">Per Patient Fee feeds the Income page's auto-amount for this agency, and also drives the Unfit Refund (Per Patient Fee − Test Fee, calculated automatically). VITA Commission is what this agency earns when its patient gets a Vita Slip; Others Commission is what it earns for a Slip from any other center — each agency can have its own rates for both.</div>
       <div class="agency-form-grid">
-        <div class="ff"><label>Amount (৳)</label><input type="number" id="dc-amount" min="0" placeholder="0" style="font-size:15px;"></div>
+        <div class="ff"><label>Date</label><input type="date" id="dc-date" style="font-size:15px;"></div>
         <div class="ff"><label>Agency Name</label><input type="text" id="dc-agency" placeholder="ABC Agency" list="agency-dl"><datalist id="agency-dl"></datalist></div>
         <div class="ff"><label>Contact Name</label><input type="text" id="dc-contact-name" placeholder="Contact person"></div>
         <div class="ff"><label>Mobile No.</label><input type="text" id="dc-mobile" placeholder="+880 1XXXXXXXXX"></div>
         <div class="ff"><label>Address</label><input type="text" id="dc-address" placeholder="Address"></div>
         <div class="ff"><label>Note</label><input type="text" id="dc-note" placeholder="e.g. June referral"></div>
+        <div class="ff"><label>Per Patient Fee (৳)</label><input type="number" id="dc-amount" min="0" placeholder="0" style="font-size:15px;"></div>
+        <div class="ff"><label>VITA Commission (৳)</label><input type="number" id="dc-vita" min="0" placeholder="0" style="font-size:15px;"></div>
+        <div class="ff"><label>Others Commission (৳)</label><input type="number" id="dc-others" min="0" placeholder="0" style="font-size:15px;"></div>
       </div>
       <div style="margin-top:9px;display:flex;gap:8px;">
         <button class="abtn bcom" id="dc-submit-btn" style="padding:9px 22px;white-space:nowrap;" onclick="addCommissionEntry()">+ Add Commission</button>
@@ -1078,7 +1015,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
       </div>
       <div class="tw">
         <table class="dt">
-          <thead><tr><th>Date</th><th>Agency</th><th>Contact</th><th>Mobile</th><th>Address</th><th>Note</th><th style="text-align:right;">Amount</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>Agency</th><th>Contact</th><th>Mobile</th><th>Address</th><th>Note</th><th style="text-align:right;">Per Patient</th><th style="text-align:right;">VITA Comm.</th><th style="text-align:right;">Others Comm.</th><th style="text-align:right;">Unfit Refund</th><th></th></tr></thead>
           <tbody id="commissionTbody"></tbody>
         </table>
       </div>
@@ -1370,7 +1307,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
     </div>
     <div class="tw">
       <table class="dt">
-        <thead><tr><th>Month</th><th style="text-align:right;">Patients</th><th style="text-align:right;">Other Ctr Pts</th><th style="text-align:right;">Net Profit</th><th style="text-align:right;">Total Income</th><th style="text-align:right;">Total Expense</th><th style="text-align:right;">Vita Income</th><th style="text-align:right;">Other Ctr Income</th><th style="text-align:right;">Margin</th><th></th></tr></thead>
+        <thead><tr><th>Month</th><th style="text-align:right;">Patients</th><th style="text-align:right;">Net Profit</th><th style="text-align:right;">Total Income</th><th style="text-align:right;">Total Expense</th><th style="text-align:right;">Vita Income</th><th style="text-align:right;">Margin</th><th></th></tr></thead>
         <tbody id="historyTbody"></tbody>
       </table>
     </div>
@@ -2171,7 +2108,7 @@ const MN_EN=['January','February','March','April','May','June','July','August','
 const CENTERS=['Vita','Kent','Sadiq','Ready-Health','MediPath'];
 const CENTER_COLORS={'Vita':'rgba(0,212,255,.8)','Kent':'rgba(247,37,133,.8)','Sadiq':'rgba(123,47,255,.8)','Ready-Health':'rgba(0,229,160,.8)','MediPath':'rgba(255,107,53,.8)','Other Center':'rgba(245,158,11,.8)'};
 const SK='vh_data',SK2='vh_settings_v2',SK4='vh_daily',SK5='vh_other_exp',SK8='vh_notepad',SK9='vh_commission',SK10='vh_vita_patients',SK11='vh_others_patients',SK12='vh_vitaothers_patients',SK13='vh_commission_calc';
-const SK_USERS='vh_users_v2', SK_ATT='vh_attendance_v2', SK_SAL='vh_salary_v2', SK_CALC='vh_calc_v1', SK_SAL_DEL='vh_salary_deleted_v1', SK_ADV='vh_salary_advance_v1', SK_SAL_HIST='vh_salary_increment_log_v1', SK_AUDIT='vh_audit_log_v1', SK_RETRY='vh_sync_retry_v1';
+const SK_USERS='vh_users_v2', SK_ATT='vh_attendance_v2', SK_SAL='vh_salary_v2', SK_SAL_DEL='vh_salary_deleted_v1', SK_ADV='vh_salary_advance_v1', SK_SAL_HIST='vh_salary_increment_log_v1', SK_AUDIT='vh_audit_log_v1', SK_RETRY='vh_sync_retry_v1';
 // Bangladesh government public holidays 2026 (per Ministry of Public Administration circular).
 // Aug 15 is intentionally NOT included — it is not on the official 2026 govt holiday list.
 const BD_HOLIDAYS_2026=['2026-02-04','2026-02-21','2026-03-17','2026-03-18','2026-03-19','2026-03-20','2026-03-21','2026-03-22','2026-03-23','2026-03-26','2026-04-14','2026-05-01','2026-05-26','2026-05-27','2026-05-28','2026-05-29','2026-05-30','2026-05-31','2026-06-26','2026-08-05','2026-08-26','2026-09-04','2026-10-20','2026-10-21','2026-12-16','2026-12-25'];
@@ -2409,7 +2346,7 @@ function applyRoleUI(){
   // page keyword must match showPage() names and onclick attribute text
   const ACCESS={
     accountant:['daily','patients','others'],
-    staff:['operations','report']
+    staff:['operations']
   };
   const allowed=ACCESS[role]||[];
 
@@ -2605,7 +2542,7 @@ document.addEventListener('click',(e)=>{
 // BUILD SELECTS
 function buildMonthSels(){
   const cur=new Date().getMonth();
-  ['selMonth','fin-month','calc-month-filter','report-month-filter'].forEach(id=>{const el=g(id);if(!el)return;el.innerHTML='';MN_EN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;if(i===cur)o.selected=true;el.appendChild(o);});});
+  ['selMonth','fin-month','report-month-filter'].forEach(id=>{const el=g(id);if(!el)return;el.innerHTML='';MN_EN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;if(i===cur)o.selected=true;el.appendChild(o);});});
   buildMsel('d-month-filter',MN_EN,'Months');
   mselState['d-month-filter']=new Set([MN_EN[cur]]);
   updateMselLabel('d-month-filter');
@@ -2621,57 +2558,14 @@ function buildMonthSels(){
   g('fin-month').addEventListener('change',onFinanceYearMonthChange);g('fin-year').addEventListener('change',onFinanceYearMonthChange);
   const _now=new Date(),_yr=_now.getFullYear(),_mo=String(_now.getMonth()+1).padStart(2,'0'),_dy=String(_now.getDate()).padStart(2,'0');const today=`${_yr}-${_mo}-${_dy}`;g('di-date').value=today;g('de-date').value=today;
 }
-function onFinanceYearMonthChange(){g('selYear').value=g('fin-year').value;g('selMonth').value=g('fin-month').value;if(g('calc-year-filter'))g('calc-year-filter').value=g('fin-year').value;if(g('calc-month-filter'))g('calc-month-filter').value=g('fin-month').value;loadMonthData();g('yr-label').textContent=yk();updateYearSummary();}
+function onFinanceYearMonthChange(){g('selYear').value=g('fin-year').value;g('selMonth').value=g('fin-month').value;loadMonthData();g('yr-label').textContent=yk();updateYearSummary();}
 function onYearMonthChange(){loadMonthData();g('yr-label').textContent=yk();updateYearSummary();}
-// Patient Calculation page's own year/month filter — controls the same global month, kept in sync everywhere
-function onCalcFilterChange(){
-  g('fin-year').value=g('calc-year-filter').value;
-  g('fin-month').value=g('calc-month-filter').value;
-  onFinanceYearMonthChange();
-}
 
 // OTHER EXPENSES
 let otherExps=[];
 function loadOtherExps(){otherExps=loadArr(SK5);}
 
 // DUE
-
-// AUTO COUNT FROM SHEETS
-let _calcSyncTimer=null;
-// Counts Others Center patients for a given year/month, split into Medipath vs everything else (Kent bucket)
-function computeOthersCenterCounts(yr,mi){
-  const list=loadArr(SK11).filter(r=>String(r._year)===String(yr)&&Number(r._month)===Number(mi));
-  let medipathCount=0,kentCount=0;
-  list.forEach(r=>{
-    const c=(r._center||'').toLowerCase().trim();
-    if(c==='medipath')medipathCount++;else kentCount++;
-  });
-  return{kentCount,medipathCount};
-}
-function savePerPatientInputs(){
-  const k=dataKey(yk(),ym());
-  const d=loadCalc();
-  d[k]={
-    ocARate:+(g('oc-a-rate')?g('oc-a-rate').value:4000)||4000,
-    ocBRate:+(g('oc-b-rate')?g('oc-b-rate').value:3000)||3000
-  };
-  saveCalc(d);
-  if(_calcSyncTimer)clearTimeout(_calcSyncTimer);
-  _calcSyncTimer=setTimeout(()=>pushCalcToSheet(),1500);
-}
-function loadPerPatientInputs(){
-  const k=dataKey(yk(),ym());const _calc=loadCalc();const d=_calc[k]||null;
-  if(g('calc-year-filter'))g('calc-year-filter').value=yk();
-  if(g('calc-month-filter'))g('calc-month-filter').value=ym();
-  const counts=computeOthersCenterCounts(yk(),ym());
-  // OC Group A (Kent — catch-all for all non-Medipath centers)
-  if(g('oc-a-count'))g('oc-a-count').value=counts.kentCount;
-  if(g('oc-a-rate'))g('oc-a-rate').value=d&&d.ocARate!=null?d.ocARate:4000;
-  // OC Group B (Medipath)
-  if(g('oc-b-count'))g('oc-b-count').value=counts.medipathCount;
-  if(g('oc-b-rate'))g('oc-b-rate').value=d&&d.ocBRate!=null?d.ocBRate:3000;
-  if(typeof updateOcGroupTotal==='function')updateOcGroupTotal();
-}
 
 // RECALC
 function dedupeDailyRecords(){
@@ -2697,33 +2591,22 @@ function getDailyTrackerMonthTotals(){
 function recalc(){
   const dt=getDailyTrackerMonthTotals();
   g('patients').value=dt.patients;
-  // Other Center revenue — always computed live from actual Others Center patient records, no manual entry needed
-  const _pp=loadCalc()[dataKey(yk(),ym())]||null;
-  const _counts=computeOthersCenterCounts(yk(),ym());
-  const aCount=_counts.kentCount,aRate=(_pp&&_pp.ocARate!=null)?_pp.ocARate:4000;
-  const bCount=_counts.medipathCount,bRate=(_pp&&_pp.ocBRate!=null)?_pp.ocBRate:3000;
-  const _totalPts=aCount+bCount,_ocTotal=aCount*aRate+bCount*bRate;
-  const otherPts=_totalPts;
-  const otherInc=_ocTotal;
   const otherExpTotal=otherExps.reduce((a,e)=>a+e.amount,0);
   const vitaInc=dt.income;
-  const income=vitaInc+otherInc,expense=dt.expense+otherExpTotal,profit=income-expense;
+  const income=vitaInc,expense=dt.expense+otherExpTotal,profit=income-expense;
   const margin=income>0?Math.round(profit/income*100):0;
   g('m-income').textContent=fmtExact(income);g('m-expense').textContent=fmtExact(expense);if(g('m-expense-sub'))g('m-expense-sub').textContent='Variable';g('m-profit').textContent=fmtExact(profit);
   g('m-due').textContent=fmtExact(dt.due);g('m-due-sub').textContent=dt.duePts+' patients pending';
   g('m-vita').textContent=fmtExact(vitaInc);g('m-vita-sub').textContent=dt.patients+' patients via Finance';
-  g('m-other').textContent=fmtExact(otherInc);g('m-other-sub').textContent=otherPts+' pts';
   g('s-month').textContent=monthLabel(yk(),ym());g('s-patients').textContent=dt.patients.toLocaleString();
-  if(g('s-other-pts'))g('s-other-pts').textContent=(otherPts||0).toLocaleString();
   g('s-income').textContent=fmtExact(income);g('s-expense').textContent=fmtExact(expense);g('s-profit').textContent=fmtExact(profit);
-  g('s-margin').textContent=margin+'%';g('s-other').textContent=fmtExact(otherInc);
+  g('s-margin').textContent=margin+'%';
   if(g('s-vita-inc'))g('s-vita-inc').textContent=fmtExact(vitaInc);
   const badge=g('profitBadge'),sub=g('m-profit-sub'),sp=g('s-profit');
   if(profit>=0){badge.className='pbadge';badge.textContent='Profitable';sub.textContent='In profit';sub.style.color='var(--green)';sp.style.color='var(--green)';}
   else{badge.className='pbadge lbadge';badge.textContent='Loss';sub.textContent='At a loss';sub.style.color='var(--pink)';sp.style.color='var(--pink)';}
   saveSettings(getSettings());
   renderDueReminders();
-  if(g('oc-a-count')||g('oc-b-count'))updateOcGroupTotal();
   renderTodayGlance();
 }
 function renderTodayGlance(){
@@ -2741,17 +2624,12 @@ function renderTodayGlance(){
 
 // MONTH DATA
 function dataKey(yr,mi){return yr+'_'+MK[mi];}
-function loadMonthData(){loadPerPatientInputs();recalc();}
+function loadMonthData(){recalc();}
 function saveCurrentMonth(){
   const dt=getDailyTrackerMonthTotals();
-  const _pp2=loadCalc()[dataKey(yk(),ym())]||null;
-  const _counts=computeOthersCenterCounts(yk(),ym());
-  const aRate=(_pp2&&_pp2.ocARate!=null)?_pp2.ocARate:4000,bRate=(_pp2&&_pp2.ocBRate!=null)?_pp2.ocBRate:3000;
-  const otherPts=_counts.kentCount+_counts.medipathCount;
-  const otherIncome=_counts.kentCount*aRate+_counts.medipathCount*bRate;
-  const income=dt.income+otherIncome,expense=dt.expense+otherExpTotal_safe(),profit=income-expense;
+  const income=dt.income,expense=dt.expense+otherExpTotal_safe(),profit=income-expense;
   const margin=income>0?Math.round(profit/income*100):0;
-  const all=load(SK);all[dataKey(yk(),ym())]={patients:dt.patients,otherPts,income,expense,profit,margin,otherIncome,dailyExpense:dt.expense,saved:new Date().toISOString()};
+  const all=load(SK);all[dataKey(yk(),ym())]={patients:dt.patients,income,expense,profit,margin,dailyExpense:dt.expense,saved:new Date().toISOString()};
   save(SK,all);toast(monthLabel(yk(),ym())+' saved');updateYearSummary();pushToSheet();
 }
 function otherExpTotal_safe(){return otherExps.reduce((a,e)=>a+e.amount,0);}
@@ -2763,7 +2641,7 @@ function deleteMonth(yr,mi){
     const all2=load(SK);all2[key]=rec;save(SK,all2);renderHistory();updateYearSummary();pushToSheet();toast('Restored');
   });
 }
-function exportCSV(){const yr=yk(),all=load(SK);const rows=[['Month','Year','Patients','OtherPts','Income','Expense','Net Profit','Margin','Other Center Income']];MK.forEach((k,i)=>{const d=all[yr+'_'+k];if(d)rows.push([MN_EN[i],yr,d.patients,d.otherPts||0,d.income,d.expense,d.profit,d.margin+'%',d.otherIncome||0]);});dlCSV(rows,'vitahealth_finance_'+yr+'.csv');toast('CSV exported');}
+function exportCSV(){const yr=yk(),all=load(SK);const rows=[['Month','Year','Patients','Income','Expense','Net Profit','Margin']];MK.forEach((k,i)=>{const d=all[yr+'_'+k];if(d)rows.push([MN_EN[i],yr,d.patients,d.income,d.expense,d.profit,d.margin+'%']);});dlCSV(rows,'vitahealth_finance_'+yr+'.csv');toast('CSV exported');}
 
 // YEAR SUMMARY
 function updateYearSummary(){
@@ -2782,9 +2660,9 @@ function renderHistory(){
   const yr=g('hist-year').value,all=load(SK);
   const rows=MK.map((k,i)=>{const d=all[yr+'_'+k];if(!d)return null;const pc=d.profit>=0?'var(--green)':'var(--pink)';
     const vitaInc=(d.income||0)-(d.otherIncome||0);
-    return`<tr><td style="color:var(--ts);">${MN_EN[i]} ${yr}</td><td style="font-family:var(--mono);text-align:right;">${(d.patients||0).toLocaleString()}</td><td style="font-family:var(--mono);text-align:right;color:var(--yellow);">${(d.otherPts||0).toLocaleString()}</td><td style="font-family:var(--mono);text-align:right;color:${pc};">${fmtExact(d.profit)}</td><td style="font-family:var(--mono);text-align:right;color:var(--cyan);">${fmtExact(d.income)}</td><td style="font-family:var(--mono);text-align:right;color:var(--pink);">${fmtExact(d.expense)}</td><td style="font-family:var(--mono);text-align:right;color:var(--green);">${fmtExact(vitaInc)}</td><td style="font-family:var(--mono);text-align:right;color:var(--orange);">${fmtExact(d.otherIncome||0)}</td><td style="text-align:right;color:${pc};">${d.margin}%</td><td style="text-align:right;"><button onclick="deleteMonth('${yr}',${i})" style="background:rgba(247,37,133,.1);border:1px solid rgba(247,37,133,.3);color:var(--pink);border-radius:5px;padding:3px 7px;font-size:11px;cursor:pointer;">Delete</button></td></tr>`;
+    return`<tr><td style="color:var(--ts);">${MN_EN[i]} ${yr}</td><td style="font-family:var(--mono);text-align:right;">${(d.patients||0).toLocaleString()}</td><td style="font-family:var(--mono);text-align:right;color:${pc};">${fmtExact(d.profit)}</td><td style="font-family:var(--mono);text-align:right;color:var(--cyan);">${fmtExact(d.income)}</td><td style="font-family:var(--mono);text-align:right;color:var(--pink);">${fmtExact(d.expense)}</td><td style="font-family:var(--mono);text-align:right;color:var(--green);">${fmtExact(vitaInc)}</td><td style="text-align:right;color:${pc};">${d.margin}%</td><td style="text-align:right;"><button onclick="deleteMonth('${yr}',${i})" style="background:rgba(247,37,133,.1);border:1px solid rgba(247,37,133,.3);color:var(--pink);border-radius:5px;padding:3px 7px;font-size:11px;cursor:pointer;">Delete</button></td></tr>`;
   }).filter(Boolean);
-  g('historyTbody').innerHTML=rows.length?rows.join(''):'<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--tm);">No saved months for '+yr+'.</td></tr>';
+  g('historyTbody').innerHTML=rows.length?rows.join(''):'<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--tm);">No saved months for '+yr+'.</td></tr>';
 }
 
 // FINANCE - INCOME / EXPENSE
@@ -2824,33 +2702,50 @@ function switchDailySubPage(view,btn){
   document.querySelectorAll('.daily-subnav-btn').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
   g('daily-view-records').style.display=view==='records'?'flex':'none';
-  if(g('daily-view-calc'))g('daily-view-calc').style.display=view==='calc'?'flex':'none';
   if(g('daily-view-agencycomm'))g('daily-view-agencycomm').style.display=view==='agencycomm'?'flex':'none';
   g('daily-view-commission').style.display=view==='commission'?'flex':'none';
-  if(view==='calc')renderCalcPage();
   if(view==='agencycomm')renderCommissionCalc();
   if(view==='commission'){renderCommissionLog();populateAgencyDL();initCommissionRatesUI();}
 }
 
+// Unfit/Test Fee are optional per-agency overrides — an empty field means
+// "no override", so we store them as undefined (never 0) and the resolver
+// falls back to the global Default Rate. Only a value the user actually typed
+// is saved as a number.
+function readOptionalRateField(id){
+  const el=g(id);if(!el)return undefined;
+  const raw=(el.value||'').trim();
+  if(raw==='')return undefined;
+  const n=parseFloat(raw);
+  return isNaN(n)?undefined:n;
+}
 function addCommissionEntry(){
   if(addLock)return;
   const amount=parseFloat(g('dc-amount').value)||0;
-  if(amount<=0){toast('Enter a valid amount');return;}
+  if(amount<=0){toast('Enter a valid Per Patient Fee');return;}
   addLock=true;setTimeout(()=>{addLock=false;},700);
   const agency=(g('dc-agency').value||'').trim();
   const contactName=(g('dc-contact-name').value||'').trim();
   const mobile=(g('dc-mobile').value||'').trim();
   const address=(g('dc-address').value||'').trim();
   const note=(g('dc-note').value||'').trim();
-  const _cn=new Date();const date=_cn.getFullYear()+'-'+String(_cn.getMonth()+1).padStart(2,'0')+'-'+String(_cn.getDate()).padStart(2,'0');
+  const date=(g('dc-date')&&g('dc-date').value.trim())||todayStr();
+  const vitaCommission=readOptionalRateField('dc-vita');
+  const othersCommission=readOptionalRateField('dc-others');
+  const entry={id:genId('com'),date,agency,contactName,mobile,address,note,amount};
+  if(vitaCommission!==undefined)entry.vitaCommission=vitaCommission;
+  if(othersCommission!==undefined)entry.othersCommission=othersCommission;
   const all=loadArr(SK9);
-  all.push({id:genId('com'),date,agency,contactName,mobile,address,note,amount});
+  all.push(entry);
   save(SK9,all);toast('Agency commission saved');
   g('dc-amount').value='';g('dc-agency').value='';
+  if(g('dc-vita'))g('dc-vita').value='';
+  if(g('dc-others'))g('dc-others').value='';
   if(g('dc-contact-name'))g('dc-contact-name').value='';
   if(g('dc-mobile'))g('dc-mobile').value='';
   if(g('dc-address'))g('dc-address').value='';
   g('dc-note').value='';
+  if(g('dc-date'))g('dc-date').value='';
   renderCommissionLog();pushToSheet();if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
 }
 function deleteCommissionEntry(id){
@@ -2868,41 +2763,74 @@ function editCommissionEntry(id){
   editingCommissionId=id;
   g('dc-amount').value=rec.amount;
   g('dc-agency').value=rec.agency||'';
+  if(g('dc-vita'))g('dc-vita').value=(typeof rec.vitaCommission==='number')?rec.vitaCommission:'';
+  if(g('dc-others'))g('dc-others').value=(typeof rec.othersCommission==='number')?rec.othersCommission:'';
   if(g('dc-contact-name'))g('dc-contact-name').value=rec.contactName||'';
   if(g('dc-mobile'))g('dc-mobile').value=rec.mobile||'';
   if(g('dc-address'))g('dc-address').value=rec.address||'';
   g('dc-note').value=rec.note||'';
+  if(g('dc-date'))g('dc-date').value=rec.date||'';
   const btn=g('dc-submit-btn');
   if(btn){btn.textContent='Update Commission';btn.setAttribute('onclick','saveCommissionEdit()');}
   const cancelBtn=g('dc-cancel-btn');if(cancelBtn)cancelBtn.style.display='inline-block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
+// Saving an edit: if none of the rate fields changed, this is just a
+// metadata/date correction and is safe to apply in place. If any of them
+// HAVE changed, this is a real rate update — per the Agency Management rule,
+// the old amounts must keep applying to patients dated before the change, so
+// we leave the original dated entry untouched and add a brand-new entry (its
+// own date, defaulting to today) carrying the new amounts.
+// commRateFromLogHistory then resolves each patient against whichever entry
+// was in effect as of their own visit date.
 function saveCommissionEdit(){
   if(!editingCommissionId)return;
   const amount=parseFloat(g('dc-amount').value)||0;
-  if(amount<=0){toast('Enter a valid amount');return;}
+  if(amount<=0){toast('Enter a valid Per Patient Fee');return;}
   const all=loadArr(SK9);
   const idx=all.findIndex(r=>r.id===editingCommissionId);
   if(idx<0){cancelCommissionEdit();return;}
-  all[idx]={...all[idx],
-    amount,
-    agency:(g('dc-agency').value||'').trim(),
-    contactName:(g('dc-contact-name')?g('dc-contact-name').value:'').trim(),
-    mobile:(g('dc-mobile')?g('dc-mobile').value:'').trim(),
-    address:(g('dc-address')?g('dc-address').value:'').trim(),
-    note:(g('dc-note').value||'').trim()
-  };
-  save(SK9,all);toast('Commission entry updated');
+  const orig=all[idx];
+  const agency=(g('dc-agency').value||'').trim();
+  const contactName=(g('dc-contact-name')?g('dc-contact-name').value:'').trim();
+  const mobile=(g('dc-mobile')?g('dc-mobile').value:'').trim();
+  const address=(g('dc-address')?g('dc-address').value:'').trim();
+  const note=(g('dc-note').value||'').trim();
+  const date=(g('dc-date')&&g('dc-date').value.trim())||todayStr();
+  const vitaCommission=readOptionalRateField('dc-vita');
+  const othersCommission=readOptionalRateField('dc-others');
+  // Per Patient Fee, VITA Commission, and Others Commission are versioned
+  // TOGETHER as one dated snapshot per agency — a change to any of them
+  // counts as a rate update, so a fresh entry is pushed (old entry untouched,
+  // past patients keep resolving to it) rather than editing them separately.
+  const ratesChanged=amount!==orig.amount||vitaCommission!==orig.vitaCommission||othersCommission!==orig.othersCommission;
+  if(ratesChanged){
+    const entry={id:genId('com'),date,agency,contactName,mobile,address,note,amount};
+    if(vitaCommission!==undefined)entry.vitaCommission=vitaCommission;
+    if(othersCommission!==undefined)entry.othersCommission=othersCommission;
+    all.push(entry);
+    toast('New rate saved — applies from '+date+' onward; earlier patients keep the old amount');
+  }else{
+    const upd={...orig,date,agency,contactName,mobile,address,note};
+    if(vitaCommission===undefined)delete upd.vitaCommission;else upd.vitaCommission=vitaCommission;
+    if(othersCommission===undefined)delete upd.othersCommission;else upd.othersCommission=othersCommission;
+    all[idx]=upd;
+    toast('Commission entry updated');
+  }
+  save(SK9,all);
   cancelCommissionEdit();
   renderCommissionLog();pushToSheet();if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
 }
 function cancelCommissionEdit(){
   editingCommissionId=null;
   g('dc-amount').value='';g('dc-agency').value='';
+  if(g('dc-vita'))g('dc-vita').value='';
+  if(g('dc-others'))g('dc-others').value='';
   if(g('dc-contact-name'))g('dc-contact-name').value='';
   if(g('dc-mobile'))g('dc-mobile').value='';
   if(g('dc-address'))g('dc-address').value='';
   g('dc-note').value='';
+  if(g('dc-date'))g('dc-date').value='';
   const btn=g('dc-submit-btn');
   if(btn){btn.textContent='+ Add Commission';btn.setAttribute('onclick','addCommissionEntry()');}
   const cancelBtn=g('dc-cancel-btn');if(cancelBtn)cancelBtn.style.display='none';
@@ -2912,8 +2840,12 @@ function renderCommissionLog(){
   const kw=g('dc-search')?g('dc-search').value.toLowerCase().trim():'';
   let rows=loadArr(SK9).filter(r=>r.type!=='center').sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
   if(kw)rows=rows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.agency||'').toLowerCase().includes(kw)||(r.date||'').includes(kw)||(r.contactName||'').toLowerCase().includes(kw));
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--tm);">No agency records yet.</td></tr>';return;}
-  tbody.innerHTML=rows.map(r=>`<tr>
+  populateIncomeAgencyDL();
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--tm);">No agency records yet.</td></tr>';return;}
+  const testFee=loadCommissionData().rateTestFee;
+  tbody.innerHTML=rows.map(r=>{
+    const unfitRefund=(typeof r.amount==='number')?r.amount-testFee:null;
+    return`<tr>
     <td style="white-space:nowrap;font-size:12px;">${r.date||'-'}</td>
     <td style="color:var(--cyan);font-weight:500;">${escapeHtml(r.agency||'-')}</td>
     <td style="font-size:12px;color:var(--ts);">${escapeHtml(r.contactName||'-')}</td>
@@ -2921,95 +2853,23 @@ function renderCommissionLog(){
     <td style="font-size:12px;color:var(--ts);">${escapeHtml(r.address||'-')}</td>
     <td style="font-size:12px;color:var(--ts);">${escapeHtml(r.note||'-')}</td>
     <td style="font-family:var(--mono);text-align:right;color:var(--yellow);font-weight:600;">${fmtExact(r.amount)}</td>
+    <td style="font-family:var(--mono);text-align:right;color:var(--ts);">${typeof r.vitaCommission==='number'?fmtExact(r.vitaCommission):'<span style="color:var(--tm);">No Rate Set</span>'}</td>
+    <td style="font-family:var(--mono);text-align:right;color:var(--ts);">${typeof r.othersCommission==='number'?fmtExact(r.othersCommission):'<span style="color:var(--tm);">No Rate Set</span>'}</td>
+    <td style="font-family:var(--mono);text-align:right;color:var(--ts);">${unfitRefund!=null?fmtExact(unfitRefund):'-'}</td>
     <td style="text-align:right;white-space:nowrap;"><button onclick="editCommissionEntry('${r.id}')" class="rm-btn" style="color:var(--cyan);" title="Edit">&#9998;</button> <button onclick="deleteCommissionEntry('${r.id}')" class="rm-btn" title="Delete">&#10005;</button></td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
 }
 function populateAgencyDL(){
   const dl=g('agency-dl');if(!dl)return;
   const names=[...new Set([...loadArr(SK9).map(r=>r.agency),...loadArr(SK10).map(r=>r.agency)].filter(Boolean))].sort();
   dl.innerHTML=names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
 }
-const CENTER_DEFAULTS=['Veritas','Kent','KGN','Medipath','Medison'];
-function populateCenterDL(){
-  const dl=g('center-dl');if(!dl)return;
-  const names=[...new Set([...CENTER_DEFAULTS,...loadArr(SK9).filter(r=>r.type==='center').map(r=>r.center)].filter(Boolean))].sort();
-  dl.innerHTML=names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
-}
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function addCenterCommissionEntry(){
-  if(addLock)return;
-  const amount=parseFloat(g('cr-amount').value)||0;
-  const center=(g('cr-center').value||'').trim();
-  const date=(g('cr-date').value||'').trim()||todayStr();
-  if(!center){toast('Enter a center name');return;}
-  if(amount<=0){toast('Enter a valid amount');return;}
-  addLock=true;setTimeout(()=>{addLock=false;},700);
-  const all=loadArr(SK9);
-  all.push({id:genId('com'),type:'center',date,center,amount});
-  save(SK9,all);toast('Center rate saved');
-  g('cr-amount').value='';g('cr-center').value='';g('cr-date').value='';
-  renderCenterCommissionLog();populateCenterDL();pushToSheet();
-  if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
-}
-let editingCenterCommissionId=null;
-function editCenterCommissionEntry(id){
-  const rec=loadArr(SK9).find(r=>r.id===id);if(!rec)return;
-  editingCenterCommissionId=id;
-  g('cr-date').value=rec.date||'';
-  g('cr-center').value=rec.center||'';
-  g('cr-amount').value=rec.amount;
-  const btn=g('cr-submit-btn');
-  if(btn){btn.textContent='Update Center Rate';btn.setAttribute('onclick','saveCenterCommissionEdit()');}
-  const cancelBtn=g('cr-cancel-btn');if(cancelBtn)cancelBtn.style.display='inline-block';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function saveCenterCommissionEdit(){
-  if(!editingCenterCommissionId)return;
-  const amount=parseFloat(g('cr-amount').value)||0;
-  const center=(g('cr-center').value||'').trim();
-  const date=(g('cr-date').value||'').trim()||todayStr();
-  if(!center){toast('Enter a center name');return;}
-  if(amount<=0){toast('Enter a valid amount');return;}
-  const all=loadArr(SK9);
-  const idx=all.findIndex(r=>r.id===editingCenterCommissionId);
-  if(idx<0){cancelCenterCommissionEdit();return;}
-  all[idx]={...all[idx],type:'center',date,center,amount};
-  save(SK9,all);toast('Center rate updated');
-  cancelCenterCommissionEdit();
-  renderCenterCommissionLog();populateCenterDL();pushToSheet();
-  if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
-}
-function cancelCenterCommissionEdit(){
-  editingCenterCommissionId=null;
-  g('cr-amount').value='';g('cr-center').value='';g('cr-date').value='';
-  const btn=g('cr-submit-btn');
-  if(btn){btn.textContent='+ Add Center Rate';btn.setAttribute('onclick','addCenterCommissionEntry()');}
-  const cancelBtn=g('cr-cancel-btn');if(cancelBtn)cancelBtn.style.display='none';
-}
-function deleteCenterCommissionEntry(id){
-  const rec=loadArr(SK9).find(r=>r.id===id);
-  save(SK9,loadArr(SK9).filter(r=>r.id!==id));renderCenterCommissionLog();pushToSheet();
-  if(typeof renderCommissionCalc==='function'&&g('commAgencyGroups'))renderCommissionCalc();
-  toastUndo('Center rate deleted',()=>{
-    if(!rec)return;
-    const all=loadArr(SK9);
-    if(!all.find(r=>r.id===rec.id)){all.push(rec);save(SK9,all);renderCenterCommissionLog();pushToSheet();toast('Restored');}
-  });
-}
-function renderCenterCommissionLog(){
-  const tbody=g('centerCommissionTbody');if(!tbody)return;
-  const rows=loadArr(SK9).filter(r=>r.type==='center').slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--tm);">No center rates yet.</td></tr>';return;}
-  tbody.innerHTML=rows.map(r=>`<tr>
-    <td style="white-space:nowrap;font-size:12px;">${r.date||'-'}</td>
-    <td style="color:var(--purple);font-weight:500;">${escapeHtml(r.center||'-')}</td>
-    <td style="font-family:var(--mono);text-align:right;color:var(--yellow);font-weight:600;">${fmtExact(r.amount)}</td>
-    <td style="text-align:right;white-space:nowrap;"><button onclick="editCenterCommissionEntry('${r.id}')" class="rm-btn" style="color:var(--cyan);" title="Edit">&#9998;</button> <button onclick="deleteCenterCommissionEntry('${r.id}')" class="rm-btn" title="Delete">&#10005;</button></td>
-  </tr>`).join('');
-}
 function exportCommissionCSV(){
-  const rows=[['Date','Agency','Contact Name','Mobile','Address','Note','Amount']];
-  loadArr(SK9).filter(r=>r.type!=='center').forEach(r=>rows.push([r.date,r.agency||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount]));
+  const rows=[['Date','Agency','Contact Name','Mobile','Address','Note','Per Patient Fee','VITA Commission','Others Commission','Unfit Refund (auto)']];
+  const testFee=loadCommissionData().rateTestFee;
+  loadArr(SK9).filter(r=>r.type!=='center').forEach(r=>rows.push([r.date,r.agency||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount,typeof r.vitaCommission==='number'?r.vitaCommission:'',typeof r.othersCommission==='number'?r.othersCommission:'',typeof r.amount==='number'?r.amount-testFee:'']));
   dlCSV(rows,'agency_commission_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
 }
 
@@ -3026,8 +2886,8 @@ let commLastNewlyLocked=new Set(); // keys locked during the most recent sync pa
 
 function loadCommissionData(){
   const d=load(SK13);
-  if(typeof d.rateUnfit!=='number')d.rateUnfit=7000;
-  if(typeof d.rateTestFee!=='number')d.rateTestFee=7000;
+  if(typeof d.rateUnfit!=='number')d.rateUnfit=7000; // legacy field, kept for sheet-schema compatibility only — no longer used in calculations
+  if(typeof d.rateTestFee!=='number')d.rateTestFee=1500;
   if(!d.ledger||typeof d.ledger!=='object')d.ledger={};
   if(!d.batches||typeof d.batches!=='object')d.batches={}; // agency name -> [row keys] pending PDF/print
   if(!d.reconciled||typeof d.reconciled!=='object')d.reconciled={}; // agency name -> {row key: date cleared}
@@ -3040,15 +2900,11 @@ function loadCommissionData(){
 }
 function initCommissionRatesUI(){
   const d=loadCommissionData();
-  if(g('comm-rate-unfit'))g('comm-rate-unfit').value=d.rateUnfit;
   if(g('comm-rate-testfee'))g('comm-rate-testfee').value=d.rateTestFee;
-  if(g('cr-date')&&!g('cr-date').value)g('cr-date').value=todayStr();
-  renderCenterCommissionLog();
-  populateCenterDL();
+  if(g('dc-date')&&!g('dc-date').value)g('dc-date').value=todayStr();
 }
 function saveCommissionRates(){
   const d=loadCommissionData();
-  if(g('comm-rate-unfit'))d.rateUnfit=parseFloat(g('comm-rate-unfit').value)||0;
   if(g('comm-rate-testfee'))d.rateTestFee=parseFloat(g('comm-rate-testfee').value)||0;
   save(SK13,d);
   scheduleCommissionPush();
@@ -3077,7 +2933,7 @@ function commIsPaidFlag(v){
 // right now". Used identically for both per-agency Vita rates and per-center
 // Other Center rates, so updating either only affects patients going forward
 // from that date; past entries are never rewritten.
-function commRateFromLogHistory(entries,asOfDate){
+function commRateFromLogHistory(entries,asOfDate,field='amount'){
   if(!entries.length)return null;
   const sorted=entries.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||String(a.id).localeCompare(String(b.id)));
   let chosen=null;
@@ -3087,51 +2943,99 @@ function commRateFromLogHistory(entries,asOfDate){
   }else{
     chosen=sorted[sorted.length-1];
   }
-  const amt=chosen.amount;
+  const amt=chosen[field];
   return typeof amt==='number'?amt:(parseFloat(amt)||null);
 }
-// The Vita-slip rate for an agency comes straight from the Agency Commission
-// Log (SK9) — whichever Amount was in effect for that agency as of the
-// patient's own visit date.
-function commAgencyVitaRateFromLog(agency,asOfDate){
+// Per Patient Fee — feeds the Income page's auto-amount for this agency AND
+// the Unfit Refund formula below. Resolved as of the patient's own visit
+// date, same history rule as everything else here. Distinct from the two
+// Commission fields below: this is what the agency charges per patient, not
+// what Vita pays the agency back for a referral.
+function commAgencyFeeFromLog(agency,asOfDate){
   const norm=(agency||'').trim().toLowerCase();
   if(!norm)return null;
   const entries=loadArr(SK9).filter(r=>r.type!=='center'&&(r.agency||'').trim().toLowerCase()===norm);
   return commRateFromLogHistory(entries,asOfDate);
 }
-// The Other Center rate (Veritas/Kent/KGN/Medipath/Medison, or any other
-// center name) comes from the Center Commission Log (SK9, type='center') —
-// shared by every agency, also resolved as of the patient's own visit date.
-function commOtherCenterRateFor(slip,asOfDate){
-  const norm=(slip||'').trim().toLowerCase();
+// The Vita-slip commission for an agency comes straight from that agency's
+// own VITA Commission field in the Agency Commission Log (SK9) — whichever
+// value was in effect as of the patient's own visit date.
+function commAgencyVitaCommissionFromLog(agency,asOfDate){
+  const norm=(agency||'').trim().toLowerCase();
   if(!norm)return null;
-  const entries=loadArr(SK9).filter(r=>r.type==='center'&&(r.center||'').trim().toLowerCase()===norm);
-  return commRateFromLogHistory(entries,asOfDate);
+  const entries=loadArr(SK9).filter(r=>r.type!=='center'&&(r.agency||'').trim().toLowerCase()===norm&&typeof r.vitaCommission==='number');
+  return commRateFromLogHistory(entries,asOfDate,'vitaCommission');
+}
+// The Other-Center-slip commission for an agency comes from that same
+// agency's own Others Commission field — one rate per agency, applying to a
+// Slip from ANY center other than Vita (Kent, KGN, Medipath, Medison, etc.).
+// Each agency sets its own rate here; it's no longer a single rate shared by
+// every agency per center.
+function commAgencyOthersCommissionFromLog(agency,asOfDate){
+  const norm=(agency||'').trim().toLowerCase();
+  if(!norm)return null;
+  const entries=loadArr(SK9).filter(r=>r.type!=='center'&&(r.agency||'').trim().toLowerCase()===norm&&typeof r.othersCommission==='number');
+  return commRateFromLogHistory(entries,asOfDate,'othersCommission');
+}
+// The agency's "due amount" against a test/discounted patient — this
+// agency's own Per Patient Fee (as of the patient's visit date) minus the
+// fixed, global Test Fee. E.g. an 8500 fee → 7000 due, a 9000 fee →
+// 7500 due, a 12000 fee → 10500 due. Used two ways in commRateFor: as the
+// straight Unfit Refund for a regular (non-test) UNFIT patient, and as the
+// amount deducted from a TEST patient's referral commission once their Slip
+// arrives. Returns null if this agency has no Per Patient Fee configured yet
+// (nothing to base it on).
+function commAgencyUnfitRefund(agency,asOfDate,testFee){
+  const fee=commAgencyFeeFromLog(agency,asOfDate);
+  if(typeof fee!=='number')return null;
+  return fee-testFee;
 }
 // Determine which rate applies to a row right now.
-// - UNFIT status always wins over Slip (Slip is irrelevant for an unfit patient);
-//   uses the fixed UNFIT rate.
-// - Otherwise Slip decides: "Vita" → that agency's own Vita rate (Agency
-//   Commission Log); any other named center → that center's shared rate
-//   (Center Commission Log) — both resolved as of the patient's visit date.
-// - If Slip is still blank: regular patients get the agency's own Vita rate as
-//   an unresolved advance (lockable, if that agency has a rate configured);
-//   TEST patients get NOTHING and are not lockable at all until a Slip
-//   appears — they already paid a discounted test fee up front.
-// - If the applicable rate (agency Vita rate, or the matching Other Center
-//   rate) hasn't been configured yet, the row is held back (not lockable)
-//   with reason 'no-rate-configured' so nothing gets locked at a wrong ৳0.
-// - Once a TEST patient's Slip appears, the Test Recovery Fee is deducted from
-//   whatever the normal rate would have been (can go negative — the agency
-//   then owes that amount back, since the test-fee shortfall is being recovered).
+// - UNFIT status always wins over Slip (Slip is irrelevant for an unfit patient).
+//   For a regular (non-test) patient this pays out the Unfit Refund — this
+//   agency's own Per Patient Fee minus the Test Fee. A TEST patient
+//   who is UNFIT gets ৳0 — no calculation at all (see below).
+// - Otherwise Slip decides: "Vita" → that agency's own VITA Commission; any
+//   other named center → that same agency's own Others Commission — both
+//   resolved as of the patient's visit date (each agency sets its own rate
+//   for both, no longer a rate shared across agencies per center).
+// - If Slip is still blank: regular patients get the agency's own VITA
+//   Commission as an unresolved advance (lockable, if that agency has a rate
+//   configured); TEST patients get NOTHING and are not lockable at all,
+//   regardless of Fit/Unfit status, until a Slip appears — they already
+//   paid a discounted ৳1500 test fee up front and nothing is calculated
+//   until the Slip settles things.
+// - If the applicable rate (agency's VITA/Others Commission) hasn't been
+//   configured yet, the row is held back (not lockable) with reason
+//   'no-rate-configured' so nothing gets locked at a wrong ৳0.
+// - Once a TEST patient's Slip appears, this agency's "due amount" (Per
+//   Patient Fee minus the ৳1500 already paid) is deducted straight from
+//   whatever VITA/Others Commission would have applied (can go negative —
+//   the agency then owes that amount back, since their referral commission
+//   didn't cover the discount they gave the patient up front).
 function commRateFor(r,data){
   const isTest=commIsTestPatient(r);
-  if(commIsUnfit(r.status)){
-    const amount=data.rateUnfit-(isTest?data.rateTestFee:0);
-    return{amount,resolved:true,lockable:true,reason:isTest?'unfit-test':'unfit'};
-  }
   const agency=(r.agency||'Unknown').trim()||'Unknown';
-  const agencyVitaRate=commAgencyVitaRateFromLog(agency,r.date);
+  // Test Fee is a single fixed amount for everyone (৳1500),
+  // not agency-specific.
+  const testFee=data.rateTestFee;
+  // "Due amount" — what's still owed against this agency's own Per Patient
+  // Fee after the ৳1500 test payment (e.g. 8500 fee → 7000 due, 12000 fee →
+  // 10500 due). Used two ways below: as the straight Unfit Refund for a
+  // regular UNFIT patient, and as the deduction from a TEST patient's
+  // referral commission once their Slip arrives (see the isTest branch
+  // further down) — never a flat ৳1500 subtraction, always this agency's
+  // actual due amount.
+  const dueAmount=commAgencyUnfitRefund(agency,r.date,testFee);
+  if(commIsUnfit(r.status)){
+    // UNFIT + Test patient: agency gets nothing — the test fee already
+    // covered/exceeded whatever refund would apply, so there's nothing left
+    // to pay out.
+    if(isTest)return{amount:0,resolved:true,lockable:true,reason:'unfit-test'};
+    if(dueAmount==null)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
+    return{amount:dueAmount,resolved:true,lockable:true,reason:'unfit'};
+  }
+  const agencyVitaRate=commAgencyVitaCommissionFromLog(agency,r.date);
   const hasAgencyRate=typeof agencyVitaRate==='number';
   const slip=(r.slips||'').trim();
   if(!slip){
@@ -3145,11 +3049,17 @@ function commRateFor(r,data){
     if(!hasAgencyRate)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
     base=agencyVitaRate;
   }else{
-    const otherRate=commOtherCenterRateFor(slip,r.date);
+    const otherRate=commAgencyOthersCommissionFromLog(agency,r.date);
     if(otherRate==null)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
     base=otherRate;
   }
-  const amount=isTest?(base-data.rateTestFee):base;
+  // TEST patient whose Slip has now arrived: this agency owes the dueAmount
+  // (their Per Patient Fee minus the ৳1500 they already paid up front) — that
+  // gets deducted straight from their referral commission for this Slip, not
+  // a flat ৳1500. If dueAmount can't be worked out (no Per Patient Fee on
+  // file for this agency), hold the row back rather than guess.
+  if(isTest&&dueAmount==null)return{amount:0,resolved:false,lockable:false,reason:'no-rate-configured'};
+  const amount=isTest?(base-dueAmount):base;
   return{amount,resolved:true,lockable:true,reason:isTest?(isVita?'vita-test':'other-test'):(isVita?'vita':'other')};
 }
 // Lock any row the sheet marks "Paid" that hasn't been locked yet (and is
@@ -3395,9 +3305,9 @@ function renderCommissionCalc(){
       const slipLabel=x.hasSlip?escapeHtml(x.slip):'No Slip Yet';
       const isTest=commIsTestPatient(r);
       const testTag=isTest?' <span class="comm-test-tag">TEST</span>':'';
-      const rateNote=x.rateReason==='unfit-test'?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(UNFIT − Test Fee)</span>'
-        :x.rateReason==='unfit'?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(UNFIT rate)</span>'
-        :(x.rateReason==='vita-test'||x.rateReason==='other-test')?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(− Test Fee)</span>'
+      const rateNote=x.rateReason==='unfit-test'?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(TEST + UNFIT — ৳0)</span>'
+        :x.rateReason==='unfit'?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(Unfit Refund)</span>'
+        :(x.rateReason==='vita-test'||x.rateReason==='other-test')?' <span style="font-size:9.5px;color:var(--pink);font-weight:600;">(− Agency Due)</span>'
         :'';
       const meta=COMM_STATUS_META[x.status];
       const badge=`<span class="comm-badge ${meta.cls}">${x.isNew?'&#10024; New — ':''}${meta.label}</span>${x.status==='reconciled'&&x.reconciledAt?`<div style="font-size:9px;color:var(--tm);margin-top:2px;">on ${x.reconciledAt}</div>`:''}`;
@@ -3457,7 +3367,7 @@ function commPdfCopyBlock(agencyName,batchItems,gross,adjustment,net){
   const statusLine=Object.entries(statusCounts).map(([st,cnt])=>`<span style="color:${sc(st)};font-weight:700;">${escapeHtml(st)}: ${cnt}</span>`).join('&nbsp;&nbsp;&middot;&nbsp;&nbsp;');
   // Group by rate bucket: UNFIT status wins regardless of slip; otherwise group by the
   // actual Slip text (Vita / Veritas / Kent / ...), or "No Slip Yet" for the advance rate.
-  // Test-patient rows (Test Recovery Fee already deducted) get their own labeled bucket
+  // Test-patient rows (Test Fee already deducted) get their own labeled bucket
   // so the negative/reduced rate isn't confused with a regular patient's rate.
   const groups={}; // label -> {total, count, uniformRate|null}
   batchItems.forEach(x=>{
@@ -3564,12 +3474,30 @@ function switchDailyTab(type){
   g('dt-form-income').classList.toggle('show',type==='income');
   g('dt-form-expense').classList.toggle('show',type==='expense');
 }
+// If an Agency is entered and it has a Per Patient Fee configured in the
+// Agency Commission Log (as of the entry's date), that rate is used instead
+// of the generic INCOME_RATE default. Leaving Agency blank keeps the old
+// flat-rate behavior untouched.
+function resolveIncomeRate(){
+  const agency=(g('di-agency')&&g('di-agency').value||'').trim();
+  if(agency){
+    const date=(g('di-date')&&g('di-date').value)||todayStr();
+    const rate=commAgencyFeeFromLog(agency,date);
+    if(typeof rate==='number')return rate;
+  }
+  return INCOME_RATE;
+}
 function calcIncomeAmount(){
   if(incomeManualAmt)return;
   const pts=parseInt(g('di-patients').value)||0;
-  setAmountField(g('di-amount'),pts*INCOME_RATE);
+  setAmountField(g('di-amount'),pts*resolveIncomeRate());
 }
 function onIncomeAmountEdited(){incomeManualAmt=true;}
+function populateIncomeAgencyDL(){
+  const dl=g('income-agency-dl');if(!dl)return;
+  const names=[...new Set([...loadArr(SK9).map(r=>r.agency),...loadArr(SK10).map(r=>r.agency)].filter(Boolean))].sort();
+  dl.innerHTML=names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
+}
 let addLock=false;
 function genId(prefix){return prefix+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);}
 function addIncomeEntry(){
@@ -3580,14 +3508,15 @@ function addIncomeEntry(){
   const pts=parseInt(g('di-patients').value)||0;
   const amountEl=g('di-amount'),amount=numVal(amountEl);
   const status=g('di-status').value,note=g('di-note').value.trim();
+  const agency=(g('di-agency')&&g('di-agency').value||'').trim();
   clearFieldError(amountEl);
   if(amount<=0&&status!=='free'){showFieldError(amountEl,'Enter a valid amount');toast('Enter a valid amount');return;}
   addLock=true;setTimeout(()=>{addLock=false;},700);
   const _dp=date.split('-');const yr=_dp[0],mi=parseInt(_dp[1],10)-1,all=loadArr(SK4);
-  all.push({id:genId('inc'),type:'income',date,patients:pts,amount,status,note,year:yr,month:mi,addedBy:currentName(),addedByRole:currentRole()});
+  all.push({id:genId('inc'),type:'income',date,patients:pts,amount,status,note,agency,year:yr,month:mi,addedBy:currentName(),addedByRole:currentRole(),addedByUsername:currentUser()});
   save(SK4,all);toast(status==='due'?'Due income added':status==='free'?'Free entry added':'Income added');
   logAudit('Income Added',date+' — ৳'+amount+' ('+status+')');
-  g('di-patients').value=1;setAmountField(g('di-amount'),INCOME_RATE);g('di-status').value='paid';g('di-note').value='';incomeManualAmt=false;
+  g('di-patients').value=1;if(g('di-agency'))g('di-agency').value='';incomeManualAmt=false;setAmountField(g('di-amount'),resolveIncomeRate());g('di-status').value='paid';g('di-note').value='';
   renderDailyTable();recalc();pushToSheet();
 }
 function onIncomeStatusChange(){
@@ -3605,7 +3534,7 @@ function addExpenseEntry(){
   addLock=true;setTimeout(()=>{addLock=false;},700);
   const note=g('de-note').value.trim();
   const _dp2=date.split('-');const yr=_dp2[0],mi=parseInt(_dp2[1],10)-1,all=loadArr(SK4);
-  all.push({id:genId('exp'),type:'expense',date,patients:0,amount,status:'',note,year:yr,month:mi,addedBy:currentName(),addedByRole:currentRole()});
+  all.push({id:genId('exp'),type:'expense',date,patients:0,amount,status:'',note,year:yr,month:mi,addedBy:currentName(),addedByRole:currentRole(),addedByUsername:currentUser()});
   save(SK4,all);toast('Expense added');
   logAudit('Expense Added',date+' — ৳'+amount);
   g('de-amount').value='';g('de-amount').dataset.raw='';g('de-note').value='';
@@ -3645,6 +3574,17 @@ function dTypeFilterMatch(r,tfArr){
     return r.type===tf;
   });
 }
+// Admin always sees every Income/Expense entry. Any other role (Accountant,
+// etc.) only sees entries THEY personally added — not other Accountants',
+// and not Admin's — matched by username, falling back to the saved display
+// name for older entries recorded before addedByUsername existed.
+function isOwnDailyEntry(r){
+  if(r.addedByUsername)return r.addedByUsername===currentUser();
+  return(r.addedBy||'')===currentName();
+}
+function visibleDailyRows(rows){
+  return currentRole()==='admin'?rows:rows.filter(isOwnDailyEntry);
+}
 function renderDailyTable(){
   const yr=g('d-year-filter').value;
   const miArr=mselValues('d-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
@@ -3653,7 +3593,7 @@ function renderDailyTable(){
   const tfArr=mselValues('d-type-filter').map(v=>v.toLowerCase());
   if(g('d-date-clear'))g('d-date-clear').style.display=dateF?'block':'none';
 
-  const all=loadArr(SK4);
+  const all=visibleDailyRows(loadArr(SK4));
   const monthRows=all.filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month)));
   const mInc=monthRows.filter(r=>r.type==='income'&&(r.status==='paid'||!r.status)).reduce((a,r)=>a+(r.amount||0),0);
   const mDue=monthRows.filter(r=>r.type==='income'&&r.status==='due').reduce((a,r)=>a+(r.amount||0),0);
@@ -3663,14 +3603,14 @@ function renderDailyTable(){
   g('d-total-expense').textContent=fmtExact(mExp);g('d-total-net').textContent=fmtExact(mNet);g('d-total-net').style.color=mNet>=0?'var(--green)':'var(--pink)';
 
   let rows;
-  if(kw){rows=monthRows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.date||'').includes(kw));}
+  if(kw){rows=monthRows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.date||'').includes(kw)||(r.agency||'').toLowerCase().includes(kw));}
   else{rows=monthRows;if(dateF)rows=rows.filter(r=>r.date===dateF);}
   rows=rows.filter(r=>dTypeFilterMatch(r,tfArr));
   rows=rows.slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
 
   const tbody=g('dailyTbody');
   if(!rows.length){
-    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--tm);">No records found.</td></tr>';return;
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--tm);">No records found.</td></tr>';return;
   }
   tbody.innerHTML=rows.map(r=>{
     const isIncome=r.type==='income',isDue=isIncome&&r.status==='due',isFree=isIncome&&r.status==='free';
@@ -3680,14 +3620,14 @@ function renderDailyTable(){
     const amtSign=isIncome?'+':'-';
     const markPaidBtn=isDue?`<button onclick="markEntryPaid('${r.id}')" class="paid-btn" title="Mark as Paid">&#10003; Paid</button>`:'';
     const addedByTag=r.addedByRole?`<span class="sb" style="background:${r.addedByRole==='admin'?'rgba(0,212,255,.12)':r.addedByRole==='accountant'?'rgba(157,78,221,.12)':'rgba(148,163,184,.12)'};color:${r.addedByRole==='admin'?'var(--cyan)':r.addedByRole==='accountant'?'var(--purple)':'var(--ts)'};font-size:9.5px;margin-left:6px;vertical-align:middle;">${escapeHtml(r.addedBy||r.addedByRole)}</span>`:'';
-    return`<tr><td style="font-weight:500;white-space:nowrap;">${r.date}${addedByTag}</td><td>${typeBadge}</td><td style="font-family:var(--mono);color:var(--cyan);">${isIncome?(r.patients||0):'-'}</td><td style="font-family:var(--mono);text-align:right;color:${amtColor};font-weight:500;">${amtSign}${fmtExact(r.amount)}</td><td>${statusBadge}</td><td style="color:var(--ts);font-size:12px;max-width:240px;">${r.note?escapeHtml(r.note):'-'}</td><td style="text-align:right;white-space:nowrap;">${markPaidBtn}<button onclick="deleteDailyEntry('${r.id}')" class="rm-btn">&#10005;</button></td></tr>`;
+    return`<tr><td style="font-weight:500;white-space:nowrap;">${r.date}${addedByTag}</td><td>${typeBadge}</td><td style="font-family:var(--mono);color:var(--cyan);">${isIncome?(r.patients||0):'-'}</td><td style="font-size:12px;color:var(--ts);">${isIncome&&r.agency?escapeHtml(r.agency):'-'}</td><td style="font-family:var(--mono);text-align:right;color:${amtColor};font-weight:500;">${amtSign}${fmtExact(r.amount)}</td><td>${statusBadge}</td><td style="color:var(--ts);font-size:12px;max-width:240px;">${r.note?escapeHtml(r.note):'-'}</td><td style="text-align:right;white-space:nowrap;">${markPaidBtn}<button onclick="deleteDailyEntry('${r.id}')" class="rm-btn">&#10005;</button></td></tr>`;
   }).join('');
 }
 function exportDailyCSV(){
   const yr=g('d-year-filter').value;
   const miArr=mselValues('d-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
-  const rows=[['Date','Type','Patients','Amount','Status','Note','Added By']];
-  loadArr(SK4).filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month))).sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>rows.push([r.date,r.type,r.patients||'',r.amount,r.status||'',r.note||'',r.addedBy||'']));
+  const rows=[['Date','Type','Patients','Agency','Amount','Status','Note','Added By']];
+  visibleDailyRows(loadArr(SK4)).filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month))).sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>rows.push([r.date,r.type,r.patients||'',r.agency||'',r.amount,r.status||'',r.note||'',r.addedBy||'']));
   dlCSV(rows,'vitahealth_daily_'+yr+'_'+(miArr.length===1?MN_EN[miArr[0]]:miArr.length?'multi':'all')+'.csv');toast('Exported');
 }
 function getFilteredDailyRows(){
@@ -3696,7 +3636,7 @@ function getFilteredDailyRows(){
   const dateF=g('d-date-filter')?g('d-date-filter').value:'';
   const kw=(g('d-search')?g('d-search').value:'').trim().toLowerCase();
   const tfArr=mselValues('d-type-filter').map(v=>v.toLowerCase());
-  const all=loadArr(SK4);
+  const all=visibleDailyRows(loadArr(SK4));
   const monthRows=all.filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month)));
   let rows;
   if(kw){rows=monthRows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.date||'').includes(kw));}
@@ -4274,7 +4214,7 @@ ${summaryCards}
 async function syncOthersNow(){
   toast('Pulling from Others Center Sheet...');
   const ok=await othersPull();
-  if(ok){renderOthersPatients();recalc();if(g('oc-a-count')||g('oc-b-count'))loadPerPatientInputs();toast('Others Center data updated!');}
+  if(ok){renderOthersPatients();recalc();toast('Others Center data updated!');}
   else{toast('Others sync failed — check URL in Settings');}
 }
 
@@ -4873,7 +4813,7 @@ async function syncPull(){
     try{
       if(data.daily&&data.daily.length>1){
         const merged=new Map();
-        for(let i=1;i<data.daily.length;i++){const r=data.daily[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);const parsedDate=parseSheetDate(r[2]||'');const dp=parsedDate.split('-');merged.set(id,{id,type:r[1]||'expense',date:parsedDate,patients:+r[3]||0,amount:+r[4]||0,status:r[5]||'',note:r[6]||'',year:dp[0]||String(r[7]||''),month:dp[1]?parseInt(dp[1],10)-1:+r[8]||0,addedBy:r[9]||'',addedByRole:r[10]||''});}
+        for(let i=1;i<data.daily.length;i++){const r=data.daily[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);const parsedDate=parseSheetDate(r[2]||'');const dp=parsedDate.split('-');merged.set(id,{id,type:r[1]||'expense',date:parsedDate,patients:+r[3]||0,amount:+r[4]||0,status:r[5]||'',note:r[6]||'',year:dp[0]||String(r[7]||''),month:dp[1]?parseInt(dp[1],10)-1:+r[8]||0,addedBy:r[9]||'',addedByRole:r[10]||'',addedByUsername:r[11]||'',agency:r[12]||''});}
         // The Sheet is the source of truth: a local record missing from the Sheet means it
         // was deleted on another device, so it should NOT be kept around here. The one
         // exception is if THIS device has a push still pending/failed (queued for retry) —
@@ -4892,13 +4832,38 @@ async function syncPull(){
         const cmerged=new Map();
         for(let i=1;i<data.commission.length;i++){
           const r=data.commission[i];if(r[0]==null||r[0]==='')continue;const id=String(r[0]);
-          // Support old (5-col), old (8-col), and new (10-col, with type/center) formats
-          const is10=r.length>=10;
-          const is8=r.length>=8&&!is10;
-          const is5=r.length>=5&&!is8&&!is10;
+          // Support old (5-col), old (8-col), old (10/11-col, with type/center
+          // and a trailing legacy unfitAmount), and the current 12-col format
+          // that appends per-agency vitaCommission/othersCommission instead.
+          const is12=r.length>=12;
+          const is10=r.length>=10&&!is12;
+          const is8=r.length>=8&&!is10&&!is12;
+          const is5=r.length>=5&&!is8&&!is10&&!is12;
           // Normalize date: Sheets sometimes returns an Excel serial number (e.g. 46196)
           // instead of a string when a cell was manually typed without explicit date format.
-          if(is10){
+          if(is12){
+            const rawVita=r[10],rawOthers=r[11];
+            const entry={
+              id,
+              type:String(r[1]||'agency'),
+              date:parseSheetDate(r[2]),
+              agency:String(r[3]||''),
+              center:String(r[4]||''),
+              contactName:String(r[5]||''),
+              mobile:String(r[6]||''),
+              address:String(r[7]||''),
+              note:String(r[8]||''),
+              amount:+r[9]||0
+            };
+            if(rawVita!==undefined&&rawVita!==null&&rawVita!=='')entry.vitaCommission=+rawVita||0;
+            if(rawOthers!==undefined&&rawOthers!==null&&rawOthers!=='')entry.othersCommission=+rawOthers||0;
+            cmerged.set(id,entry);
+          }else if(is10){
+            // Legacy 10/11-col rows (pre-dating VITA/Others Commission): the old
+            // trailing unfitAmount column, if present, is no longer meaningful
+            // under the new per-agency Vita/Others Commission model, so it's
+            // simply dropped here — re-enter this agency's rates in Agency
+            // Commission Log to populate the new fields.
             cmerged.set(id,{
               id,
               type:String(r[1]||'agency'),
@@ -4935,23 +4900,6 @@ async function syncPull(){
       }
     }catch(e){console.log('Commission section parse failed:',e);}
     try{
-      // ── CALC DATA: restore Patient Calculation from Sheet ──
-      // Apps Script returns sheet names as-is; try multiple key variants
-      const calcRaw=data.calc_data||data['calc_data']||data.Calc_data||data['Calc Data']||null;
-      if(calcRaw&&calcRaw.length>1){
-        const calcData=loadCalc();
-        for(let i=1;i<calcRaw.length;i++){
-          const r=calcRaw[i];if(!r||!r[0])continue;
-          calcData[String(r[0])]={
-            ocARate:(r[6]!==undefined&&r[6]!==''&&r[6]!==null)?+r[6]:4000,
-            ocBRate:(r[9]!==undefined&&r[9]!==''&&r[9]!==null)?+r[9]:3000
-          };
-        }
-        saveCalc(calcData);
-        pushCalcToSheet();
-      }
-    }catch(e){console.log('Calc data section parse failed:',e);}
-    try{
       // ── COMMISSION CALCULATION: restore rates/ledger/batches/reconciled from Sheet ──
       const commRaw=data.commission_calc||data['commission_calc']||null;
       if(commRaw&&commRaw.length>1){
@@ -4960,7 +4908,7 @@ async function syncPull(){
         const iType=gi('type'),iKey=gi('key'),iAgency=gi('agency'),iDisb=gi('disbursedamount'),iResolved=gi('resolvedamount'),
               iLocked=gi('lockedat'),iSlip=gi('slipatlock'),iStatus=gi('statusatlock'),
               iRU=gi('rateunfit'),iRT=gi('ratetestfee');
-        const sheetData={rateUnfit:7000,rateTestFee:7000,ledger:{},batches:{},reconciled:{}};
+        const sheetData={rateUnfit:7000,rateTestFee:1500,ledger:{},batches:{},reconciled:{}};
         for(let i=1;i<commRaw.length;i++){
           const r=commRaw[i];if(!r)continue;
           const type=String(r[iType]||'').trim();
@@ -5179,23 +5127,6 @@ async function pushToSheet(){
   }catch(e){setSyncStatus('error');queueRetry('main');pushInFlight.main=false;return false;}
 }
 
-async function pushCalcToSheet(){
-  const s=getSettings();
-  const url=s.scriptUrl||((s.dailyUrls&&s.dailyUrls.length)?s.dailyUrls.find(e=>e.url)?.url:'');
-  if(!url)return;
-  const pp=loadCalc();
-  const calcRows=[['month_key','unfitPts','unfitDeduction','otherPts','otherRate','ocACount','ocARate','ocAMonth','ocBCount','ocBRate','ocBMonth']];
-  Object.entries(pp).forEach(([k,d])=>{
-    calcRows.push([k,d.unfitPts||0,d.unfitDeduction!=null?d.unfitDeduction:7000,d.otherPts||0,d.otherRate||0,
-      d.ocACount||0,d.ocARate!=null?d.ocARate:4000,d.ocAMonth!=null?d.ocAMonth:new Date().getMonth(),
-      d.ocBCount||0,d.ocBRate!=null?d.ocBRate:3000,d.ocBMonth!=null?d.ocBMonth:new Date().getMonth()]);
-  });
-  if(calcRows.length<2)return; // no data rows — don't push empty
-  try{
-    await fetch(url,{method:'POST',body:JSON.stringify({calc_data:calcRows}),headers:{'Content-Type':'text/plain'}});
-  }catch(e){console.warn('Calc push failed:',e);}
-}
-
 // ── COMMISSION CALCULATION SYNC ──────────────────────────────────────────
 // Serializes rates/ledger/batches/reconciled into a flat sheet-friendly table
 // (self-describing via a "type" column) and pushes it as a "commission_calc"
@@ -5396,7 +5327,7 @@ async function manualSync(){
   // if nothing changed locally, pushing the same current state again is harmless.
   let pushOk=true;
   if(hasDailyUrl){
-    const r1=await pushToSheet();       // finance, daily, other_exp, commission, users, calc_data, attendance
+    const r1=await pushToSheet();       // finance, daily, other_exp, commission, users, attendance
     const r2=await pushSalaryToSheet(); // salary pushed separately by design
     pushOk=(r1!==false)&&(r2!==false);
   }
@@ -5420,7 +5351,7 @@ function startAutoSync(){
   autoSyncTimer=setInterval(async()=>{
     if(hasDailyUrl){await syncPull();loadOtherExps();recalc();}
     if(hasVitaUrl)await vitaPull();
-    if(hasOthersUrl){await othersPull();recalc();if(g('oc-a-count')||g('oc-b-count'))loadPerPatientInputs();}
+    if(hasOthersUrl){await othersPull();recalc();}
     if(hasVitaOthersUrl)await vitaOthersPull();
     if(g('page-daily')&&g('page-daily').classList.contains('active')){renderDailyTable();renderCommissionLog();}
     if(g('page-patients')&&g('page-patients').classList.contains('active'))renderVitaPatients();
@@ -5909,8 +5840,6 @@ ${staffPages}
 function loadSalary(){try{return JSON.parse(localStorage.getItem(SK_SAL))||[];}catch{return[];}}
 function loadSalaryDeleted(){try{return JSON.parse(localStorage.getItem(SK_SAL_DEL))||[];}catch{return[];}}
 function saveSalaryDeleted(a){localStorage.setItem(SK_SAL_DEL,JSON.stringify(a));}
-function loadCalc(){try{return JSON.parse(localStorage.getItem(SK_CALC))||{};}catch{return{};}}
-function saveCalc(d){localStorage.setItem(SK_CALC,JSON.stringify(d));}
 function saveSalaryData(a){localStorage.setItem(SK_SAL,JSON.stringify(a));}
 
 function addSalary(){
@@ -6492,39 +6421,6 @@ function scheduleAutoBackup(){
   },60*60*1000); // check every hour
 }
 
-// ═══════════════════════════ PATIENT CALCULATION PAGE ═══════════════════════════
-
-function renderCalcPage(){
-  // Pull from sheets first so data is fresh after login/reload
-  const s=getSettings();
-  const hasUrl=s.scriptUrl||((s.dailyUrls&&s.dailyUrls.length)?s.dailyUrls.find(e=>e.url):null);
-  const hasOthersUrl=(s.othersUrls&&s.othersUrls.length)||s.othersScriptUrl;
-  const jobs=[];
-  if(hasUrl)jobs.push(syncPull());
-  if(hasOthersUrl)jobs.push(othersPull());
-  if(jobs.length){
-    Promise.all(jobs).then(()=>{
-      loadPerPatientInputs();
-      updateOcGroupTotal();
-      recalc();
-    });
-  } else {
-    loadPerPatientInputs();
-    updateOcGroupTotal();
-  }
-}
-
-function updateOcGroupTotal(){
-  const aCount=parseInt((g('oc-a-count')||{}).value)||0;
-  const aRate=parseFloat((g('oc-a-rate')||{}).value)||4000;
-  const bCount=parseInt((g('oc-b-count')||{}).value)||0;
-  const bRate=parseFloat((g('oc-b-rate')||{}).value)||3000;
-  const aTotal=aCount*aRate, bTotal=bCount*bRate, combined=aTotal+bTotal;
-  if(g('oc-a-total'))g('oc-a-total').textContent=fmtExact(aTotal);
-  if(g('oc-b-total'))g('oc-b-total').textContent=fmtExact(bTotal);
-  if(g('calc-other-total'))g('calc-other-total').textContent=fmtExact(combined);
-}
-
 // ═══════════════════════════ AGENCY PATIENT SHARE CARD ═══════════════════════════
 // ---- SVG helpers (Report page) ----
 // ---- SVG helpers (Report page) ----
@@ -6716,28 +6612,23 @@ function rptBarList(el,counts,emptyMsg,maxRows){
     </div>`;
   }).join('')+`</div>`;
 }
-// Vita/Other Center income split — mirrors the same formula used on the Finance
-// (Patient Calculation) page, so the Report page always agrees with it.
+// Vita income for a given month — mirrors the Finance page's own figure so
+// the Report page always agrees with it.
 function computeCenterIncomeFor(yr,mi){
   const dailyRows=loadArr(SK4).filter(r=>String(r.year)===String(yr)&&+r.month===mi);
   const vitaInc=dailyRows.filter(r=>r.type==='income'&&(r.status==='paid'||!r.status)).reduce((a,r)=>a+(r.amount||0),0);
   const due=dailyRows.filter(r=>r.type==='income'&&r.status==='due').reduce((a,r)=>a+(r.amount||0),0);
   const duePts=dailyRows.filter(r=>r.type==='income'&&r.status==='due').reduce((a,r)=>a+(r.patients||0),0);
   const expense=dailyRows.filter(r=>r.type==='expense').reduce((a,r)=>a+(r.amount||0),0);
-  const counts=computeOthersCenterCounts(yr,mi);
-  const calc=(loadCalc()[dataKey(String(yr),mi)])||null;
-  const aRate=(calc&&calc.ocARate!=null)?calc.ocARate:4000;
-  const bRate=(calc&&calc.ocBRate!=null)?calc.ocBRate:3000;
-  const otherInc=counts.kentCount*aRate+counts.medipathCount*bRate;
-  return{vitaInc,otherInc,due,duePts,expense,totalIncome:vitaInc+otherInc};
+  return{vitaInc,due,duePts,expense,totalIncome:vitaInc};
 }
 function renderReportPage(){
   const yf=g('report-year-filter')?g('report-year-filter').value:String(new Date().getFullYear());
   const mf=g('report-month-filter')?+g('report-month-filter').value:new Date().getMonth();
   const monthKey=yf+'-'+String(mf+1).padStart(2,'0');
 
-  // ---- FINANCE (Vita/Other split, mirrors Patient Calculation page) ----
-  const {vitaInc,otherInc,due,duePts,expense,totalIncome}=computeCenterIncomeFor(yf,mf);
+  // ---- FINANCE (Vita income) ----
+  const {vitaInc,due,duePts,expense,totalIncome}=computeCenterIncomeFor(yf,mf);
   const net=totalIncome-expense;
 
   // ---- PATIENTS (all 3 sources) ----
@@ -6763,10 +6654,9 @@ function renderReportPage(){
   const kpi=g('report-kpi-row');
   if(kpi)kpi.innerHTML=`
     <div class="rpt-sstat"><div class="rpt-sstat-label">Net Profit</div><div class="rpt-sstat-value" style="color:${net>=0?'var(--green)':'var(--pink)'};">${fmtExact(net)}</div><div class="rpt-sstat-sub">${MN_EN[mf]} ${yf}</div></div>
-    <div class="rpt-sstat"><div class="rpt-sstat-label">Total Income</div><div class="rpt-sstat-value">${fmtExact(totalIncome)}</div><div class="rpt-sstat-sub">Vita + Other Center</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Total Income</div><div class="rpt-sstat-value">${fmtExact(totalIncome)}</div><div class="rpt-sstat-sub">This month</div></div>
     <div class="rpt-sstat"><div class="rpt-sstat-label">Expense</div><div class="rpt-sstat-value">${fmtExact(expense)}</div><div class="rpt-sstat-sub">This month</div></div>
     <div class="rpt-sstat"><div class="rpt-sstat-label">Vita Center Income</div><div class="rpt-sstat-value" style="color:var(--cyan);">${fmtExact(vitaInc)}</div><div class="rpt-sstat-sub">via Finance</div></div>
-    <div class="rpt-sstat"><div class="rpt-sstat-label">Other Center Income</div><div class="rpt-sstat-value" style="color:var(--orange);">${fmtExact(otherInc)}</div><div class="rpt-sstat-sub">Kent + Medipath</div></div>
     <div class="rpt-sstat"><div class="rpt-sstat-label">Pending Due</div><div class="rpt-sstat-value" style="color:var(--yellow);">${fmtExact(due)}</div><div class="rpt-sstat-sub">${duePts} patient(s)</div></div>
   `;
 
@@ -6992,15 +6882,7 @@ function serializeSalaryHistoryForSheet(){
     ...loadSalaryHistory().map(r=>[r.id||'',r.date||'',r.name||'',r.month||'',r.oldBase||0,r.newBase||0])];
 }
 function serializeForPush(){
-  // Serialize Patient Calculation data (perPatient from settings)
-  const pp=loadCalc();
-  const calcRows=[['month_key','unfitPts','unfitDeduction','otherPts','otherRate','ocACount','ocARate','ocAMonth','ocBCount','ocBRate','ocBMonth']];
-  Object.entries(pp).forEach(([k,d])=>{
-    calcRows.push([k,d.unfitPts||0,d.unfitDeduction!=null?d.unfitDeduction:7000,d.otherPts||0,d.otherRate||0,
-      d.ocACount||0,d.ocARate!=null?d.ocARate:4000,d.ocAMonth!=null?d.ocAMonth:new Date().getMonth(),
-      d.ocBCount||0,d.ocBRate!=null?d.ocBRate:3000,d.ocBMonth!=null?d.ocBMonth:new Date().getMonth()]);
-  });
-  const base={finance:[['key','patients','otherPts','income','expense','profit','margin','otherIncome','dailyExpense','saved'],...Object.entries(load(SK)).map(([k,d])=>[k,d.patients||0,d.otherPts||0,d.income||0,d.expense||0,d.profit||0,d.margin||0,d.otherIncome||0,d.dailyExpense||0,d.saved||''])],daily:[['id','type','date','patients','amount','status','note','year','month','addedBy','addedByRole'],...loadArr(SK4).map(r=>[r.id||'',r.type||'expense',r.date||'',r.patients||0,r.amount||0,r.status||'',r.note||'',r.year||'',r.month||0,r.addedBy||'',r.addedByRole||''])],other_exp:[['id','label','amount'],...loadArr(SK5).map(e=>[e.id||0,e.label||'',e.amount||0])],commission:[['id','type','date','agency','center','contactName','mobile','address','note','amount'],...loadArr(SK9).map(r=>[r.id||'',r.type||'agency',r.date||'',r.agency||'',r.center||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount||0])],attendance:serializeAttendanceForSheet(),users:[['username','password','role','name'],...loadUsers().map(u=>[u.username,u.password,u.role,u.name||u.username])],calc_data:calcRows,salary_advance:serializeSalaryAdvanceForSheet(),salary_history:serializeSalaryHistoryForSheet()};
+  const base={finance:[['key','patients','otherPts','income','expense','profit','margin','otherIncome','dailyExpense','saved'],...Object.entries(load(SK)).map(([k,d])=>[k,d.patients||0,d.otherPts||0,d.income||0,d.expense||0,d.profit||0,d.margin||0,d.otherIncome||0,d.dailyExpense||0,d.saved||''])],daily:[['id','type','date','patients','amount','status','note','year','month','addedBy','addedByRole','addedByUsername','agency'],...loadArr(SK4).map(r=>[r.id||'',r.type||'expense',r.date||'',r.patients||0,r.amount||0,r.status||'',r.note||'',r.year||'',r.month||0,r.addedBy||'',r.addedByRole||'',r.addedByUsername||'',r.agency||''])],other_exp:[['id','label','amount'],...loadArr(SK5).map(e=>[e.id||0,e.label||'',e.amount||0])],commission:[['id','type','date','agency','center','contactName','mobile','address','note','amount','vitaCommission','othersCommission'],...loadArr(SK9).map(r=>[r.id||'',r.type||'agency',r.date||'',r.agency||'',r.center||'',r.contactName||'',r.mobile||'',r.address||'',r.note||'',r.amount||0,typeof r.vitaCommission==='number'?r.vitaCommission:'',typeof r.othersCommission==='number'?r.othersCommission:''])],attendance:serializeAttendanceForSheet(),users:[['username','password','role','name'],...loadUsers().map(u=>[u.username,u.password,u.role,u.name||u.username])],salary_advance:serializeSalaryAdvanceForSheet(),salary_history:serializeSalaryHistoryForSheet()};
   // NOTE: salary is pushed separately via pushSalaryToSheet() — not included here
   // to prevent accidental overwrites during general sync
   return base;
@@ -7084,8 +6966,6 @@ function bootstrapBuiltinUrls(){
 
 // INIT
 function initApp(){
-  // Migrate perPatient from settings to SK_CALC if needed
-  (()=>{try{const s=getSettings();if(s.perPatient&&Object.keys(s.perPatient).length>0){const existing=loadCalc();let changed=false;Object.entries(s.perPatient).forEach(([k,v])=>{if(!existing[k]){existing[k]=v;changed=true;}});if(changed){saveCalc(existing);}delete s.perPatient;saveSettings(s);}}catch(e){}})();
   // Migrate admin password: if stored as old default 'vita123', update to 'Vita1234'
   (()=>{try{const users=loadUsers();let changed=false;users.forEach(u=>{if(u.username==='admin'&&u.password==='vita123'){u.password='Vita1234';changed=true;}});if(changed){localStorage.setItem(SK_USERS,JSON.stringify(users));}}catch(e){}})();
   buildMonthSels();
