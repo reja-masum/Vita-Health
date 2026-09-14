@@ -226,68 +226,100 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .ctitle{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .ctitle .dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0;}
 
-/* REPORT PAGE */
-.rpt-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
-.rpt-eyebrow{font-size:10.5px;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase;font-weight:700;margin-bottom:3px;}
-.rpt-title{font-size:26px;font-weight:800;color:var(--tp);letter-spacing:-.02em;line-height:1;}
-.rpt-filters{display:flex;gap:8px;}
-.rpt-hero{display:flex;flex-wrap:wrap;background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:20px 6px;margin-bottom:16px;}
-.rpt-statstrip{display:flex;flex-wrap:wrap;background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:18px 4px;margin-bottom:16px;}
-.rpt-sstat{flex:1 1 150px;min-width:130px;padding:2px 22px;position:relative;}
-.rpt-sstat:not(:last-child)::after{content:'';position:absolute;right:0;top:4px;bottom:4px;width:1px;background:var(--border);}
-.rpt-sstat-label{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:8px;}
-.rpt-sstat-value{font-size:21px;font-weight:800;font-family:var(--mono);letter-spacing:-.01em;line-height:1;}
-.rpt-sstat-sub{font-size:10.5px;color:var(--ts);margin-top:7px;}
-@media(max-width:760px){.rpt-sstat:not(:last-child)::after{display:none;}.rpt-sstat{flex:1 1 45%;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:8px;}}
-.rpt-card{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:20px;margin-bottom:16px;}
-.rpt-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
-.rpt-card-title{font-size:14px;font-weight:700;color:var(--tp);}
-.rpt-card-sub{font-size:11px;color:var(--tm);margin-top:2px;margin-bottom:14px;}
-.rpt-legend{display:flex;gap:14px;}
-.rpt-legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ts);}
-.rpt-legend-item i{width:9px;height:9px;border-radius:3px;display:inline-block;}
-.rpt-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;}
-.rpt-grid2{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;}
-@media(max-width:900px){.rpt-grid3{grid-template-columns:1fr;}.rpt-grid2{grid-template-columns:1fr;}}
-.rpt-donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
-.rpt-donut-legend{flex:1;min-width:120px;display:flex;flex-direction:column;gap:9px;}
-.rpt-dlrow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;}
-.rpt-dlrow .dk{display:flex;align-items:center;gap:7px;color:var(--ts);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.rpt-dlrow .dk i{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
-.rpt-dlrow .dv{display:flex;align-items:center;gap:7px;flex-shrink:0;}
-.rpt-dlrow .dv b{font-family:var(--mono);color:var(--tp);font-weight:600;}
-.rpt-dlrow .dv em{font-style:normal;font-size:10px;font-family:var(--mono);padding:1px 6px;border-radius:99px;font-weight:700;}
-.rpt-empty{font-size:12px;color:var(--tm);padding:20px 0;text-align:center;width:100%;}
-.rpt-staff-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
-.rpt-staff-row:last-child{border-bottom:none;}
-.rpt-staff-name{font-size:12.5px;color:var(--tp);}
-.rpt-staff-pills{display:flex;gap:6px;}
-.rpt-pill{font-size:11px;font-family:var(--mono);padding:2px 7px;border-radius:99px;font-weight:600;}
-.rpt-pill.p{background:rgba(0,229,160,.12);color:var(--green);}
-.rpt-pill.l{background:rgba(245,158,11,.12);color:var(--yellow);}
-.rpt-payroll{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
-.rpt-payroll-item .pl{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
-.rpt-payroll-item .pv{font-size:15px;font-weight:700;font-family:var(--mono);}
-.rpt-barlist{display:flex;flex-direction:column;gap:12px;}
-.rpt-bar-row .bhead{display:flex;justify-content:space-between;margin-bottom:5px;}
-.rpt-bar-row .bname{font-size:12px;color:var(--tp);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;}
-.rpt-bar-row .bval{font-size:11.5px;font-family:var(--mono);color:var(--ts);}
-.rpt-bar-track{background:var(--bg-card2);border-radius:99px;height:8px;overflow:hidden;}
-.rpt-bar-fill{height:100%;border-radius:99px;}
+/* REPORT PAGE v2 — full redesign */
+.rp-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.rp-eyebrow{font-size:10.5px;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.rp-title{font-size:27px;font-weight:800;color:var(--tp);letter-spacing:-.02em;line-height:1;}
+.rp-filters{display:flex;gap:8px;}
+
+.rp-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:1100px){.rp-kpi-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:640px){.rp-kpi-grid{grid-template-columns:repeat(2,1fr);}}
+.rp-kpi{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:16px 17px;position:relative;overflow:hidden;}
+.rp-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--cyan));opacity:.85;}
+.rp-kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:13px;}
+.rp-kpi-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(255,255,255,.06);}
+.rp-kpi-delta{font-size:10.5px;font-family:var(--mono);font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;}
+.rp-kpi-delta.up{background:rgba(0,229,160,.12);color:var(--green);}
+.rp-kpi-delta.down{background:rgba(247,37,133,.12);color:var(--pink);}
+.rp-kpi-delta.flat{background:rgba(255,255,255,.06);color:var(--tm);}
+.rp-kpi-label{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px;}
+.rp-kpi-val{font-size:21px;font-weight:800;font-family:var(--mono);letter-spacing:-.01em;color:var(--tp);}
+.rp-kpi-sub{font-size:10.5px;color:var(--ts);margin-top:5px;}
+
+.rp-card{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:20px;margin-bottom:16px;}
+.rp-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px;flex-wrap:wrap;}
+.rp-card-title{font-size:14px;font-weight:700;color:var(--tp);display:flex;align-items:center;gap:8px;}
+.rp-card-title i{font-style:normal;font-size:15px;}
+.rp-card-sub{font-size:11px;color:var(--tm);margin-top:2px;}
+.rp-legend{display:flex;gap:14px;flex-wrap:wrap;}
+.rp-legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ts);}
+.rp-legend-item i{width:9px;height:9px;border-radius:3px;display:inline-block;font-style:normal;}
+
+.rp-grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;}
+@media(max-width:900px){.rp-grid2{grid-template-columns:1fr;}}
+
+.rp-flow-wrap{position:relative;margin-top:10px;}
+
+/* Proportion bar — replaces the old Collections donut */
+.rp-prop-track{display:flex;width:100%;height:14px;border-radius:99px;overflow:hidden;background:var(--bg-card2);margin-bottom:14px;}
+.rp-prop-seg{height:100%;transition:width .4s;}
+.rp-prop-legend{display:flex;flex-wrap:wrap;gap:10px 18px;}
+.rp-prop-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ts);}
+.rp-prop-item i{width:9px;height:9px;border-radius:3px;flex-shrink:0;font-style:normal;}
+.rp-prop-item b{font-family:var(--mono);color:var(--tp);margin-left:3px;font-weight:700;}
+.rp-prop-item em{font-style:normal;font-size:10.5px;color:var(--tm);margin-left:3px;}
+
+/* Patient intake comparison cards — replaces the old rings */
+.rp-intake-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:760px){.rp-intake-grid{grid-template-columns:1fr;}}
+.rp-intake-card{background:var(--bg-card2);border:1px solid var(--border);border-radius:13px;padding:15px 16px;}
+.rp-intake-name{font-size:11.5px;color:var(--ts);font-weight:600;margin-bottom:9px;line-height:1.35;}
+.rp-intake-val{font-size:25px;font-weight:800;font-family:var(--mono);color:var(--tp);line-height:1;margin-bottom:11px;}
+.rp-intake-val span{font-size:11px;color:var(--tm);font-weight:500;font-family:var(--font);margin-left:5px;}
+.rp-intake-track{background:var(--bg-deep);border-radius:99px;height:7px;overflow:hidden;}
+.rp-intake-fill{height:100%;border-radius:99px;transition:width .5s;}
+
+/* Ranked bar list — unified component for every category breakdown */
+.rp-rank-list{display:flex;flex-direction:column;gap:12px;}
+.rp-rank-row{display:flex;align-items:center;gap:11px;}
+.rp-rank-badge{width:22px;height:22px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;font-family:var(--mono);color:#0a0d14;}
+.rp-rank-body{flex:1;min-width:0;}
+.rp-rank-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px;}
+.rp-rank-name{font-size:12px;color:var(--tp);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rp-rank-val{font-size:11.5px;font-family:var(--mono);color:var(--ts);white-space:nowrap;}
+.rp-rank-track{background:var(--bg-card2);border-radius:99px;height:7px;overflow:hidden;}
+.rp-rank-fill{height:100%;border-radius:99px;transition:width .5s;}
+.rp-rank-more{font-size:11px;color:var(--tm);padding-top:2px;}
+
+.rp-multi3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.rp-multi2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+@media(max-width:760px){.rp-multi3{grid-template-columns:1fr;}.rp-multi2{grid-template-columns:1fr;}}
+.rp-subhead{font-size:10.5px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.07em;margin-bottom:13px;}
+
+.rp-empty{font-size:12px;color:var(--tm);padding:22px 0;text-align:center;width:100%;}
+
+/* Team */
+.rp-team-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+@media(max-width:640px){.rp-team-tiles{grid-template-columns:repeat(2,1fr);}}
+.rp-team-tile{background:var(--bg-card2);border-radius:12px;padding:13px 14px;}
+.rp-team-tile .tl{font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;font-weight:700;}
+.rp-team-tile .tv{font-size:16px;font-weight:800;font-family:var(--mono);}
+.rp-staff-list{display:flex;flex-direction:column;}
+.rp-staff-row{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--border);}
+.rp-staff-row:last-child{border-bottom:none;}
+.rp-staff-avatar{width:29px;height:29px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0a0d14;}
+.rp-staff-name{font-size:12.5px;color:var(--tp);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rp-staff-pills{display:flex;gap:6px;flex-shrink:0;}
+.rp-pill{font-size:11px;font-family:var(--mono);padding:2px 8px;border-radius:99px;font-weight:700;}
+.rp-pill.p{background:rgba(0,229,160,.12);color:var(--green);}
+.rp-pill.l{background:rgba(245,158,11,.12);color:var(--yellow);}
+
+.rp-tooltip{position:absolute;background:#0d1420;border:1px solid var(--border-bright);border-radius:10px;padding:9px 12px;font-size:11.5px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:20;box-shadow:0 10px 24px rgba(0,0,0,.55);white-space:nowrap;}
+.rp-tooltip.show{opacity:1;}
+.rp-tooltip .tt-month{color:var(--tm);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+.rp-tooltip .tt-row{display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);margin-top:2px;}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;}
-.rpt-ringrow{display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;padding-top:8px;}
-.rpt-ring{display:flex;flex-direction:column;align-items:center;gap:10px;}
-.rpt-ring-label{font-size:11.5px;color:var(--ts);text-align:center;max-width:120px;line-height:1.4;}
-.rpt-multi3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-.rpt-multi3.rpt-multi3-agency{grid-template-columns:0.8fr 2fr 0.8fr;}
-.rpt-multi2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
-@media(max-width:760px){.rpt-multi3{grid-template-columns:1fr;}.rpt-multi3.rpt-multi3-agency{grid-template-columns:1fr;}.rpt-multi2{grid-template-columns:1fr;}}
-.rpt-subpanel-title{font-size:10.5px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
-.rpt-coll-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
-.rpt-tooltip{position:absolute;background:#0d1420;border:1px solid var(--border-bright);border-radius:10px;padding:9px 12px;font-size:11.5px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:20;box-shadow:0 10px 24px rgba(0,0,0,.55);white-space:nowrap;}
-.rpt-tooltip.show{opacity:1;}
-.rpt-tooltip .tt-month{color:var(--tm);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
-.rpt-tooltip .tt-row{display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);margin-top:2px;}
 .ppf{background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--rs);padding:9px;}
 .ppf label{display:block;font-size:11px;color:var(--tm);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
 .ppf input{font-family:var(--mono);font-size:15px;font-weight:500;background:transparent;border:none;color:var(--cyan);width:100%;outline:none;}
@@ -439,6 +471,17 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .dt-form.dt-form-exp{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));}
 .dt-form.dt-form-inc{grid-template-columns:repeat(auto-fit,minmax(100px,1fr));}
 .rm-btn{background:rgba(247,37,133,.08);border:1px solid rgba(247,37,133,.2);color:var(--pink);border-radius:6px;padding:4px 9px;font-size:13px;cursor:pointer;line-height:1;}
+/* BILL VOUCHER (Finance > Bill Voucher — nothing here is persisted) */
+.bv-head-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.bv-table td{padding:6px 8px;vertical-align:middle;}
+.bv-table input{font-family:var(--font);font-size:13px;background:var(--bg-card2);border:1px solid var(--border-bright);border-radius:var(--rs);padding:7px 9px;color:var(--tp);outline:none;width:100%;box-sizing:border-box;}
+.bv-table input:focus{border-color:var(--cyan);}
+.bv-table .bv-total-cell{font-family:var(--mono);text-align:right;color:var(--cyan);font-weight:600;white-space:nowrap;}
+.bv-grand-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border-bright);font-size:14px;color:var(--tp);}
+.bv-grand-row b{font-family:var(--mono);font-size:19px;color:var(--cyan);}
+.bv-toggle{display:flex;background:var(--bg-card2);border:1px solid var(--border-bright);border-radius:99px;padding:3px;flex-shrink:0;}
+.bv-toggle-btn{border:none;background:transparent;color:var(--tm);font-family:var(--font);font-size:12px;font-weight:600;padding:7px 14px;border-radius:99px;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s;}
+.bv-toggle-btn.active{background:var(--cyan);color:#0a0d14;}
 .paid-btn{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.25);color:var(--green);border-radius:6px;padding:4px 9px;font-size:12px;cursor:pointer;line-height:1;margin-right:6px;font-family:var(--font);font-weight:500;white-space:nowrap;}
 .paid-btn:hover{background:rgba(0,229,160,.16);}
 .daily-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px;}
@@ -855,6 +898,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
     <button class="daily-subnav-btn active" id="dsub-records" onclick="switchDailySubPage('records',this)">&#128200; Income &amp; Expenses</button>
     <button class="daily-subnav-btn" id="dsub-commission" onclick="switchDailySubPage('commission',this)">&#129309; Agency Management</button>
     <button class="daily-subnav-btn" id="dsub-agencycomm" onclick="switchDailySubPage('agencycomm',this)">&#128176; Commission</button>
+    <button class="daily-subnav-btn" id="dsub-billvoucher" onclick="switchDailySubPage('billvoucher',this)">&#128203; Bill Voucher</button>
   </div>
 
   <!-- ── SUB-PAGE 1: Income & Expenses ── -->
@@ -1018,6 +1062,54 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
           <thead><tr><th>Date</th><th>Agency</th><th>Contact</th><th>Mobile</th><th>Address</th><th>Note</th><th style="text-align:right;">Per Patient</th><th style="text-align:right;">VITA Comm.</th><th style="text-align:right;">Others Comm.</th><th style="text-align:right;">Unfit Refund</th><th></th></tr></thead>
           <tbody id="commissionTbody"></tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SUB-PAGE: Bill Voucher (no storage — generates a printable PDF only) ── -->
+  <div id="daily-view-billvoucher" style="display:none;flex-direction:column;gap:14px;">
+    <div class="card" style="border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.04);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;">
+        <div style="font-size:12px;color:var(--tp);" id="bv-intro-text">Create a payment voucher/slip for any bill (Internet, Rent, Utility, etc.) — fill in the details below and generate a printable PDF. <b>Nothing here is saved</b> — once you print/download, the form clears for the next voucher.</div>
+        <div class="bv-toggle" id="bv-toggle">
+          <button type="button" class="bv-toggle-btn active" id="bv-toggle-out" onclick="setBvDirection('out')">💸 Payment Out</button>
+          <button type="button" class="bv-toggle-btn" id="bv-toggle-in" onclick="setBvDirection('in')">💰 Payment In</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Voucher Details</div>
+      <div class="bv-head-grid">
+        <div class="ff"><label>Date</label><input type="date" id="bv-date"></div>
+        <div class="ff"><label id="bv-paidto-label">Paid To / Payee</label><input type="text" id="bv-paidto" placeholder="e.g. Link3 Technologies Ltd."></div>
+        <div class="ff"><label>Payment Method</label>
+          <select id="bv-mode">
+            <option value="Cash">Cash</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Cheque">Cheque</option>
+            <option value="Mobile Banking">Mobile Banking (bKash/Nagad)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Items <span style="margin-left:auto;font-size:11px;color:var(--tm);font-weight:400;text-transform:none;letter-spacing:0;">Leave Quantity blank for a flat amount — Total then equals the Rate/Amount as-is</span></div>
+      <div class="tw">
+        <table class="dt bv-table">
+          <thead><tr><th style="width:40%;">Description</th><th style="width:14%;">Quantity</th><th style="width:20%;">Rate / Amount (৳)</th><th style="width:18%;text-align:right;">Total (৳)</th><th style="width:8%;"></th></tr></thead>
+          <tbody id="bvItemsBody"></tbody>
+        </table>
+      </div>
+      <button class="abtn" style="margin-top:10px;background:var(--bg-card2);color:var(--cyan);" onclick="addBillRow()">+ Add Item</button>
+      <div class="bv-grand-row">
+        <span>Grand Total</span>
+        <b id="bv-grand-total">৳0</b>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+        <button class="abtn bexp" style="padding:10px 22px;" id="bv-generate-btn" onclick="generateBillVoucherPDF()">📄 Generate &amp; Print Voucher</button>
+        <button class="abtn" style="padding:10px 22px;background:var(--bg-card2);color:var(--ts);" onclick="resetBillVoucherForm()">Clear Form</button>
       </div>
     </div>
   </div>
@@ -1195,12 +1287,12 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
 
 <!-- REPORT -->
 <div class="page" id="page-report">
-  <div class="rpt-head">
+  <div class="rp-head">
     <div>
-      <div class="rpt-eyebrow">Overview</div>
-      <div class="rpt-title">Report</div>
+      <div class="rp-eyebrow">Overview</div>
+      <div class="rp-title">Report</div>
     </div>
-    <div class="rpt-filters">
+    <div class="rp-filters">
       <select class="sel" id="report-year-filter" onchange="renderReportPage()">
         <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
       </select>
@@ -1208,92 +1300,71 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
     </div>
   </div>
 
-  <!-- SECTION 1: Stat strip -->
-  <div class="rpt-statstrip" id="report-kpi-row"></div>
+  <!-- KPI cards, with month-over-month trend badges -->
+  <div class="rp-kpi-grid" id="report-kpi-row"></div>
 
-  <!-- SECTION 2: Patient overview (round) + Collections -->
-  <div class="rpt-grid2">
-    <div class="rpt-card">
-      <div class="rpt-card-title">Patient Management</div>
-      <div class="rpt-card-sub">Total patients this month, by page</div>
-      <div class="rpt-ringrow" id="report-patient-rings"></div>
+  <!-- Cash flow -->
+  <div class="rp-card">
+    <div class="rp-card-head">
+      <div>
+        <div class="rp-card-title"><i>📈</i>Cash Flow</div>
+        <div class="rp-card-sub">Income vs expense, last 12 months &middot; tap a point for details</div>
+      </div>
+      <div class="rp-legend">
+        <span class="rp-legend-item"><i style="background:var(--green);"></i>Income</span>
+        <span class="rp-legend-item"><i style="background:var(--pink);"></i>Expense</span>
+      </div>
     </div>
-    <div class="rpt-card">
-      <div class="rpt-card-title">Collections</div>
-      <div class="rpt-card-sub">Income breakdown, this month</div>
-      <div id="report-collections"></div>
+    <div id="report-finance-trend" class="rp-flow-wrap"></div>
+  </div>
+
+  <!-- Collections + Patient intake -->
+  <div class="rp-grid2">
+    <div class="rp-card">
+      <div class="rp-card-title"><i>💰</i>Collections</div>
+      <div class="rp-card-sub">Paid, due &amp; expense split — this month</div>
+      <div id="report-collections" style="margin-top:16px;"></div>
+    </div>
+    <div class="rp-card">
+      <div class="rp-card-title"><i>🩺</i>Patient Intake</div>
+      <div class="rp-card-sub">Total patients this month, by page</div>
+      <div class="rp-intake-grid" id="report-patient-rings" style="margin-top:16px;"></div>
     </div>
   </div>
 
-  <!-- SECTION 3: Cash flow -->
-  <div class="rpt-card">
-    <div class="rpt-card-head">
-      <div>
-        <div class="rpt-card-title">Cash Flow</div>
-        <div class="rpt-card-sub">Income vs expense, last 12 months · tap a point for details</div>
-      </div>
-      <div class="rpt-legend">
-        <span class="rpt-legend-item"><i style="background:var(--green);"></i>Income</span>
-        <span class="rpt-legend-item"><i style="background:var(--pink);"></i>Expense</span>
-      </div>
-    </div>
-    <div id="report-finance-trend" style="position:relative;"></div>
-  </div>
-
-  <!-- SECTION 4: Breakdown detail -->
-  <div class="rpt-card">
-    <div class="rpt-card-title">Vita Center</div>
-    <div class="rpt-card-sub">Status &middot; Agency &middot; Slips breakdown</div>
-    <div class="rpt-multi3 rpt-multi3-agency">
-      <div>
-        <div class="rpt-subpanel-title">Status</div>
-        <div id="report-vita-status"></div>
-      </div>
-      <div>
-        <div class="rpt-subpanel-title">Agency</div>
-        <div id="report-vita-agency"></div>
-      </div>
-      <div>
-        <div class="rpt-subpanel-title">Slips</div>
-        <div id="report-vita-slips"></div>
-      </div>
+  <!-- Vita Center breakdown -->
+  <div class="rp-card">
+    <div class="rp-card-title"><i>🏥</i>Vita Center</div>
+    <div class="rp-card-sub">Status &middot; Agency &middot; Slips breakdown</div>
+    <div class="rp-multi3" style="margin-top:18px;">
+      <div><div class="rp-subhead">Status</div><div id="report-vita-status"></div></div>
+      <div><div class="rp-subhead">Agency</div><div id="report-vita-agency"></div></div>
+      <div><div class="rp-subhead">Slips</div><div id="report-vita-slips"></div></div>
     </div>
   </div>
 
-  <div class="rpt-grid2">
-    <div class="rpt-card">
-      <div class="rpt-card-title">Vita (Med) + Others (Slip)</div>
-      <div class="rpt-card-sub">Center &amp; Agency breakdown</div>
-      <div class="rpt-multi2">
-        <div>
-          <div class="rpt-subpanel-title">Center</div>
-          <div id="report-vitaothers-center"></div>
-        </div>
-        <div>
-          <div class="rpt-subpanel-title">Agency</div>
-          <div id="report-vitaothers-agency"></div>
-        </div>
+  <div class="rp-grid2">
+    <div class="rp-card">
+      <div class="rp-card-title"><i>🔁</i>Vita (Med) + Others (Slip)</div>
+      <div class="rp-card-sub">Center &amp; Agency breakdown</div>
+      <div class="rp-multi2" style="margin-top:18px;">
+        <div><div class="rp-subhead">Center</div><div id="report-vitaothers-center"></div></div>
+        <div><div class="rp-subhead">Agency</div><div id="report-vitaothers-agency"></div></div>
       </div>
     </div>
-    <div class="rpt-card">
-      <div class="rpt-card-title">Others (Med) + VITA (Slip)</div>
-      <div class="rpt-card-sub">Center breakdown</div>
-      <div id="report-others-chart"></div>
+    <div class="rp-card">
+      <div class="rp-card-title"><i>🔀</i>Others (Med) + Vita (Slip)</div>
+      <div class="rp-card-sub">Center breakdown</div>
+      <div id="report-others-chart" style="margin-top:18px;"></div>
     </div>
   </div>
 
-  <!-- SECTION 5 -->
-  <div class="rpt-grid2">
-    <div class="rpt-card">
-      <div class="rpt-card-title">Payroll</div>
-      <div class="rpt-card-sub">Staff payroll, this month</div>
-      <div id="report-salary"></div>
-    </div>
-    <div class="rpt-card">
-      <div class="rpt-card-title">Attendance</div>
-      <div class="rpt-card-sub">Staff attendance, this month</div>
-      <div id="report-attendance"></div>
-    </div>
+  <!-- Team -->
+  <div class="rp-card">
+    <div class="rp-card-title"><i>👥</i>Team</div>
+    <div class="rp-card-sub">Payroll &amp; attendance, this month</div>
+    <div class="rp-team-tiles" id="report-salary" style="margin-top:16px;"></div>
+    <div class="rp-staff-list" id="report-attendance"></div>
   </div>
 </div>
 
@@ -2704,8 +2775,10 @@ function switchDailySubPage(view,btn){
   g('daily-view-records').style.display=view==='records'?'flex':'none';
   if(g('daily-view-agencycomm'))g('daily-view-agencycomm').style.display=view==='agencycomm'?'flex':'none';
   g('daily-view-commission').style.display=view==='commission'?'flex':'none';
+  if(g('daily-view-billvoucher'))g('daily-view-billvoucher').style.display=view==='billvoucher'?'flex':'none';
   if(view==='agencycomm')renderCommissionCalc();
   if(view==='commission'){renderCommissionLog();populateAgencyDL();initCommissionRatesUI();}
+  if(view==='billvoucher'&&typeof initBillVoucherPage==='function')initBillVoucherPage();
 }
 
 // Unfit/Test Fee are optional per-agency overrides — an empty field means
@@ -3467,6 +3540,202 @@ ${copy2}
   const w=window.open('','_blank');
   w.document.write(html);w.document.close();
   setTimeout(()=>w.print(),600);
+}
+// ══════════════════════════════════════════════════════════════════════════
+// BILL VOUCHER — pure client-side, one-off slip generator.
+// Nothing here touches localStorage or the sheet sync: every value lives only
+// in the DOM inputs, and the form is wiped right after the PDF is produced.
+// ══════════════════════════════════════════════════════════════════════════
+let _bvRowSeq=0;
+// Converts a Taka amount to words (South Asian lakh/crore grouping), e.g.
+// 150000 → "One Lakh Fifty Thousand Taka Only". Used on the printed PDF.
+function amountToWordsBDT(amount){
+  amount=Math.round((amount||0)*100)/100;
+  const neg=amount<0;amount=Math.abs(amount);
+  const whole=Math.floor(amount);
+  const paisa=Math.round((amount-whole)*100);
+  const ones=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const tens=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  function twoDigits(n){if(n<20)return ones[n];return tens[Math.floor(n/10)]+(n%10?' '+ones[n%10]:'');}
+  function threeDigits(n){
+    const h=Math.floor(n/100),r=n%100;
+    return (h?ones[h]+' Hundred'+(r?' ':''):'')+(r?twoDigits(r):'');
+  }
+  function inWords(n){
+    if(n===0)return 'Zero';
+    let crore=Math.floor(n/10000000);n%=10000000;
+    let lakh=Math.floor(n/100000);n%=100000;
+    let thousand=Math.floor(n/1000);n%=1000;
+    let rest=n;
+    let parts=[];
+    if(crore)parts.push(threeDigits(crore)+' Crore');
+    if(lakh)parts.push(threeDigits(lakh)+' Lakh');
+    if(thousand)parts.push(threeDigits(thousand)+' Thousand');
+    if(rest)parts.push(threeDigits(rest));
+    return parts.join(' ');
+  }
+  let words=(neg?'Minus ':'')+inWords(whole)+' Taka';
+  if(paisa>0)words+=' and '+inWords(paisa)+' Paisa';
+  return words+' Only';
+}
+function bvRowHtml(id){
+  return`<tr class="bv-row" data-rid="${id}">
+    <td><input type="text" class="bv-desc" placeholder="e.g. Internet Bill — 20 Mbps package"></td>
+    <td><input type="number" class="bv-qty" min="0" step="any" placeholder="—" oninput="calcBillRowTotal(${id})"></td>
+    <td><input type="text" inputmode="decimal" class="bv-rate" placeholder="0" oninput="formatNumberLive(this);calcBillRowTotal(${id})"></td>
+    <td class="bv-total-cell" id="bv-total-${id}">৳0</td>
+    <td style="text-align:center;"><button class="rm-btn" onclick="removeBillRow(${id})" title="Remove">&#10005;</button></td>
+  </tr>`;
+}
+function addBillRow(){
+  _bvRowSeq++;
+  const body=g('bvItemsBody');if(!body)return;
+  body.insertAdjacentHTML('beforeend',bvRowHtml(_bvRowSeq));
+}
+function removeBillRow(id){
+  const body=g('bvItemsBody');if(!body)return;
+  const row=body.querySelector('tr[data-rid="'+id+'"]');
+  if(row)row.remove();
+  if(!body.querySelector('tr'))addBillRow(); // never leave the table empty
+  updateBillGrandTotal();
+}
+function calcBillRowTotal(id){
+  const row=g('bvItemsBody').querySelector('tr[data-rid="'+id+'"]');if(!row)return;
+  const qtyEl=row.querySelector('.bv-qty'),rateEl=row.querySelector('.bv-rate');
+  const qtyRaw=(qtyEl.value||'').trim();
+  const rate=parseFloat(rateEl.dataset.raw!==undefined?rateEl.dataset.raw:rateEl.value)||0;
+  let total;
+  if(qtyRaw===''){total=rate;} // no quantity → the Rate/Amount field IS the line total
+  else{const qty=parseFloat(qtyRaw)||0;total=qty*rate;}
+  g('bv-total-'+id).textContent=fmtExact(total);
+  updateBillGrandTotal();
+}
+function updateBillGrandTotal(){
+  let sum=0;
+  g('bvItemsBody').querySelectorAll('tr.bv-row').forEach(row=>{
+    const rid=row.getAttribute('data-rid');
+    const cell=g('bv-total-'+rid);
+    if(cell)sum+=parseFloat(cell.textContent.replace(/[^0-9.-]/g,''))||0;
+  });
+  if(g('bv-grand-total'))g('bv-grand-total').textContent=fmtExact(sum);
+  return sum;
+}
+function initBillVoucherPage(){
+  if(!g('bv-date').value)g('bv-date').value=todayStr();
+  if(!g('bvItemsBody').querySelector('tr'))addBillRow();
+  updateBvDirectionUI(); // reflect the current bvDirection (defaults to 'out')
+}
+// Payment Out ⇄ Payment In — same form/table/PDF pipeline, just re-labelled.
+let bvDirection='out';
+function setBvDirection(dir){
+  bvDirection=dir;
+  g('bv-paidto').value=''; // the meaning of this field flips, so clear stale text
+  updateBvDirectionUI();
+}
+function updateBvDirectionUI(){
+  const isIn=bvDirection==='in';
+  g('bv-toggle-out').classList.toggle('active',!isIn);
+  g('bv-toggle-in').classList.toggle('active',isIn);
+  g('bv-paidto-label').textContent=isIn?'Received From / Payer':'Paid To / Payee';
+  g('bv-paidto').placeholder=isIn?'e.g. City General Hospital / Patient Name':'e.g. Link3 Technologies Ltd.';
+  g('bv-intro-text').innerHTML=isIn
+    ?'Create a money receipt for any incoming payment (from a patient, another agency, or a partner center) — fill in the details below and generate a printable PDF. <b>Nothing here is saved</b> — once you print/download, the form clears for the next receipt.'
+    :'Create a payment voucher/slip for any bill (Internet, Rent, Utility, etc.) — fill in the details below and generate a printable PDF. <b>Nothing here is saved</b> — once you print/download, the form clears for the next voucher.';
+  g('bv-generate-btn').innerHTML=isIn?'📄 Generate &amp; Print Receipt':'📄 Generate &amp; Print Voucher';
+}
+function resetBillVoucherForm(){
+  g('bv-paidto').value='';g('bv-mode').value='Cash';
+  g('bv-date').value=todayStr();
+  g('bvItemsBody').innerHTML='';
+  addBillRow();
+  updateBillGrandTotal();
+}
+function generateBillVoucherPDF(){
+  const isIn=bvDirection==='in';
+  const paidTo=(g('bv-paidto').value||'').trim();
+  const mode=g('bv-mode').value;
+  const dateVal=g('bv-date').value||todayStr();
+  const rows=[...g('bvItemsBody').querySelectorAll('tr.bv-row')].map(row=>{
+    const rid=row.getAttribute('data-rid');
+    const desc=(row.querySelector('.bv-desc').value||'').trim();
+    const qtyRaw=(row.querySelector('.bv-qty').value||'').trim();
+    const rateEl=row.querySelector('.bv-rate');
+    const rate=parseFloat(rateEl.dataset.raw!==undefined?rateEl.dataset.raw:rateEl.value)||0;
+    const total=parseFloat((g('bv-total-'+rid).textContent||'0').replace(/[^0-9.-]/g,''))||0;
+    return{desc,qty:qtyRaw,rate,total};
+  }).filter(r=>r.desc||r.rate);
+  if(!paidTo){toast(isIn?'Enter who the payment is being received from':'Enter who the bill is being paid to');return;}
+  if(!rows.length){toast('Add at least one item with a description');return;}
+  const grand=rows.reduce((s,r)=>s+r.total,0);
+  const dateDisplay=new Date(dateVal+'T00:00:00').toLocaleDateString('en-BD',{day:'2-digit',month:'long',year:'numeric'});
+  const docTitle=isIn?'BILL':'PAYMENT VOUCHER';
+  const partyLabel=isIn?'Received From':'Paid To';
+  const sign1Label=isIn?'Received By':'Received By';
+  const sign2Label=isIn?'Signature':'Approved By';
+  const itemRows=rows.map((r,i)=>`<tr>
+      <td>${i+1}</td>
+      <td>${escapeHtml(r.desc)||'-'}</td>
+      <td style="text-align:center;">${r.qty!==''?escapeHtml(r.qty):'—'}</td>
+      <td style="text-align:right;">${r.qty!==''?fmtExact(r.rate):'—'}</td>
+      <td style="text-align:right;">${fmtExact(r.total)}</td>
+    </tr>`).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${docTitle} — ${escapeHtml(paidTo)}</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  @page{size:A4;margin:16mm 18mm;}
+  html,body{width:100%;}
+  body{font-family:Arial,sans-serif;font-size:12px;color:#1a1a2e;background:#fff;}
+  .bv-page{max-width:100%;}
+  .bv-header{text-align:center;border-bottom:2.5px solid #00d4ff;padding-bottom:10px;margin-bottom:16px;}
+  .bv-logo{font-size:16px;font-weight:900;letter-spacing:1.5px;}
+  .bv-logo span{color:#00d4ff;}
+  .bv-addr{font-size:10px;color:#666;margin-top:3px;}
+  .bv-title{background:#1a1a2e;color:#00d4ff;text-align:center;padding:8px;font-size:14px;font-weight:700;margin-bottom:16px;border-radius:4px;letter-spacing:.05em;}
+  .bv-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11.5px;color:#333;margin-bottom:16px;background:#f8f9fa;border-left:3px solid #00d4ff;border-radius:3px;padding:10px 14px;}
+  .bv-meta span b{color:#888;font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:.05em;display:block;margin-bottom:2px;}
+  table.bv-items{width:100%;border-collapse:collapse;margin-bottom:14px;}
+  table.bv-items th{background:#1a1a2e;color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;text-align:left;}
+  table.bv-items th:first-child{border-radius:4px 0 0 0;}
+  table.bv-items th:last-child{border-radius:0 4px 0 0;text-align:right;}
+  table.bv-items td{padding:8px 10px;border-bottom:1px solid #eee;font-size:11.5px;}
+  .bv-total-row td{font-weight:800;font-size:13px;border-top:2px solid #1a1a2e;border-bottom:none;background:#f8f9fa;}
+  .bv-words{font-size:11px;color:#444;margin-bottom:6px;font-style:italic;}
+  .bv-sign{display:flex;justify-content:space-between;gap:24px;margin-top:40px;}
+  .bv-sign-box{flex:1;text-align:center;}
+  .bv-sign-line{border-bottom:1px dashed #333;margin-bottom:6px;height:7mm;}
+  .bv-sign-box span{font-size:9.5px;color:#555;}
+  @media print{body{padding:0;}}
+</style></head><body>
+  <div class="bv-page">
+    <div class="bv-header">
+      <div class="bv-logo">VITA-<span>HEALTH</span> MEDICAL CENTER</div>
+      <div class="bv-addr">Praasad Palton Square (14th Floor), 3/11 Naya Paltan, 167 Fakirapool, DIT Ave, Dhaka 1000</div>
+      <div class="bv-addr">Phone: +880 1324-254582 &nbsp;|&nbsp; Email: vitahealthfrontdesk@gmail.com</div>
+    </div>
+    <div class="bv-title">${docTitle}</div>
+    <div class="bv-meta">
+      <span><b>Date</b>${dateDisplay}</span>
+      <span><b>${partyLabel}</b>${escapeHtml(paidTo)}</span>
+      <span><b>Payment Method</b>${escapeHtml(mode)}</span>
+    </div>
+    <table class="bv-items">
+      <thead><tr><th style="width:6%;">#</th><th style="width:44%;">Description</th><th style="width:14%;text-align:center;">Qty</th><th style="width:18%;text-align:right;">Rate</th><th style="width:18%;text-align:right;">Amount</th></tr></thead>
+      <tbody>
+        ${itemRows}
+        <tr class="bv-total-row"><td colspan="4" style="text-align:right;">Grand Total</td><td style="text-align:right;">${fmtExact(grand)}</td></tr>
+      </tbody>
+    </table>
+    <div class="bv-words">In Words: <b>${amountToWordsBDT(grand)}</b></div>
+    <div class="bv-sign">
+      <div class="bv-sign-box"><div class="bv-sign-line"></div><span>${sign1Label}</span></div>
+      <div class="bv-sign-box"><div class="bv-sign-line"></div><span>${sign2Label}</span></div>
+    </div>
+  </div>
+</body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);w.document.close();
+  setTimeout(()=>w.print(),600);
+  resetBillVoucherForm();
 }
 function switchDailyTab(type){
   document.querySelectorAll('.dt-tab').forEach(t=>t.classList.remove('active'));
@@ -6422,40 +6691,9 @@ function scheduleAutoBackup(){
 }
 
 // ═══════════════════════════ AGENCY PATIENT SHARE CARD ═══════════════════════════
-// ---- SVG helpers (Report page) ----
-// ---- SVG helpers (Report page) ----
-// ---- SVG helpers (Report page) ----
-function svgDonut(segments,size,strokeW,centerVal,centerLabel){
-  const total=segments.reduce((a,s)=>a+s.value,0)||1;
-  const r=(size-strokeW)/2;
-  const c=2*Math.PI*r;
-  let offset=0;
-  const circles=segments.map(s=>{
-    const frac=s.value/total;
-    const dash=Math.max(frac*c-1,0);
-    const el=`<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-dashoffset="${-offset}" stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>`;
-    offset+=frac*c;
-    return el;
-  }).join('');
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0;">
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
-    ${circles}
-    <text x="${size/2}" y="${size/2-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${centerVal}</text>
-    <text x="${size/2}" y="${size/2+15}" text-anchor="middle" font-size="9" fill="var(--tm)" letter-spacing="0.05em">${centerLabel}</text>
-  </svg>`;
-}
-function svgRing(value,max,size,strokeW,color,valueColor){
-  const r=(size-strokeW)/2;
-  const c=2*Math.PI*r;
-  const pct=max>0?Math.min(1,value/max):0;
-  const dash=Math.max(pct*c-1,0);
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>
-    <text x="${size/2}" y="${size/2+8}" text-anchor="middle" font-size="24" font-weight="800" fill="${valueColor||'var(--tp)'}" font-family="var(--mono)">${value}</text>
-  </svg>`;
-}
+// ---- SVG / render helpers (Report page v2) ----
 const RPT_SHORT_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const RP_COLORS=['var(--cyan)','var(--purple)','var(--green)','var(--yellow)','var(--pink)','var(--orange)','#60a5fa','#a78bfa'];
 function svgAreaChart(data,height){
   const width=1000,pad={l:8,r:8,t:14,b:24};
   const w=width-pad.l-pad.r,h=height-pad.t-pad.b;
@@ -6475,7 +6713,7 @@ function svgAreaChart(data,height){
   const dots=data.map((d,i)=>`<circle cx="${x(i)}" cy="${y(d.inc)}" r="2.5" fill="var(--green)"/><circle cx="${x(i)}" cy="${y(d.exp)}" r="2.5" fill="var(--pink)"/>`).join('');
   const hit=data.map((d,i)=>{
     const midY=(y(d.inc)+y(d.exp))/2;
-    return`<circle class="rpt-hit" data-pt="${i}" cx="${x(i)}" cy="${midY}" r="16" fill="transparent" style="cursor:pointer;"/>
+    return`<circle class="rp-hit" data-pt="${i}" cx="${x(i)}" cy="${midY}" r="16" fill="transparent" style="cursor:pointer;"/>
     <line x1="${x(i)}" y1="${pad.t}" x2="${x(i)}" y2="${pad.t+h}" stroke="var(--cyan)" stroke-width="1" opacity="0" data-guide="${i}"/>`;
   }).join('');
   return `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="overflow:visible;">
@@ -6501,8 +6739,8 @@ function svgAreaChart(data,height){
 }
 function attachChartTooltip(containerEl,series){
   const svgEl=containerEl.querySelector('svg');if(!svgEl)return;
-  let tip=containerEl.querySelector('.rpt-tooltip');
-  if(!tip){tip=document.createElement('div');tip.className='rpt-tooltip';containerEl.appendChild(tip);}
+  let tip=containerEl.querySelector('.rp-tooltip');
+  if(!tip){tip=document.createElement('div');tip.className='rp-tooltip';containerEl.appendChild(tip);}
   const showAt=(idx,clientX,clientY)=>{
     const d=series[idx];if(!d)return;
     tip.innerHTML=`<div class="tt-month">${d.label}</div>
@@ -6518,99 +6756,80 @@ function attachChartTooltip(containerEl,series){
     tip.classList.add('show');
   };
   const hide=()=>tip.classList.remove('show');
-  svgEl.querySelectorAll('.rpt-hit').forEach(hitEl=>{
+  svgEl.querySelectorAll('.rp-hit').forEach(hitEl=>{
     const idx=+hitEl.getAttribute('data-pt');
     hitEl.addEventListener('mouseenter',e=>showAt(idx,e.clientX,e.clientY));
     hitEl.addEventListener('mousemove',e=>showAt(idx,e.clientX,e.clientY));
     hitEl.addEventListener('mouseleave',hide);
     hitEl.addEventListener('touchstart',e=>{const t=e.touches[0];showAt(idx,t.clientX,t.clientY);e.preventDefault();e.stopPropagation();},{passive:false});
   });
-  containerEl.addEventListener('touchstart',e=>{if(!e.target.closest('.rpt-hit'))hide();},{passive:true});
+  containerEl.addEventListener('touchstart',e=>{if(!e.target.closest('.rp-hit'))hide();},{passive:true});
 }
-const RPT_COLORS=['var(--cyan)','var(--purple)','var(--green)','var(--yellow)','var(--pink)','var(--orange)','#60a5fa','#a78bfa'];
-function rptDonutCard(el,counts,emptyMsg,centerLabel){
+// KPI card with an optional month-over-month delta badge.
+// invertGood=true means a rise in the value is actually bad (e.g. Expense) so
+// the up/down arrow keeps its literal direction but the colour flips.
+function rpKpiCard(label,value,sub,deltaPct,colorVar,icon,invertGood){
+  let deltaHtml='';
+  if(deltaPct!==null&&deltaPct!==undefined&&isFinite(deltaPct)){
+    const dir=deltaPct>0.5?'up':deltaPct<-0.5?'down':'flat';
+    let cls=dir;
+    if(invertGood&&dir!=='flat')cls=dir==='up'?'down':'up';
+    const arrow=dir==='up'?'▲':dir==='down'?'▼':'—';
+    deltaHtml=`<span class="rp-kpi-delta ${cls}">${arrow} ${Math.abs(deltaPct).toFixed(0)}%</span>`;
+  }
+  return `<div class="rp-kpi" style="--kc:${colorVar};">
+    <div class="rp-kpi-top"><div class="rp-kpi-icon">${icon}</div>${deltaHtml}</div>
+    <div class="rp-kpi-label">${label}</div>
+    <div class="rp-kpi-val" style="color:${colorVar};">${value}</div>
+    <div class="rp-kpi-sub">${sub}</div>
+  </div>`;
+}
+// Horizontal segmented proportion bar — replaces the old Collections donut.
+function rpProportionBar(el,segments,emptyMsg){
+  if(!el)return;
+  const segs=segments.filter(s=>s.value>0);
+  const total=segs.reduce((a,s)=>a+s.value,0);
+  if(total<=0){el.innerHTML=`<div class="rp-empty">${emptyMsg}</div>`;return;}
+  const track=segs.map(s=>`<div class="rp-prop-seg" style="width:${(s.value/total*100).toFixed(2)}%;background:${s.color};"></div>`).join('');
+  const legend=segs.map(s=>{
+    const pct=Math.round(s.value/total*100);
+    return`<div class="rp-prop-item"><i style="background:${s.color};"></i>${escapeHtml(s.label)}<b>${fmtExact(s.value)}</b><em>${pct}%</em></div>`;
+  }).join('');
+  el.innerHTML=`<div class="rp-prop-track">${track}</div><div class="rp-prop-legend">${legend}</div>`;
+}
+// Single patient-intake comparison card (replaces the old ring chart).
+function rpIntakeCard(name,val,max,color){
+  const pct=max>0?Math.round(val/max*100):0;
+  return `<div class="rp-intake-card">
+    <div class="rp-intake-name">${name}</div>
+    <div class="rp-intake-val">${val}<span>patient${val===1?'':'s'}</span></div>
+    <div class="rp-intake-track"><div class="rp-intake-fill" style="width:${pct}%;background:${color};"></div></div>
+  </div>`;
+}
+// Ranked horizontal bar list — the single component used for every
+// category breakdown on the Report page (status, agency, slips, center…).
+function rpRankList(el,counts,emptyMsg,maxRows){
   if(!el)return;
   const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
+  if(!entries.length){el.innerHTML=`<div class="rp-empty">${emptyMsg}</div>`;return;}
+  const shown=entries.slice(0,maxRows||8);
+  const rest=entries.length-shown.length;
   const total=entries.reduce((a,[,c])=>a+c,0);
-  const segments=entries.map(([label,value],i)=>({label,value,color:RPT_COLORS[i%RPT_COLORS.length]}));
-  const donut=svgDonut(segments,116,16,total,centerLabel);
-  const legend=entries.slice(0,6).map(([label,cnt],i)=>{
-    const pct=Math.round(cnt/total*100);
-    const c=RPT_COLORS[i%RPT_COLORS.length];
-    return`<div class="rpt-dlrow">
-      <span class="dk"><i style="background:${c};"></i>${escapeHtml(label)}</span>
-      <span class="dv"><b>${cnt}</b><em style="background:color-mix(in srgb, ${c} 18%, transparent);color:${c};">${pct}%</em></span>
+  const maxV=Math.max(...shown.map(([,v])=>v),1);
+  const rows=shown.map(([label,val],i)=>{
+    const c=RP_COLORS[i%RP_COLORS.length];
+    const widthPct=Math.round(val/maxV*100);
+    const pct=Math.round(val/total*100);
+    return`<div class="rp-rank-row">
+      <div class="rp-rank-badge" style="background:${c};">${i+1}</div>
+      <div class="rp-rank-body">
+        <div class="rp-rank-top"><span class="rp-rank-name">${escapeHtml(label)}</span><span class="rp-rank-val">${val} <span style="color:var(--tm);">(${pct}%)</span></span></div>
+        <div class="rp-rank-track"><div class="rp-rank-fill" style="width:${widthPct}%;background:${c};"></div></div>
+      </div>
     </div>`;
   }).join('');
-  const more=entries.length>6?`<div class="rpt-dlrow"><span class="dk" style="color:var(--tm);">+${entries.length-6} more</span></div>`:'';
-  el.innerHTML=`<div class="rpt-donut-wrap">${donut}<div class="rpt-donut-legend">${legend}${more}</div></div>`;
-}
-// Same donut, but names are arranged radially around the ring (with a short
-// leader line to their segment) instead of a side legend list.
-function rptDonutRadialCard(el,counts,emptyMsg,centerLabel){
-  if(!el)return;
-  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
-  const total=entries.reduce((a,[,c])=>a+c,0);
-  const shown=entries.slice(0,8);
-  const rest=entries.slice(8);
-  const segments=entries.map(([label,value],i)=>({label,value,color:RPT_COLORS[i%RPT_COLORS.length]}));
-  const W=320,H=286,cx=W/2,cy=H/2,ringSize=118,strokeW=15;
-  const r=(ringSize-strokeW)/2;
-  const c=2*Math.PI*r;
-  let offset=0;
-  const arcEls=segments.map(s=>{
-    const frac=s.value/total;
-    const dash=Math.max(frac*c-1,0);
-    const el2=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-dashoffset="${-offset}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>`;
-    offset+=frac*c;
-    return el2;
-  }).join('');
-  let cum=0;
-  const labelR=r+strokeW/2+38;
-  const labelEls=shown.map(([label,value],i)=>{
-    const frac=value/total;
-    const midFrac=cum+frac/2;
-    cum+=frac;
-    const angleRad=(-90+360*midFrac)*Math.PI/180;
-    const lx=cx+labelR*Math.cos(angleRad);
-    const ly=cy+labelR*Math.sin(angleRad);
-    const dotX=cx+(r+strokeW/2+6)*Math.cos(angleRad);
-    const dotY=cy+(r+strokeW/2+6)*Math.sin(angleRad);
-    const anchor=Math.cos(angleRad)>0.15?'start':Math.cos(angleRad)<-0.15?'end':'middle';
-    const color=RPT_COLORS[i%RPT_COLORS.length];
-    const shortLabel=label.length>13?label.slice(0,12)+'…':label;
-    return`<g>
-      <line x1="${dotX.toFixed(1)}" y1="${dotY.toFixed(1)}" x2="${lx.toFixed(1)}" y2="${ly.toFixed(1)}" stroke="${color}" stroke-width="1" opacity="0.55"/>
-      <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="2.5" fill="${color}"/>
-      <text x="${(lx+(anchor==='start'?6:anchor==='end'?-6:0)).toFixed(1)}" y="${(ly+3).toFixed(1)}" font-size="9.5" text-anchor="${anchor}" fill="var(--tp)">${escapeHtml(shortLabel)} <tspan fill="var(--tm)" font-size="8.5">(${value})</tspan></text>
-    </g>`;
-  }).join('');
-  const more=rest.length?`<div class="rpt-empty" style="padding:2px 0 0;">+${rest.length} more</div>`:'';
-  el.innerHTML=`<div style="display:flex;justify-content:center;">
-    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;">
-      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
-      ${arcEls}
-      <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${total}</text>
-      <text x="${cx}" y="${cy+15}" text-anchor="middle" font-size="9" fill="var(--tm)" letter-spacing="0.05em">${centerLabel}</text>
-      ${labelEls}
-    </svg>
-  </div>${more}`;
-}
-function rptBarList(el,counts,emptyMsg,maxRows){
-  if(!el)return;
-  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,maxRows||7);
-  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
-  const maxV=Math.max(...entries.map(([,v])=>v),1);
-  el.innerHTML=`<div class="rpt-barlist">`+entries.map(([label,val],i)=>{
-    const pct=Math.round(val/maxV*100);
-    const c=RPT_COLORS[i%RPT_COLORS.length];
-    return`<div class="rpt-bar-row">
-      <div class="bhead"><span class="bname">${escapeHtml(label)}</span><span class="bval">${val}</span></div>
-      <div class="rpt-bar-track"><div class="rpt-bar-fill" style="width:${pct}%;background:${c};"></div></div>
-    </div>`;
-  }).join('')+`</div>`;
+  const more=rest>0?`<div class="rp-rank-more">+${rest} more</div>`:'';
+  el.innerHTML=`<div class="rp-rank-list">${rows}</div>${more}`;
 }
 // Vita income for a given month — mirrors the Finance page's own figure so
 // the Report page always agrees with it.
@@ -6622,6 +6841,12 @@ function computeCenterIncomeFor(yr,mi){
   const expense=dailyRows.filter(r=>r.type==='expense').reduce((a,r)=>a+(r.amount||0),0);
   return{vitaInc,due,duePts,expense,totalIncome:vitaInc};
 }
+// Percent change of curr vs prev. Returns null when a comparison isn't
+// meaningful (prev is 0) so the caller can skip the delta badge.
+function rpDeltaPct(curr,prev){
+  if(!prev)return null;
+  return((curr-prev)/Math.abs(prev))*100;
+}
 function renderReportPage(){
   const yf=g('report-year-filter')?g('report-year-filter').value:String(new Date().getFullYear());
   const mf=g('report-month-filter')?+g('report-month-filter').value:new Date().getMonth();
@@ -6630,6 +6855,11 @@ function renderReportPage(){
   // ---- FINANCE (Vita income) ----
   const {vitaInc,due,duePts,expense,totalIncome}=computeCenterIncomeFor(yf,mf);
   const net=totalIncome-expense;
+
+  // ---- FINANCE, previous month (for the KPI trend badges) ----
+  let pmi=mf-1,pyr=+yf;if(pmi<0){pmi=11;pyr--;}
+  const prev=computeCenterIncomeFor(pyr,pmi);
+  const prevNet=prev.totalIncome-prev.expense;
 
   // ---- PATIENTS (all 3 sources) ----
   const vitaRows=loadArr(SK10).filter(r=>String(r._year)===yf&&+r._month===mf);
@@ -6640,8 +6870,6 @@ function renderReportPage(){
   // ---- ATTENDANCE (staff only) ----
   const staffNames=new Set(loadUsers().filter(u=>u.role==='staff').map(u=>u.name||u.username));
   const attRows=loadAttendance().filter(r=>staffNames.has(r.name||r.username)&&r.date&&r.date.startsWith(monthKey));
-  const presentCount=attRows.filter(r=>r.status==='Present').length;
-  const leaveCount=attRows.filter(r=>r.status==='Leave').length;
 
   // ---- SALARY ----
   const salRows=loadSalary().filter(r=>r.month===monthKey);
@@ -6650,42 +6878,16 @@ function renderReportPage(){
   const salaryUnpaid=salaryTotal-salaryPaid;
   const advTotal=loadSalaryAdvances().filter(r=>!r.settled).reduce((a,r)=>a+(r.amount||0),0);
 
-  // ═══ SECTION 1 — Stat strip ═══
+  // ═══ KPI cards ═══
   const kpi=g('report-kpi-row');
-  if(kpi)kpi.innerHTML=`
-    <div class="rpt-sstat"><div class="rpt-sstat-label">Net Profit</div><div class="rpt-sstat-value" style="color:${net>=0?'var(--green)':'var(--pink)'};">${fmtExact(net)}</div><div class="rpt-sstat-sub">${MN_EN[mf]} ${yf}</div></div>
-    <div class="rpt-sstat"><div class="rpt-sstat-label">Total Income</div><div class="rpt-sstat-value">${fmtExact(totalIncome)}</div><div class="rpt-sstat-sub">This month</div></div>
-    <div class="rpt-sstat"><div class="rpt-sstat-label">Expense</div><div class="rpt-sstat-value">${fmtExact(expense)}</div><div class="rpt-sstat-sub">This month</div></div>
-    <div class="rpt-sstat"><div class="rpt-sstat-label">Vita Center Income</div><div class="rpt-sstat-value" style="color:var(--cyan);">${fmtExact(vitaInc)}</div><div class="rpt-sstat-sub">via Finance</div></div>
-    <div class="rpt-sstat"><div class="rpt-sstat-label">Pending Due</div><div class="rpt-sstat-value" style="color:var(--yellow);">${fmtExact(due)}</div><div class="rpt-sstat-sub">${duePts} patient(s)</div></div>
-  `;
+  if(kpi)kpi.innerHTML=
+    rpKpiCard('Net Profit',fmtExact(net),MN_EN[mf]+' '+yf,rpDeltaPct(net,prevNet),net>=0?'var(--green)':'var(--pink)','💹')+
+    rpKpiCard('Total Income',fmtExact(totalIncome),'This month',rpDeltaPct(totalIncome,prev.totalIncome),'var(--cyan)','💵')+
+    rpKpiCard('Expense',fmtExact(expense),'This month',rpDeltaPct(expense,prev.expense),'var(--pink)','💸',true)+
+    rpKpiCard('Vita Center Income',fmtExact(vitaInc),'via Finance',rpDeltaPct(vitaInc,prev.vitaInc),'var(--purple)','🏥')+
+    rpKpiCard('Pending Due',fmtExact(due),duePts+' patient(s)',null,'var(--yellow)','⏳');
 
-  // ═══ SECTION 2 — Patient rings + Collections ═══
-  const ringEl=g('report-patient-rings');
-  if(ringEl){
-    ringEl.innerHTML=`
-      <div class="rpt-ring">${svgRing(vitaRows.length,maxPatients,110,13,'var(--cyan)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Vita Center</b><br>Patient</div></div>
-      <div class="rpt-ring">${svgRing(othersRows.length,maxPatients,110,13,'var(--purple)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Others (Med)</b><br>+ VITA (Slip)</div></div>
-      <div class="rpt-ring">${svgRing(vitaOthersRows.length,maxPatients,110,13,'var(--green)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Vita (Med)</b><br>+ Others (Slip)</div></div>
-    `;
-  }
-  const collEl=g('report-collections');
-  if(collEl){
-    if(totalIncome+due+expense<=0){
-      collEl.innerHTML='<div class="rpt-empty">No income data for '+MN_EN[mf]+' '+yf+'.</div>';
-    }else{
-      const segs=[{label:'Paid',value:totalIncome,color:'var(--green)'},{label:'Due',value:due,color:'var(--yellow)'},{label:'Expense',value:expense,color:'var(--pink)'}].filter(s=>s.value>0);
-      const total=totalIncome+due+expense;
-      const donut=svgDonut(segs,110,14,'','');
-      const legend=segs.map(s=>{
-        const pct=Math.round(s.value/total*100);
-        return`<div class="rpt-dlrow"><span class="dk"><i style="background:${s.color};"></i>${s.label}</span><span class="dv"><b>${fmtExact(s.value)}</b><em style="background:color-mix(in srgb, ${s.color} 18%, transparent);color:${s.color};">${pct}%</em></span></div>`;
-      }).join('');
-      collEl.innerHTML=`<div class="rpt-donut-wrap">${donut}<div class="rpt-donut-legend">${legend}</div></div>`;
-    }
-  }
-
-  // ═══ SECTION 3 — Cash flow (12 months, interactive) ═══
+  // ═══ Cash flow (12 months, interactive) ═══
   const trendEl=g('report-finance-trend');
   if(trendEl){
     const months=[];
@@ -6698,35 +6900,58 @@ function renderReportPage(){
     attachChartTooltip(trendEl,series);
   }
 
-  // ═══ SECTION 4 — Breakdown detail ═══
+  // ═══ Collections (proportion bar) + Patient intake (comparison cards) ═══
+  rpProportionBar(g('report-collections'),[
+    {label:'Paid',value:totalIncome,color:'var(--green)'},
+    {label:'Due',value:due,color:'var(--yellow)'},
+    {label:'Expense',value:expense,color:'var(--pink)'}
+  ],'No income data for '+MN_EN[mf]+' '+yf+'.');
+
+  const ringEl=g('report-patient-rings');
+  if(ringEl){
+    ringEl.innerHTML=
+      rpIntakeCard('Vita Center · Patient',vitaRows.length,maxPatients,'var(--cyan)')+
+      rpIntakeCard('Others (Med) + VITA (Slip)',othersRows.length,maxPatients,'var(--purple)')+
+      rpIntakeCard('Vita (Med) + Others (Slip)',vitaOthersRows.length,maxPatients,'var(--green)');
+  }
+
+  // ═══ Breakdown detail — every category uses the same ranked bar list ═══
   // Vita Center: Status, Agency, Slips
   const vitaStatusCounts={};
   vitaRows.forEach(r=>{const st=(r.status||'Unknown').trim()||'Unknown';vitaStatusCounts[st]=(vitaStatusCounts[st]||0)+1;});
-  rptBarList(g('report-vita-status'),vitaStatusCounts,'No data.');
+  rpRankList(g('report-vita-status'),vitaStatusCounts,'No data.');
 
   const vitaAgencyCounts={};
   vitaRows.forEach(r=>{const a=(r.agency||'Unknown').trim()||'Unknown';vitaAgencyCounts[a]=(vitaAgencyCounts[a]||0)+1;});
-  rptDonutRadialCard(g('report-vita-agency'),vitaAgencyCounts,'No data.','patients');
+  rpRankList(g('report-vita-agency'),vitaAgencyCounts,'No data.',8);
 
   const vitaSlipsCounts={};
   vitaRows.forEach(r=>{const sp=(r.slips||'Unknown').trim()||'Unknown';vitaSlipsCounts[sp]=(vitaSlipsCounts[sp]||0)+1;});
-  rptBarList(g('report-vita-slips'),vitaSlipsCounts,'No data.',6);
+  rpRankList(g('report-vita-slips'),vitaSlipsCounts,'No data.',6);
 
   // Vita (Med) + Others (Slip): Center, Agency
   const voCenterCounts={};
   vitaOthersRows.forEach(r=>{const c=(r._center||'Unknown').trim()||'Unknown';voCenterCounts[c]=(voCenterCounts[c]||0)+1;});
-  rptBarList(g('report-vitaothers-center'),voCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.');
+  rpRankList(g('report-vitaothers-center'),voCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.');
 
   const voAgencyCounts={};
   vitaOthersRows.forEach(r=>{const a=(r.agency||'Unknown').trim()||'Unknown';voAgencyCounts[a]=(voAgencyCounts[a]||0)+1;});
-  rptBarList(g('report-vitaothers-agency'),voAgencyCounts,'No data for '+MN_EN[mf]+' '+yf+'.',6);
+  rpRankList(g('report-vitaothers-agency'),voAgencyCounts,'No data for '+MN_EN[mf]+' '+yf+'.',6);
 
   // Others (Med) + VITA (Slip): Center only
   const ocCenterCounts={};
   othersRows.forEach(r=>{const c=(r._center||'Unknown').trim()||'Unknown';ocCenterCounts[c]=(ocCenterCounts[c]||0)+1;});
-  rptDonutCard(g('report-others-chart'),ocCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.','patients');
+  rpRankList(g('report-others-chart'),ocCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.');
 
-  // ═══ SECTION 5 — Payroll + Attendance ═══
+  // ═══ Team — Payroll tiles + Attendance staff list ═══
+  const salEl=g('report-salary');
+  if(salEl){
+    salEl.innerHTML=
+      `<div class="rp-team-tile"><div class="tl">Total Payroll</div><div class="tv">${fmtExact(salaryTotal)}</div></div>
+       <div class="rp-team-tile"><div class="tl">Paid</div><div class="tv" style="color:var(--green);">${fmtExact(salaryPaid)}</div></div>
+       <div class="rp-team-tile"><div class="tl">Unpaid</div><div class="tv" style="color:var(--pink);">${fmtExact(salaryUnpaid)}</div></div>
+       <div class="rp-team-tile"><div class="tl">Pending Advances</div><div class="tv" style="color:var(--yellow);">${fmtExact(advTotal)}</div></div>`;
+  }
   const attEl=g('report-attendance');
   if(attEl){
     const byStaff={};
@@ -6737,25 +6962,19 @@ function renderReportPage(){
       else if(r.status==='Leave')byStaff[k].leave++;
     });
     const names=Object.keys(byStaff);
-    if(!names.length){attEl.innerHTML='<div class="rpt-empty">No attendance data for '+MN_EN[mf]+' '+yf+'.</div>';}
+    if(!names.length){attEl.innerHTML='<div class="rp-empty">No attendance data for '+MN_EN[mf]+' '+yf+'.</div>';}
     else{
-      attEl.innerHTML=names.map(n=>{
+      attEl.innerHTML=names.map((n,i)=>{
         const d=byStaff[n];
-        return`<div class="rpt-staff-row">
-          <span class="rpt-staff-name">${escapeHtml(n)}</span>
-          <span class="rpt-staff-pills"><span class="rpt-pill p">${d.present}P</span><span class="rpt-pill l">${d.leave}L</span></span>
+        const initials=n.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+        const c=RP_COLORS[i%RP_COLORS.length];
+        return`<div class="rp-staff-row">
+          <div class="rp-staff-avatar" style="background:${c};">${initials}</div>
+          <span class="rp-staff-name">${escapeHtml(n)}</span>
+          <span class="rp-staff-pills"><span class="rp-pill p">${d.present}P</span><span class="rp-pill l">${d.leave}L</span></span>
         </div>`;
       }).join('');
     }
-  }
-  const salEl=g('report-salary');
-  if(salEl){
-    salEl.innerHTML=`<div class="rpt-payroll">
-      <div class="rpt-payroll-item"><div class="pl">Total Payroll</div><div class="pv">${fmtExact(salaryTotal)}</div></div>
-      <div class="rpt-payroll-item"><div class="pl">Paid</div><div class="pv" style="color:var(--green);">${fmtExact(salaryPaid)}</div></div>
-      <div class="rpt-payroll-item"><div class="pl">Unpaid</div><div class="pv" style="color:var(--pink);">${fmtExact(salaryUnpaid)}</div></div>
-      <div class="rpt-payroll-item"><div class="pl">Pending Advances</div><div class="pv" style="color:var(--yellow);">${fmtExact(advTotal)}</div></div>
-    </div>`;
   }
 }
 function renderAgencyCard(){
