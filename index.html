@@ -226,99 +226,67 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .ctitle{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tm);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .ctitle .dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0;}
 
-/* REPORT PAGE v2 — full redesign */
-.rp-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
-.rp-eyebrow{font-size:10.5px;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
-.rp-title{font-size:27px;font-weight:800;color:var(--tp);letter-spacing:-.02em;line-height:1;}
-.rp-filters{display:flex;gap:8px;}
-
-.rp-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
-@media(max-width:1100px){.rp-kpi-grid{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:640px){.rp-kpi-grid{grid-template-columns:repeat(2,1fr);}}
-.rp-kpi{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:16px 17px;position:relative;overflow:hidden;}
-.rp-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--cyan));opacity:.85;}
-.rp-kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:13px;}
-.rp-kpi-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(255,255,255,.06);}
-.rp-kpi-delta{font-size:10.5px;font-family:var(--mono);font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;}
-.rp-kpi-delta.up{background:rgba(0,229,160,.12);color:var(--green);}
-.rp-kpi-delta.down{background:rgba(247,37,133,.12);color:var(--pink);}
-.rp-kpi-delta.flat{background:rgba(255,255,255,.06);color:var(--tm);}
-.rp-kpi-label{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px;}
-.rp-kpi-val{font-size:21px;font-weight:800;font-family:var(--mono);letter-spacing:-.01em;color:var(--tp);}
-.rp-kpi-sub{font-size:10.5px;color:var(--ts);margin-top:5px;}
-
-.rp-card{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:20px;margin-bottom:16px;}
-.rp-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px;flex-wrap:wrap;}
-.rp-card-title{font-size:14px;font-weight:700;color:var(--tp);display:flex;align-items:center;gap:8px;}
-.rp-card-title i{font-style:normal;font-size:15px;}
-.rp-card-sub{font-size:11px;color:var(--tm);margin-top:2px;}
-.rp-legend{display:flex;gap:14px;flex-wrap:wrap;}
-.rp-legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ts);}
-.rp-legend-item i{width:9px;height:9px;border-radius:3px;display:inline-block;font-style:normal;}
-
-.rp-grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;}
-@media(max-width:900px){.rp-grid2{grid-template-columns:1fr;}}
-
-.rp-flow-wrap{position:relative;margin-top:10px;}
-
-/* Proportion bar — replaces the old Collections donut */
-.rp-prop-track{display:flex;width:100%;height:14px;border-radius:99px;overflow:hidden;background:var(--bg-card2);margin-bottom:14px;}
-.rp-prop-seg{height:100%;transition:width .4s;}
-.rp-prop-legend{display:flex;flex-wrap:wrap;gap:10px 18px;}
-.rp-prop-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ts);}
-.rp-prop-item i{width:9px;height:9px;border-radius:3px;flex-shrink:0;font-style:normal;}
-.rp-prop-item b{font-family:var(--mono);color:var(--tp);margin-left:3px;font-weight:700;}
-.rp-prop-item em{font-style:normal;font-size:10.5px;color:var(--tm);margin-left:3px;}
-
-/* Patient intake comparison cards — replaces the old rings */
-.rp-intake-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-@media(max-width:760px){.rp-intake-grid{grid-template-columns:1fr;}}
-.rp-intake-card{background:var(--bg-card2);border:1px solid var(--border);border-radius:13px;padding:15px 16px;}
-.rp-intake-name{font-size:11.5px;color:var(--ts);font-weight:600;margin-bottom:9px;line-height:1.35;}
-.rp-intake-val{font-size:25px;font-weight:800;font-family:var(--mono);color:var(--tp);line-height:1;margin-bottom:11px;}
-.rp-intake-val span{font-size:11px;color:var(--tm);font-weight:500;font-family:var(--font);margin-left:5px;}
-.rp-intake-track{background:var(--bg-deep);border-radius:99px;height:7px;overflow:hidden;}
-.rp-intake-fill{height:100%;border-radius:99px;transition:width .5s;}
-
-/* Ranked bar list — unified component for every category breakdown */
-.rp-rank-list{display:flex;flex-direction:column;gap:12px;}
-.rp-rank-row{display:flex;align-items:center;gap:11px;}
-.rp-rank-badge{width:22px;height:22px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;font-family:var(--mono);color:#0a0d14;}
-.rp-rank-body{flex:1;min-width:0;}
-.rp-rank-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px;}
-.rp-rank-name{font-size:12px;color:var(--tp);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.rp-rank-val{font-size:11.5px;font-family:var(--mono);color:var(--ts);white-space:nowrap;}
-.rp-rank-track{background:var(--bg-card2);border-radius:99px;height:7px;overflow:hidden;}
-.rp-rank-fill{height:100%;border-radius:99px;transition:width .5s;}
-.rp-rank-more{font-size:11px;color:var(--tm);padding-top:2px;}
-
-.rp-multi3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-.rp-multi2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
-@media(max-width:760px){.rp-multi3{grid-template-columns:1fr;}.rp-multi2{grid-template-columns:1fr;}}
-.rp-subhead{font-size:10.5px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.07em;margin-bottom:13px;}
-
-.rp-empty{font-size:12px;color:var(--tm);padding:22px 0;text-align:center;width:100%;}
-
-/* Team */
-.rp-team-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
-@media(max-width:640px){.rp-team-tiles{grid-template-columns:repeat(2,1fr);}}
-.rp-team-tile{background:var(--bg-card2);border-radius:12px;padding:13px 14px;}
-.rp-team-tile .tl{font-size:10px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;font-weight:700;}
-.rp-team-tile .tv{font-size:16px;font-weight:800;font-family:var(--mono);}
-.rp-staff-list{display:flex;flex-direction:column;}
-.rp-staff-row{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--border);}
-.rp-staff-row:last-child{border-bottom:none;}
-.rp-staff-avatar{width:29px;height:29px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0a0d14;}
-.rp-staff-name{font-size:12.5px;color:var(--tp);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.rp-staff-pills{display:flex;gap:6px;flex-shrink:0;}
-.rp-pill{font-size:11px;font-family:var(--mono);padding:2px 8px;border-radius:99px;font-weight:700;}
-.rp-pill.p{background:rgba(0,229,160,.12);color:var(--green);}
-.rp-pill.l{background:rgba(245,158,11,.12);color:var(--yellow);}
-
-.rp-tooltip{position:absolute;background:#0d1420;border:1px solid var(--border-bright);border-radius:10px;padding:9px 12px;font-size:11.5px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:20;box-shadow:0 10px 24px rgba(0,0,0,.55);white-space:nowrap;}
-.rp-tooltip.show{opacity:1;}
-.rp-tooltip .tt-month{color:var(--tm);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
-.rp-tooltip .tt-row{display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);margin-top:2px;}
+/* REPORT PAGE */
+.rpt-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.rpt-eyebrow{font-size:10.5px;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase;font-weight:700;margin-bottom:3px;}
+.rpt-title{font-size:26px;font-weight:800;color:var(--tp);letter-spacing:-.02em;line-height:1;}
+.rpt-filters{display:flex;gap:8px;}
+.rpt-hero{display:flex;flex-wrap:wrap;background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:20px 6px;margin-bottom:16px;}
+.rpt-statstrip{display:flex;flex-wrap:wrap;background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:18px 4px;margin-bottom:16px;}
+.rpt-sstat{flex:1 1 150px;min-width:130px;padding:2px 22px;position:relative;}
+.rpt-sstat:not(:last-child)::after{content:'';position:absolute;right:0;top:4px;bottom:4px;width:1px;background:var(--border);}
+.rpt-sstat-label{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:8px;}
+.rpt-sstat-value{font-size:21px;font-weight:800;font-family:var(--mono);letter-spacing:-.01em;line-height:1;}
+.rpt-sstat-sub{font-size:10.5px;color:var(--ts);margin-top:7px;}
+@media(max-width:760px){.rpt-sstat:not(:last-child)::after{display:none;}.rpt-sstat{flex:1 1 45%;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:8px;}}
+.rpt-card{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:16px;padding:20px;margin-bottom:16px;}
+.rpt-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.rpt-card-title{font-size:14px;font-weight:700;color:var(--tp);}
+.rpt-card-sub{font-size:11px;color:var(--tm);margin-top:2px;margin-bottom:14px;}
+.rpt-legend{display:flex;gap:14px;}
+.rpt-legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ts);}
+.rpt-legend-item i{width:9px;height:9px;border-radius:3px;display:inline-block;}
+.rpt-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;}
+.rpt-grid2{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;}
+@media(max-width:900px){.rpt-grid3{grid-template-columns:1fr;}.rpt-grid2{grid-template-columns:1fr;}}
+.rpt-donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.rpt-donut-legend{flex:1;min-width:120px;display:flex;flex-direction:column;gap:9px;}
+.rpt-dlrow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;}
+.rpt-dlrow .dk{display:flex;align-items:center;gap:7px;color:var(--ts);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rpt-dlrow .dk i{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.rpt-dlrow .dv{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.rpt-dlrow .dv b{font-family:var(--mono);color:var(--tp);font-weight:600;}
+.rpt-dlrow .dv em{font-style:normal;font-size:10px;font-family:var(--mono);padding:1px 6px;border-radius:99px;font-weight:700;}
+.rpt-empty{font-size:12px;color:var(--tm);padding:20px 0;text-align:center;width:100%;}
+.rpt-staff-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+.rpt-staff-row:last-child{border-bottom:none;}
+.rpt-staff-name{font-size:12.5px;color:var(--tp);}
+.rpt-staff-pills{display:flex;gap:6px;}
+.rpt-pill{font-size:11px;font-family:var(--mono);padding:2px 7px;border-radius:99px;font-weight:600;}
+.rpt-pill.p{background:rgba(0,229,160,.12);color:var(--green);}
+.rpt-pill.l{background:rgba(245,158,11,.12);color:var(--yellow);}
+.rpt-payroll{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.rpt-payroll-item .pl{font-size:10.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.rpt-payroll-item .pv{font-size:15px;font-weight:700;font-family:var(--mono);}
+.rpt-barlist{display:flex;flex-direction:column;gap:12px;}
+.rpt-bar-row .bhead{display:flex;justify-content:space-between;margin-bottom:5px;}
+.rpt-bar-row .bname{font-size:12px;color:var(--tp);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;}
+.rpt-bar-row .bval{font-size:11.5px;font-family:var(--mono);color:var(--ts);}
+.rpt-bar-track{background:var(--bg-card2);border-radius:99px;height:8px;overflow:hidden;}
+.rpt-bar-fill{height:100%;border-radius:99px;}
+.rpt-ringrow{display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;padding-top:8px;}
+.rpt-ring{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.rpt-ring-label{font-size:11.5px;color:var(--ts);text-align:center;max-width:120px;line-height:1.4;}
+.rpt-multi3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.rpt-multi3.rpt-multi3-agency{grid-template-columns:0.8fr 2fr 0.8fr;}
+.rpt-multi2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+@media(max-width:760px){.rpt-multi3{grid-template-columns:1fr;}.rpt-multi3.rpt-multi3-agency{grid-template-columns:1fr;}.rpt-multi2{grid-template-columns:1fr;}}
+.rpt-subpanel-title{font-size:10.5px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.rpt-coll-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.rpt-tooltip{position:absolute;background:#0d1420;border:1px solid var(--border-bright);border-radius:10px;padding:9px 12px;font-size:11.5px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:20;box-shadow:0 10px 24px rgba(0,0,0,.55);white-space:nowrap;}
+.rpt-tooltip.show{opacity:1;}
+.rpt-tooltip .tt-month{color:var(--tm);font-size:10px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+.rpt-tooltip .tt-row{display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);margin-top:2px;}
 .ppg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;}
 .ppf{background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--rs);padding:9px;}
 .ppf label{display:block;font-size:11px;color:var(--tm);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
@@ -471,6 +439,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .dt-form.dt-form-exp{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));}
 .dt-form.dt-form-inc{grid-template-columns:repeat(auto-fit,minmax(100px,1fr));}
 .rm-btn{background:rgba(247,37,133,.08);border:1px solid rgba(247,37,133,.2);color:var(--pink);border-radius:6px;padding:4px 9px;font-size:13px;cursor:pointer;line-height:1;}
+/* Date-range filter (From – To), used on every table filter toolbar */
+.drange{display:flex;align-items:center;gap:4px;}
+.drange-in{padding:5px 7px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);width:126px;}
+.drange-sep{color:var(--tm);font-size:11px;}
+.drange-x{background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;flex-shrink:0;}
 /* BILL VOUCHER (Finance > Bill Voucher — nothing here is persisted) */
 .bv-head-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
 .bv-table td{padding:6px 8px;vertical-align:middle;}
@@ -953,7 +926,12 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
           </button>
           <div class="msel-panel" id="d-month-filter-panel"></div>
         </div>
-        <input type="date" id="d-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderDailyTable()"><button onclick="clearDateFilterDaily()" id="d-date-clear" style="display:none;background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
+        <div class="drange">
+          <input type="date" id="d-date-filter-from" class="sel drange-in" oninput="renderDailyTable()" title="From date">
+          <span class="drange-sep">–</span>
+          <input type="date" id="d-date-filter-to" class="sel drange-in" oninput="renderDailyTable()" title="To date">
+          <button onclick="clearDateRange('d-date-filter',renderDailyTable)" class="drange-x" title="Clear date range">&#10005;</button>
+        </div>
         <div class="msel" id="d-type-filter-wrap">
           <button type="button" class="msel-btn" onclick="toggleMsel('d-type-filter')">
             <span class="msel-btn-label" id="d-type-filter-label">All Types</span>
@@ -1154,8 +1132,19 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
         </button>
         <div class="msel-panel" id="vita-slip-filter-panel"></div>
       </div>
-      <input type="date" id="vita-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderVitaPatients()">
-      <button onclick="g('vita-date-filter').value='';renderVitaPatients();" id="vita-date-clear" style="background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
+      <div class="msel" id="vita-remarks-filter-wrap">
+        <button type="button" class="msel-btn" onclick="toggleMsel('vita-remarks-filter')">
+          <span class="msel-btn-label" id="vita-remarks-filter-label">All Remarks</span>
+          <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="msel-panel" id="vita-remarks-filter-panel"></div>
+      </div>
+      <div class="drange">
+        <input type="date" id="vita-date-filter-from" class="sel drange-in" oninput="renderVitaPatients()" title="From date">
+        <span class="drange-sep">–</span>
+        <input type="date" id="vita-date-filter-to" class="sel drange-in" oninput="renderVitaPatients()" title="To date">
+        <button onclick="clearDateRange('vita-date-filter',renderVitaPatients)" class="drange-x" title="Clear date range">&#10005;</button>
+      </div>
       <button class="abtn bexp" onclick="exportVitaCSV()">Export</button>
       <button class="abtn bexp" onclick="generateVitaPatientsPDF()">📄 PDF Report</button>
       <button class="abtn bgrn" onclick="syncVitaNow()" style="white-space:nowrap;">&#8635; Sync Now</button>
@@ -1163,7 +1152,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
     <div class="tw">
       <table class="dt">
         <thead><tr><th>#</th><th>Date</th><th>Reg No.</th><th>Name</th><th>Passport No.</th><th>Country</th><th>Mobile No.</th><th>Status</th><th>Agency</th><th>Problem</th><th>Remarks</th><th>Slips</th><th>Report</th><th>Month</th></tr></thead>
-        <tbody id="vitaTbody"><tr><td colspan="12" style="text-align:center;padding:28px;color:var(--tm);">Configure Vita Center Sheet URL in Settings, then tap Sync Now.</td></tr></tbody>
+        <tbody id="vitaTbody"><tr><td colspan="14" style="text-align:center;padding:28px;color:var(--tm);">Configure Vita Center Sheet URL in Settings, then tap Sync Now.</td></tr></tbody>
       </table>
     </div>
     <div style="font-size:12px;color:var(--tm);margin-top:8px;text-align:right;" id="vita-record-count"></div>
@@ -1222,8 +1211,19 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
           </button>
           <div class="msel-panel" id="vitaothers-status-filter-panel"></div>
         </div>
-        <input type="date" id="vitaothers-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderVitaOthersPatients()">
-        <button onclick="g('vitaothers-date-filter').value='';renderVitaOthersPatients();" style="background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
+        <div class="msel" id="vitaothers-comment-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('vitaothers-comment-filter')">
+            <span class="msel-btn-label" id="vitaothers-comment-filter-label">All Comments</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="vitaothers-comment-filter-panel"></div>
+        </div>
+        <div class="drange">
+          <input type="date" id="vitaothers-date-filter-from" class="sel drange-in" oninput="renderVitaOthersPatients()" title="From date">
+          <span class="drange-sep">–</span>
+          <input type="date" id="vitaothers-date-filter-to" class="sel drange-in" oninput="renderVitaOthersPatients()" title="To date">
+          <button onclick="clearDateRange('vitaothers-date-filter',renderVitaOthersPatients)" class="drange-x" title="Clear date range">&#10005;</button>
+        </div>
         <button class="abtn bexp" onclick="exportVitaOthersCSV()">Export</button>
         <button class="abtn bexp" onclick="generateVitaOthersPatientsPDF()">📄 PDF Report</button>
         <button class="abtn bgrn" onclick="syncVitaOthersNow()" style="white-space:nowrap;">&#8635; Sync Now</button>
@@ -1267,8 +1267,19 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
           </button>
           <div class="msel-panel" id="others-status-filter-panel"></div>
         </div>
-        <input type="date" id="others-date-filter" class="sel" style="padding:5px 8px;font-size:12px;cursor:pointer;color:var(--cyan);border-color:rgba(0,212,255,.3);" oninput="renderOthersPatients()">
-        <button onclick="g('others-date-filter').value='';renderOthersPatients();" style="background:none;border:none;color:var(--ts);cursor:pointer;font-size:15px;padding:0 4px;">&#10005;</button>
+        <div class="msel" id="others-comment-filter-wrap">
+          <button type="button" class="msel-btn" onclick="toggleMsel('others-comment-filter')">
+            <span class="msel-btn-label" id="others-comment-filter-label">All Comments</span>
+            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="msel-panel" id="others-comment-filter-panel"></div>
+        </div>
+        <div class="drange">
+          <input type="date" id="others-date-filter-from" class="sel drange-in" oninput="renderOthersPatients()" title="From date">
+          <span class="drange-sep">–</span>
+          <input type="date" id="others-date-filter-to" class="sel drange-in" oninput="renderOthersPatients()" title="To date">
+          <button onclick="clearDateRange('others-date-filter',renderOthersPatients)" class="drange-x" title="Clear date range">&#10005;</button>
+        </div>
         <button class="abtn bexp" onclick="exportOthersCSV()">Export</button>
         <button class="abtn bexp" onclick="generateOthersPatientsPDF()">📄 PDF Report</button>
         <button class="abtn bgrn" onclick="syncOthersNow()" style="white-space:nowrap;">&#8635; Sync Now</button>
@@ -1276,7 +1287,7 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
       <div class="tw">
         <table class="dt">
           <thead><tr><th>#</th><th>Date</th><th>Reg No.</th><th>Name</th><th>Passport No.</th><th>Status</th><th>Comment</th><th>Center</th><th>Report</th><th>Month</th></tr></thead>
-          <tbody id="othersTbody"><tr><td colspan="9" style="text-align:center;padding:28px;color:var(--tm);">Configure Others Center Sheet URL in Settings, then tap Sync Now.</td></tr></tbody>
+          <tbody id="othersTbody"><tr><td colspan="10" style="text-align:center;padding:28px;color:var(--tm);">Configure Others Center Sheet URL in Settings, then tap Sync Now.</td></tr></tbody>
         </table>
       </div>
       <div style="font-size:12px;color:var(--tm);margin-top:8px;text-align:right;" id="others-record-count"></div>
@@ -1287,12 +1298,12 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
 
 <!-- REPORT -->
 <div class="page" id="page-report">
-  <div class="rp-head">
+  <div class="rpt-head">
     <div>
-      <div class="rp-eyebrow">Overview</div>
-      <div class="rp-title">Report</div>
+      <div class="rpt-eyebrow">Overview</div>
+      <div class="rpt-title">Report</div>
     </div>
-    <div class="rp-filters">
+    <div class="rpt-filters">
       <select class="sel" id="report-year-filter" onchange="renderReportPage()">
         <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
       </select>
@@ -1300,71 +1311,92 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
     </div>
   </div>
 
-  <!-- KPI cards, with month-over-month trend badges -->
-  <div class="rp-kpi-grid" id="report-kpi-row"></div>
+  <!-- SECTION 1: Stat strip -->
+  <div class="rpt-statstrip" id="report-kpi-row"></div>
 
-  <!-- Cash flow -->
-  <div class="rp-card">
-    <div class="rp-card-head">
+  <!-- SECTION 2: Patient overview (round) + Collections -->
+  <div class="rpt-grid2">
+    <div class="rpt-card">
+      <div class="rpt-card-title">Patient Management</div>
+      <div class="rpt-card-sub">Total patients this month, by page</div>
+      <div class="rpt-ringrow" id="report-patient-rings"></div>
+    </div>
+    <div class="rpt-card">
+      <div class="rpt-card-title">Collections</div>
+      <div class="rpt-card-sub">Income breakdown, this month</div>
+      <div id="report-collections"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Cash flow -->
+  <div class="rpt-card">
+    <div class="rpt-card-head">
       <div>
-        <div class="rp-card-title"><i>📈</i>Cash Flow</div>
-        <div class="rp-card-sub">Income vs expense, last 12 months &middot; tap a point for details</div>
+        <div class="rpt-card-title">Cash Flow</div>
+        <div class="rpt-card-sub">Income vs expense, last 12 months · tap a point for details</div>
       </div>
-      <div class="rp-legend">
-        <span class="rp-legend-item"><i style="background:var(--green);"></i>Income</span>
-        <span class="rp-legend-item"><i style="background:var(--pink);"></i>Expense</span>
-      </div>
-    </div>
-    <div id="report-finance-trend" class="rp-flow-wrap"></div>
-  </div>
-
-  <!-- Collections + Patient intake -->
-  <div class="rp-grid2">
-    <div class="rp-card">
-      <div class="rp-card-title"><i>💰</i>Collections</div>
-      <div class="rp-card-sub">Paid, due &amp; expense split — this month</div>
-      <div id="report-collections" style="margin-top:16px;"></div>
-    </div>
-    <div class="rp-card">
-      <div class="rp-card-title"><i>🩺</i>Patient Intake</div>
-      <div class="rp-card-sub">Total patients this month, by page</div>
-      <div class="rp-intake-grid" id="report-patient-rings" style="margin-top:16px;"></div>
-    </div>
-  </div>
-
-  <!-- Vita Center breakdown -->
-  <div class="rp-card">
-    <div class="rp-card-title"><i>🏥</i>Vita Center</div>
-    <div class="rp-card-sub">Status &middot; Agency &middot; Slips breakdown</div>
-    <div class="rp-multi3" style="margin-top:18px;">
-      <div><div class="rp-subhead">Status</div><div id="report-vita-status"></div></div>
-      <div><div class="rp-subhead">Agency</div><div id="report-vita-agency"></div></div>
-      <div><div class="rp-subhead">Slips</div><div id="report-vita-slips"></div></div>
-    </div>
-  </div>
-
-  <div class="rp-grid2">
-    <div class="rp-card">
-      <div class="rp-card-title"><i>🔁</i>Vita (Med) + Others (Slip)</div>
-      <div class="rp-card-sub">Center &amp; Agency breakdown</div>
-      <div class="rp-multi2" style="margin-top:18px;">
-        <div><div class="rp-subhead">Center</div><div id="report-vitaothers-center"></div></div>
-        <div><div class="rp-subhead">Agency</div><div id="report-vitaothers-agency"></div></div>
+      <div class="rpt-legend">
+        <span class="rpt-legend-item"><i style="background:var(--green);"></i>Income</span>
+        <span class="rpt-legend-item"><i style="background:var(--pink);"></i>Expense</span>
       </div>
     </div>
-    <div class="rp-card">
-      <div class="rp-card-title"><i>🔀</i>Others (Med) + Vita (Slip)</div>
-      <div class="rp-card-sub">Center breakdown</div>
-      <div id="report-others-chart" style="margin-top:18px;"></div>
+    <div id="report-finance-trend" style="position:relative;"></div>
+  </div>
+
+  <!-- SECTION 4: Breakdown detail -->
+  <div class="rpt-card">
+    <div class="rpt-card-title">Vita Center</div>
+    <div class="rpt-card-sub">Status &middot; Agency &middot; Slips breakdown</div>
+    <div class="rpt-multi3 rpt-multi3-agency">
+      <div>
+        <div class="rpt-subpanel-title">Status</div>
+        <div id="report-vita-status"></div>
+      </div>
+      <div>
+        <div class="rpt-subpanel-title">Agency</div>
+        <div id="report-vita-agency"></div>
+      </div>
+      <div>
+        <div class="rpt-subpanel-title">Slips</div>
+        <div id="report-vita-slips"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Team -->
-  <div class="rp-card">
-    <div class="rp-card-title"><i>👥</i>Team</div>
-    <div class="rp-card-sub">Payroll &amp; attendance, this month</div>
-    <div class="rp-team-tiles" id="report-salary" style="margin-top:16px;"></div>
-    <div class="rp-staff-list" id="report-attendance"></div>
+  <div class="rpt-grid2">
+    <div class="rpt-card">
+      <div class="rpt-card-title">Vita (Med) + Others (Slip)</div>
+      <div class="rpt-card-sub">Center &amp; Agency breakdown</div>
+      <div class="rpt-multi2">
+        <div>
+          <div class="rpt-subpanel-title">Center</div>
+          <div id="report-vitaothers-center"></div>
+        </div>
+        <div>
+          <div class="rpt-subpanel-title">Agency</div>
+          <div id="report-vitaothers-agency"></div>
+        </div>
+      </div>
+    </div>
+    <div class="rpt-card">
+      <div class="rpt-card-title">Others (Med) + VITA (Slip)</div>
+      <div class="rpt-card-sub">Center breakdown</div>
+      <div id="report-others-chart"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="rpt-grid2">
+    <div class="rpt-card">
+      <div class="rpt-card-title">Payroll</div>
+      <div class="rpt-card-sub">Staff payroll, this month</div>
+      <div id="report-salary"></div>
+    </div>
+    <div class="rpt-card">
+      <div class="rpt-card-title">Attendance</div>
+      <div class="rpt-card-sub">Staff attendance, this month</div>
+      <div id="report-attendance"></div>
+    </div>
   </div>
 </div>
 
@@ -2494,6 +2526,14 @@ const fmtExact=n=>'৳'+Math.round(n).toLocaleString();
 const fmtSigned=n=>n<0?'-'+fmtExact(Math.abs(n)):fmtExact(n);
 // parseSheetDate defined below near syncPull — do not duplicate here
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// ── Generic date-range filter helpers (used by every From/To pair added across the app) ──
+function dateRangeVals(prefix){return{from:(g(prefix+'-from')?g(prefix+'-from').value:''),to:(g(prefix+'-to')?g(prefix+'-to').value:'')};}
+function inDateRange(dateStr,from,to){if(!dateStr)return false;if(from&&dateStr<from)return false;if(to&&dateStr>to)return false;return true;}
+function clearDateRange(prefix,renderFn){
+  if(g(prefix+'-from'))g(prefix+'-from').value='';
+  if(g(prefix+'-to'))g(prefix+'-to').value='';
+  if(typeof renderFn==='function')renderFn();
+}
 // Fetches JSON with one automatic retry — Google Apps Script Web Apps sometimes cold-start
 // slowly or hiccup transiently, causing a single fetch attempt to fail even though the
 // script itself is fine. Retrying once after a short delay avoids reporting a false failure.
@@ -3834,7 +3874,6 @@ function renderDueReminders(){
   if(!dues.length){list.innerHTML='<div class="due-empty">No pending dues. All caught up!</div>';return;}
   list.innerHTML=dues.map(r=>`<div class="due-item"><div class="due-item-info"><div class="due-item-date">${r.date} &middot; ${r.patients||0} pt${r.patients===1?'':'s'}</div><div class="due-item-note">${r.note?escapeHtml(r.note):'No note'}</div></div><div class="due-item-amt">${fmtExact(r.amount)}</div><button class="paid-btn" onclick="markEntryPaid('${r.id}')">&#10003; Paid</button></div>`).join('');
 }
-function clearDateFilterDaily(){g('d-date-filter').value='';g('d-date-clear').style.display='none';renderDailyTable();}
 function dTypeFilterMatch(r,tfArr){
   if(!tfArr.length)return true;
   return tfArr.some(tf=>{
@@ -3857,10 +3896,9 @@ function visibleDailyRows(rows){
 function renderDailyTable(){
   const yr=g('d-year-filter').value;
   const miArr=mselValues('d-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
-  const dateF=g('d-date-filter')?g('d-date-filter').value:'';
+  const {from:dateFrom,to:dateTo}=dateRangeVals('d-date-filter');
   const kw=(g('d-search')?g('d-search').value:'').trim().toLowerCase();
   const tfArr=mselValues('d-type-filter').map(v=>v.toLowerCase());
-  if(g('d-date-clear'))g('d-date-clear').style.display=dateF?'block':'none';
 
   const all=visibleDailyRows(loadArr(SK4));
   const monthRows=all.filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month)));
@@ -3873,7 +3911,7 @@ function renderDailyTable(){
 
   let rows;
   if(kw){rows=monthRows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.date||'').includes(kw)||(r.agency||'').toLowerCase().includes(kw));}
-  else{rows=monthRows;if(dateF)rows=rows.filter(r=>r.date===dateF);}
+  else{rows=monthRows;if(dateFrom||dateTo)rows=rows.filter(r=>inDateRange(r.date,dateFrom,dateTo));}
   rows=rows.filter(r=>dTypeFilterMatch(r,tfArr));
   rows=rows.slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
 
@@ -3902,25 +3940,25 @@ function exportDailyCSV(){
 function getFilteredDailyRows(){
   const yr=g('d-year-filter').value;
   const miArr=mselValues('d-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
-  const dateF=g('d-date-filter')?g('d-date-filter').value:'';
+  const {from:dateFrom,to:dateTo}=dateRangeVals('d-date-filter');
   const kw=(g('d-search')?g('d-search').value:'').trim().toLowerCase();
   const tfArr=mselValues('d-type-filter').map(v=>v.toLowerCase());
   const all=visibleDailyRows(loadArr(SK4));
   const monthRows=all.filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month)));
   let rows;
   if(kw){rows=monthRows.filter(r=>(r.note||'').toLowerCase().includes(kw)||(r.date||'').includes(kw));}
-  else{rows=monthRows;if(dateF)rows=rows.filter(r=>r.date===dateF);}
+  else{rows=monthRows;if(dateFrom||dateTo)rows=rows.filter(r=>inDateRange(r.date,dateFrom,dateTo));}
   rows=rows.filter(r=>dTypeFilterMatch(r,tfArr));
   rows=rows.slice().sort((a,b)=>b.date.localeCompare(a.date)||(''+b.id).localeCompare(''+a.id));
-  return{rows,yr,mi:miArr,dateF,kw,tf:tfArr};
+  return{rows,yr,mi:miArr,dateFrom,dateTo,kw,tf:tfArr};
 }
 function generateDailyTrackerPDF(){
-  const{rows:rowsDesc,yr,mi,dateF,kw,tf}=getFilteredDailyRows();
+  const{rows:rowsDesc,yr,mi,dateFrom,dateTo,kw,tf}=getFilteredDailyRows();
   if(!rowsDesc.length){toast('No records match the current filters');return;}
   const rows=rowsDesc.slice().sort((a,b)=>a.date.localeCompare(b.date));
   const labelParts=[yr,mi.length?mi.map(i=>MN_EN[i]).join(', '):'All Months'];
   if(tf.length)labelParts.push('Type: '+tf.map(t=>t==='due'?'Due':t==='free'?'Free':t.charAt(0).toUpperCase()+t.slice(1)).join(', '));
-  if(dateF)labelParts.push('Date: '+dateF);
+  if(dateFrom||dateTo)labelParts.push('Date: '+(dateFrom||'…')+' to '+(dateTo||'…'));
   if(kw)labelParts.push('Search: "'+kw+'"');
   const label=labelParts.join(' · ');
   const incomeRows=rows.filter(r=>r.type==='income'),expenseRows=rows.filter(r=>r.type==='expense');
@@ -4112,12 +4150,15 @@ mselInit('comm-status-filter',()=>renderCommissionCalc());
 mselInit('vita-status-filter',()=>renderVitaPatients());
 mselInit('vita-agency-filter',()=>renderVitaPatients());
 mselInit('vita-slip-filter',()=>renderVitaPatients());
+mselInit('vita-remarks-filter',()=>renderVitaPatients());
 mselInit('vitaothers-month-filter',()=>renderVitaOthersPatients());
 mselInit('vitaothers-slip-filter',()=>renderVitaOthersPatients());
 mselInit('vitaothers-agency-filter',()=>renderVitaOthersPatients());
 mselInit('vitaothers-status-filter',()=>renderVitaOthersPatients());
+mselInit('vitaothers-comment-filter',()=>renderVitaOthersPatients());
 mselInit('others-month-filter',()=>renderOthersPatients());
 mselInit('others-status-filter',()=>renderOthersPatients());
+mselInit('others-comment-filter',()=>renderOthersPatients());
 
 // PATIENTS
 // SIMPLE DROPDOWN FILTER POPULATION (Agency / Center / Slip)
@@ -4128,9 +4169,18 @@ function populateVitaAgencyFilter(){
 function populateVitaMonthFilter(){
   buildMsel('vita-month-filter',MN_EN,'Months');
 }
+const BLANK_LABEL='(Blank)'; // sentinel shown in filter dropdowns so empty cells can be selected
 function populateVitaSlipFilter(){
-  const slips=[...new Set(loadArr(SK10).map(r=>r.slips).filter(Boolean).map(s=>s.trim()).filter(Boolean))].sort();
-  buildMsel('vita-slip-filter',slips,'Slips');
+  const rows=loadArr(SK10);
+  const slips=[...new Set(rows.map(r=>(r.slips||'').trim()).filter(Boolean))].sort();
+  const hasBlank=rows.some(r=>!(r.slips||'').trim());
+  buildMsel('vita-slip-filter',hasBlank?[BLANK_LABEL,...slips]:slips,'Slips');
+}
+function populateVitaRemarksFilter(){
+  const rows=loadArr(SK10);
+  const remarks=[...new Set(rows.map(r=>(r.remarks||'').trim()).filter(Boolean))].sort();
+  const hasBlank=rows.some(r=>!(r.remarks||'').trim());
+  buildMsel('vita-remarks-filter',hasBlank?[BLANK_LABEL,...remarks]:remarks,'Remarks');
 }
 function populateVitaOthersCenterFilter(){
   const centers=[...new Set(loadArr(SK12).map(r=>r._center).filter(Boolean))].sort();
@@ -4147,12 +4197,24 @@ function populateVitaOthersAgencyFilter(){
   const agencies=[...new Set(loadArr(SK12).map(r=>r.agency).filter(Boolean))].sort();
   buildMsel('vitaothers-agency-filter',agencies,'Agencies');
 }
+function populateVitaOthersCommentFilter(){
+  const rows=loadArr(SK12);
+  const comments=[...new Set(rows.map(r=>(r.comment||'').trim()).filter(Boolean))].sort();
+  const hasBlank=rows.some(r=>!(r.comment||'').trim());
+  buildMsel('vitaothers-comment-filter',hasBlank?[BLANK_LABEL,...comments]:comments,'Comments');
+}
 function populateOthersMonthFilter(){
   buildMsel('others-month-filter',MN_EN,'Months');
 }
 function populateOthersCenterFilter(){
   const centers=[...new Set(loadArr(SK11).map(r=>r._center).filter(Boolean))].sort();
   buildMsel('others-center-filter',centers,'Centers');
+}
+function populateOthersCommentFilter(){
+  const rows=loadArr(SK11);
+  const comments=[...new Set(rows.map(r=>(r.comment||'').trim()).filter(Boolean))].sort();
+  const hasBlank=rows.some(r=>!(r.comment||'').trim());
+  buildMsel('others-comment-filter',hasBlank?[BLANK_LABEL,...comments]:comments,'Comments');
 }
 function vitaStatusMatch(r,sfArr){
   if(!sfArr.length)return true;
@@ -4169,31 +4231,37 @@ function renderVitaPatients(){
   const tbody=g('vitaTbody');if(!tbody)return;
   populateVitaAgencyFilter();
   populateVitaSlipFilter();
+  populateVitaRemarksFilter();
   populateVitaMonthFilter();
   const q=(g('vitaSearch')?g('vitaSearch').value:'').toLowerCase().trim();
   const yf=g('vita-year-filter')?g('vita-year-filter').value:'';
   const mf=mselValues('vita-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
   const sf=mselValues('vita-status-filter');
-  const df=g('vita-date-filter')?g('vita-date-filter').value:'';
+  const {from:dfFrom,to:dfTo}=dateRangeVals('vita-date-filter');
   const af=mselValues('vita-agency-filter');
   const spf=mselValues('vita-slip-filter');
+  const rmf=mselValues('vita-remarks-filter');
   let rows=loadArr(SK10);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
-  if(df)rows=rows.filter(r=>r.date===df);
+  if(dfFrom||dfTo)rows=rows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   if(af.length)rows=rows.filter(r=>mselMatch('vita-agency-filter',r.agency));
-  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()||BLANK_LABEL));
+  if(rmf.length)rows=rows.filter(r=>mselMatch('vita-remarks-filter',(r.remarks||'').trim()||BLANK_LABEL));
   rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   if(g('vita-record-count'))g('vita-record-count').textContent=rows.length+' records';
   const empty=loadArr(SK10).length?'No records match filters.':'No data yet — configure Vita Center Sheet URL in Settings, then tap Sync Now.';
   if(!rows.length){tbody.innerHTML=`<tr><td colspan="14" style="text-align:center;padding:28px;color:var(--tm);">${empty}</td></tr>`;return;}
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'var(--green)';if(u==='UNFIT')return'var(--pink)';if(u.includes('HELD'))return'var(--yellow)';if(u==='PROCESSING'||u==='PENDING')return'var(--cyan)';return'var(--ts)';};
+  const missing='<span style="color:var(--yellow);font-style:italic;">— Missing</span>';
   tbody.innerHTML=rows.map((r,i)=>{
     const pdfLink=buildPassportPdfLink(r.passport, r._month, r._year);
     const pdfCell=pdfLink
       ?`<a class="pdf-btn" href="${pdfLink}" target="_blank" rel="noopener">&#128196; PDF</a>`
       :(r.passport?`<span class="pdf-btn no-folder" title="Set Drive Folder ID in Settings">No Folder</span>`:`<span style="color:var(--border-bright);">—</span>`);
+    const remarksCell=(r.remarks||'').trim()?escapeHtml(r.remarks):missing;
+    const slipsCell=(r.slips||'').trim()?escapeHtml(r.slips):missing;
     return`<tr>
     <td style="color:var(--tm);">${i+1}</td>
     <td style="white-space:nowrap;">${r.date||'-'}</td>
@@ -4205,8 +4273,8 @@ function renderVitaPatients(){
     <td style="color:${sc(r.status)};font-weight:600;">${r.status||'-'}</td>
     <td style="color:var(--ts);font-size:12px;">${escapeHtml(r.agency)||'-'}</td>
     <td style="color:var(--ts);font-size:12px;max-width:150px;">${escapeHtml(r.problem)||'-'}</td>
-    <td style="color:var(--ts);font-size:12px;max-width:150px;">${escapeHtml(r.remarks)||'-'}</td>
-    <td style="font-size:12px;color:var(--cyan);">${escapeHtml(r.slips)||'-'}</td>
+    <td style="color:var(--ts);font-size:12px;max-width:150px;">${remarksCell}</td>
+    <td style="font-size:12px;color:var(--cyan);">${slipsCell}</td>
     <td>${pdfCell}</td>
     <td style="font-size:12px;color:var(--tm);">${r._monthName||'-'}</td>
   </tr>`;}).join('');
@@ -4214,9 +4282,11 @@ function renderVitaPatients(){
 function exportVitaCSV(){
   const af=mselValues('vita-agency-filter');
   const spf=mselValues('vita-slip-filter');
+  const rmf=mselValues('vita-remarks-filter');
   let rows=loadArr(SK10);
   if(af.length)rows=rows.filter(r=>mselMatch('vita-agency-filter',r.agency));
-  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()||BLANK_LABEL));
+  if(rmf.length)rows=rows.filter(r=>mselMatch('vita-remarks-filter',(r.remarks||'').trim()||BLANK_LABEL));
   const out=[['#','Date','Reg No.','Name','Passport No.','Country','Mobile No.','Status','Agency','Problem','Remarks','Slips','Month']];
   rows.forEach((r,i)=>out.push([i+1,r.date,r.reg,r.name,r.passport,r.country||'',r.mobile,r.status,r.agency,r.problem,r.remarks||'',r.slips||'',r._monthName]));
   dlCSV(out,'vita_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
@@ -4226,29 +4296,32 @@ function getFilteredVitaRows(){
   const yf=g('vita-year-filter')?g('vita-year-filter').value:'';
   const mf=mselValues('vita-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
   const sf=mselValues('vita-status-filter');
-  const df=g('vita-date-filter')?g('vita-date-filter').value:'';
+  const {from:dfFrom,to:dfTo}=dateRangeVals('vita-date-filter');
   const af=mselValues('vita-agency-filter');
   const spf=mselValues('vita-slip-filter');
+  const rmf=mselValues('vita-remarks-filter');
   let rows=loadArr(SK10);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
-  if(df)rows=rows.filter(r=>r.date===df);
+  if(dfFrom||dfTo)rows=rows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   if(af.length)rows=rows.filter(r=>mselMatch('vita-agency-filter',r.agency));
-  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()));
+  if(spf.length)rows=rows.filter(r=>mselMatch('vita-slip-filter',(r.slips||'').trim()||BLANK_LABEL));
+  if(rmf.length)rows=rows.filter(r=>mselMatch('vita-remarks-filter',(r.remarks||'').trim()||BLANK_LABEL));
   rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
-  return {rows,yf,mf,sf,df,q,af,spf};
+  return {rows,yf,mf,sf,dfFrom,dfTo,q,af,spf,rmf};
 }
 function generateVitaPatientsPDF(){
-  const {rows,yf,mf,sf,df,q,af,spf}=getFilteredVitaRows();
+  const {rows,yf,mf,sf,dfFrom,dfTo,q,af,spf,rmf}=getFilteredVitaRows();
   if(!rows.length){toast('No records match the current filters');return;}
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
   labelParts.push(mf.length?mf.map(i=>MN_EN[i]).join(', '):'All Months');
   if(af.length)labelParts.push('Agency: '+af.join(', '));
   if(spf.length)labelParts.push('Slip: '+spf.join(', '));
+  if(rmf.length)labelParts.push('Remarks: '+rmf.join(', '));
   if(sf.length)labelParts.push('Status: '+sf.join(', '));
-  if(df)labelParts.push('Date: '+df);
+  if(dfFrom||dfTo)labelParts.push('Date: '+(dfFrom||'…')+' to '+(dfTo||'…'));
   if(q)labelParts.push('Search: "'+q+'"');
   const label=labelParts.join(' · ');
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'#0a8f4a';if(u==='UNFIT')return'#c0246b';if(u.includes('HELD'))return'#b8860b';if(u==='PROCESSING'||u==='PENDING')return'#0891b2';return'#555';};
@@ -4258,7 +4331,7 @@ function generateVitaPatientsPDF(){
   let totalRows=loadArr(SK10);
   if(yf)totalRows=totalRows.filter(r=>r._year===yf);
   if(mf.length)totalRows=totalRows.filter(r=>mf.includes(+r._month));
-  if(df)totalRows=totalRows.filter(r=>r.date===df);
+  if(dfFrom||dfTo)totalRows=totalRows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   if(af.length)totalRows=totalRows.filter(r=>mselMatch('vita-agency-filter',r.agency));
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.country,r.mobile,r.status,r.agency,r.problem,r.remarks,r.slips].some(v=>String(v||'').toLowerCase().includes(q)));
   const statusCounts={};
@@ -4344,29 +4417,33 @@ async function syncVitaNow(){
 
 function renderOthersPatients(){
   const tbody=g('othersTbody');if(!tbody)return;
-  populateOthersCenterFilter();populateOthersMonthFilter();
+  populateOthersCenterFilter();populateOthersMonthFilter();populateOthersCommentFilter();
   const q=(g('othersSearch')?g('othersSearch').value:'').toLowerCase().trim();
   const yf=g('others-year-filter')?g('others-year-filter').value:'';
   const mf=mselValues('others-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
   const cf=mselValues('others-center-filter');
   const sf=mselValues('others-status-filter');
-  const df=g('others-date-filter')?g('others-date-filter').value:'';
+  const cmf=mselValues('others-comment-filter');
+  const {from:dfFrom,to:dfTo}=dateRangeVals('others-date-filter');
   let rows=loadArr(SK11);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
   if(cf.length)rows=rows.filter(r=>mselMatch('others-center-filter',r._center));
-  if(df)rows=rows.filter(r=>r.date===df);
+  if(cmf.length)rows=rows.filter(r=>mselMatch('others-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
+  if(dfFrom||dfTo)rows=rows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   if(g('others-record-count'))g('others-record-count').textContent=rows.length+' records';
   const empty=loadArr(SK11).length?'No records match filters.':'No data yet — configure Others Center Sheet URL in Settings, then tap Sync Now.';
   if(!rows.length){tbody.innerHTML=`<tr><td colspan="10" style="text-align:center;padding:28px;color:var(--tm);">${empty}</td></tr>`;return;}
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'var(--green)';if(u==='UNFIT')return'var(--pink)';if(u.includes('HELD'))return'var(--yellow)';if(u==='PROCESSING'||u==='PENDING')return'var(--cyan)';return'var(--ts)';};
+  const missing='<span style="color:var(--yellow);font-style:italic;">— Missing</span>';
   tbody.innerHTML=rows.map((r,i)=>{
     const pdfLink=buildPassportPdfLink(r.passport, r._month, r._year);
     const pdfCell=pdfLink
       ?`<a class="pdf-btn" href="${pdfLink}" target="_blank" rel="noopener">&#128196; PDF</a>`
       :(r.passport?`<span class="pdf-btn no-folder" title="Set Drive Folder ID in Settings">No Folder</span>`:`<span style="color:var(--border-bright);">—</span>`);
+    const commentCell=(r.comment||'').trim()?escapeHtml(r.comment):missing;
     return`<tr>
     <td style="color:var(--tm);">${i+1}</td>
     <td style="white-space:nowrap;">${r.date||'-'}</td>
@@ -4374,7 +4451,7 @@ function renderOthersPatients(){
     <td style="font-weight:500;">${escapeHtml(r.name)||'-'}</td>
     <td style="font-family:var(--mono);font-size:12px;">${r.passport||'-'}</td>
     <td style="color:${sc(r.status)};font-weight:600;">${r.status||'-'}</td>
-    <td style="color:var(--ts);font-size:12px;max-width:180px;">${escapeHtml(r.comment)||'-'}</td>
+    <td style="color:var(--ts);font-size:12px;max-width:180px;">${commentCell}</td>
     <td style="font-size:12px;"><span style="background:rgba(123,47,255,.12);border:1px solid rgba(123,47,255,.25);color:#c4b5fd;border-radius:5px;padding:2px 7px;font-size:11px;">${escapeHtml(r._center)||'-'}</span></td>
     <td>${pdfCell}</td>
     <td style="font-size:12px;color:var(--tm);">${r._monthName||'-'}</td>
@@ -4382,8 +4459,10 @@ function renderOthersPatients(){
 }
 function exportOthersCSV(){
   const cf=mselValues('others-center-filter');
+  const cmf=mselValues('others-comment-filter');
   let rows=loadArr(SK11);
   if(cf.length)rows=rows.filter(r=>mselMatch('others-center-filter',r._center));
+  if(cmf.length)rows=rows.filter(r=>mselMatch('others-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
   const out=[['#','Date','Reg Number','Name','Passport No.','Status','Comment','Center','Month']];
   rows.forEach((r,i)=>out.push([i+1,r.date,r.reg,r.name,r.passport,r.status,r.comment||'',r._center,r._monthName]));
   dlCSV(out,'others_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
@@ -4394,25 +4473,28 @@ function getFilteredOthersRows(){
   const mf=mselValues('others-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
   const cf=mselValues('others-center-filter');
   const sf=mselValues('others-status-filter');
-  const df=g('others-date-filter')?g('others-date-filter').value:'';
+  const cmf=mselValues('others-comment-filter');
+  const {from:dfFrom,to:dfTo}=dateRangeVals('others-date-filter');
   let rows=loadArr(SK11);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
   if(cf.length)rows=rows.filter(r=>mselMatch('others-center-filter',r._center));
-  if(df)rows=rows.filter(r=>r.date===df);
+  if(cmf.length)rows=rows.filter(r=>mselMatch('others-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
+  if(dfFrom||dfTo)rows=rows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
-  return{rows,yf,mf,cf,sf,df,q};
+  return{rows,yf,mf,cf,sf,cmf,dfFrom,dfTo,q};
 }
 function generateOthersPatientsPDF(){
-  const{rows,yf,mf,cf,sf,df,q}=getFilteredOthersRows();
+  const{rows,yf,mf,cf,sf,cmf,dfFrom,dfTo,q}=getFilteredOthersRows();
   if(!rows.length){toast('No records match the current filters');return;}
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
   labelParts.push(mf.length?mf.map(i=>MN_EN[i]).join(', '):'All Months');
   if(cf.length)labelParts.push('Center: '+cf.join(', '));
   if(sf.length)labelParts.push('Status: '+sf.join(', '));
-  if(df)labelParts.push('Date: '+df);
+  if(cmf.length)labelParts.push('Comment: '+cmf.join(', '));
+  if(dfFrom||dfTo)labelParts.push('Date: '+(dfFrom||'…')+' to '+(dfTo||'…'));
   if(q)labelParts.push('Search: "'+q+'"');
   const label=labelParts.join(' · ');
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'#0a8f4a';if(u==='UNFIT')return'#c0246b';if(u.includes('HELD'))return'#b8860b';if(u==='PROCESSING'||u==='PENDING')return'#0891b2';return'#555';};
@@ -4423,7 +4505,7 @@ function generateOthersPatientsPDF(){
   if(yf)totalRows=totalRows.filter(r=>r._year===yf);
   if(mf.length)totalRows=totalRows.filter(r=>mf.includes(+r._month));
   if(cf.length)totalRows=totalRows.filter(r=>mselMatch('others-center-filter',r._center));
-  if(df)totalRows=totalRows.filter(r=>r.date===df);
+  if(dfFrom||dfTo)totalRows=totalRows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.reg,r.name,r.passport,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   const centerCounts={};
   totalRows.forEach(r=>{const ct=(r._center||'-').trim()||'-';centerCounts[ct]=(centerCounts[ct]||0)+1;});
@@ -4490,7 +4572,7 @@ async function syncOthersNow(){
 // ═══════════════ VITA + OTHERS CENTER (combined multi-tab sheet) ═══════════════
 function renderVitaOthersPatients(){
   const tbody=g('vitaOthersTbody');if(!tbody)return;
-  populateVitaOthersCenterFilter();populateVitaOthersSlipFilter();populateVitaOthersAgencyFilter();populateVitaOthersMonthFilter();
+  populateVitaOthersCenterFilter();populateVitaOthersSlipFilter();populateVitaOthersAgencyFilter();populateVitaOthersMonthFilter();populateVitaOthersCommentFilter();
   const q=(g('vitaOthersSearch')?g('vitaOthersSearch').value:'').toLowerCase().trim();
   const yf=g('vitaothers-year-filter')?g('vitaothers-year-filter').value:'';
   const mf=mselValues('vitaothers-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
@@ -4498,20 +4580,23 @@ function renderVitaOthersPatients(){
   const spf=mselValues('vitaothers-slip-filter');
   const agf=mselValues('vitaothers-agency-filter');
   const sf=mselValues('vitaothers-status-filter');
-  const df=g('vitaothers-date-filter')?g('vitaothers-date-filter').value:'';
+  const cmf=mselValues('vitaothers-comment-filter');
+  const {from:dfFrom,to:dfTo}=dateRangeVals('vitaothers-date-filter');
   let rows=loadArr(SK12);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
   if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
   if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
   if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
-  if(df)rows=rows.filter(r=>r.date===df);
+  if(cmf.length)rows=rows.filter(r=>mselMatch('vitaothers-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
+  if(dfFrom||dfTo)rows=rows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   if(g('vitaothers-record-count'))g('vitaothers-record-count').textContent=rows.length+' records';
   const empty=loadArr(SK12).length?'No records match filters.':'No data yet — configure VITA + Others Center Sheet URL in Settings, then tap Sync Now.';
   if(!rows.length){tbody.innerHTML=`<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--tm);">${empty}</td></tr>`;return;}
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'var(--green)';if(u==='UNFIT')return'var(--pink)';if(u.includes('HELD'))return'var(--yellow)';if(u==='PROCESSING'||u==='PENDING')return'var(--cyan)';return'var(--ts)';};
+  const missing='<span style="color:var(--yellow);font-style:italic;">— Missing</span>';
   tbody.innerHTML=rows.map((r,i)=>`<tr>
     <td style="color:var(--tm);">${i+1}</td>
     <td style="white-space:nowrap;">${r.date||'-'}</td>
@@ -4521,17 +4606,18 @@ function renderVitaOthersPatients(){
     <td style="font-size:12px;">${escapeHtml(r.slip)||'-'}</td>
     <td style="font-size:12px;">${escapeHtml(r.agency)||'-'}</td>
     <td style="color:${sc(r.status)};font-weight:600;">${r.status||'-'}</td>
-    <td style="color:var(--ts);font-size:12px;max-width:180px;">${escapeHtml(r.comment)||'-'}</td>
+    <td style="color:var(--ts);font-size:12px;max-width:180px;">${(r.comment||'').trim()?escapeHtml(r.comment):missing}</td>
     <td style="font-size:12px;"><span style="background:rgba(123,47,255,.12);border:1px solid rgba(123,47,255,.25);color:#c4b5fd;border-radius:5px;padding:2px 7px;font-size:11px;">${escapeHtml(r._center)||'-'}</span></td>
     <td style="font-size:12px;color:var(--tm);">${r._monthName||'-'}</td>
   </tr>`).join('');
 }
 function exportVitaOthersCSV(){
-  const cf=mselValues('vitaothers-center-filter'),spf=mselValues('vitaothers-slip-filter'),agf=mselValues('vitaothers-agency-filter');
+  const cf=mselValues('vitaothers-center-filter'),spf=mselValues('vitaothers-slip-filter'),agf=mselValues('vitaothers-agency-filter'),cmf=mselValues('vitaothers-comment-filter');
   let rows=loadArr(SK12);
   if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
   if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
   if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
+  if(cmf.length)rows=rows.filter(r=>mselMatch('vitaothers-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
   const out=[['#','Date','ID','Name','Passport','Slip','Agency','Status','Comment','Center','Month']];
   rows.forEach((r,i)=>out.push([i+1,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment||'',r._center,r._monthName]));
   dlCSV(out,'vita_others_center_'+new Date().toISOString().split('T')[0]+'.csv');toast('Exported');
@@ -4544,20 +4630,22 @@ function getFilteredVitaOthersRows(){
   const spf=mselValues('vitaothers-slip-filter');
   const agf=mselValues('vitaothers-agency-filter');
   const sf=mselValues('vitaothers-status-filter');
-  const df=g('vitaothers-date-filter')?g('vitaothers-date-filter').value:'';
+  const cmf=mselValues('vitaothers-comment-filter');
+  const {from:dfFrom,to:dfTo}=dateRangeVals('vitaothers-date-filter');
   let rows=loadArr(SK12);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
   if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
   if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
   if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
-  if(df)rows=rows.filter(r=>r.date===df);
+  if(cmf.length)rows=rows.filter(r=>mselMatch('vitaothers-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
+  if(dfFrom||dfTo)rows=rows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
-  return{rows,yf,mf,cf,spf,agf,sf,df,q};
+  return{rows,yf,mf,cf,spf,agf,sf,cmf,dfFrom,dfTo,q};
 }
 function generateVitaOthersPatientsPDF(){
-  const {rows,yf,mf,cf,spf,agf,sf,df,q}=getFilteredVitaOthersRows();
+  const {rows,yf,mf,cf,spf,agf,sf,cmf,dfFrom,dfTo,q}=getFilteredVitaOthersRows();
   if(!rows.length){toast('No records match the current filters');return;}
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
@@ -4566,7 +4654,8 @@ function generateVitaOthersPatientsPDF(){
   if(spf.length)labelParts.push('Slip: '+spf.join(', '));
   if(agf.length)labelParts.push('Agency: '+agf.join(', '));
   if(sf.length)labelParts.push('Status: '+sf.join(', '));
-  if(df)labelParts.push('Date: '+df);
+  if(cmf.length)labelParts.push('Comment: '+cmf.join(', '));
+  if(dfFrom||dfTo)labelParts.push('Date: '+(dfFrom||'…')+' to '+(dfTo||'…'));
   if(q)labelParts.push('Search: "'+q+'"');
   const label=labelParts.join(' · ');
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'#0a8f4a';if(u==='UNFIT')return'#c0246b';if(u.includes('HELD'))return'#b8860b';if(u==='PROCESSING'||u==='PENDING')return'#0891b2';return'#555';};
@@ -4578,7 +4667,7 @@ function generateVitaOthersPatientsPDF(){
   if(cf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
   if(spf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
   if(agf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
-  if(df)totalRows=totalRows.filter(r=>r.date===df);
+  if(dfFrom||dfTo)totalRows=totalRows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   if(q)totalRows=totalRows.filter(r=>[r.sl,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
   const centerCounts={};
   totalRows.forEach(r=>{const ct=(r._center||'-').trim()||'-';centerCounts[ct]=(centerCounts[ct]||0)+1;});
@@ -5054,7 +5143,6 @@ function parseAttTime(val){
   if(/^1899-/.test(s))return'';
   return s;
 }
-function parseYrMi(val){const ds=parseSheetDate(val);if(!ds)return{yr:'',mi:-1};const p=ds.split('-');return{yr:p[0]||'',mi:p[1]?parseInt(p[1],10)-1:-1};}
 
 
 async function syncPull(){
@@ -6691,9 +6779,40 @@ function scheduleAutoBackup(){
 }
 
 // ═══════════════════════════ AGENCY PATIENT SHARE CARD ═══════════════════════════
-// ---- SVG / render helpers (Report page v2) ----
+// ---- SVG helpers (Report page) ----
+// ---- SVG helpers (Report page) ----
+// ---- SVG helpers (Report page) ----
+function svgDonut(segments,size,strokeW,centerVal,centerLabel){
+  const total=segments.reduce((a,s)=>a+s.value,0)||1;
+  const r=(size-strokeW)/2;
+  const c=2*Math.PI*r;
+  let offset=0;
+  const circles=segments.map(s=>{
+    const frac=s.value/total;
+    const dash=Math.max(frac*c-1,0);
+    const el=`<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-dashoffset="${-offset}" stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>`;
+    offset+=frac*c;
+    return el;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0;">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
+    ${circles}
+    <text x="${size/2}" y="${size/2-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${centerVal}</text>
+    <text x="${size/2}" y="${size/2+15}" text-anchor="middle" font-size="9" fill="var(--tm)" letter-spacing="0.05em">${centerLabel}</text>
+  </svg>`;
+}
+function svgRing(value,max,size,strokeW,color,valueColor){
+  const r=(size-strokeW)/2;
+  const c=2*Math.PI*r;
+  const pct=max>0?Math.min(1,value/max):0;
+  const dash=Math.max(pct*c-1,0);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="${size/2}" y="${size/2+8}" text-anchor="middle" font-size="24" font-weight="800" fill="${valueColor||'var(--tp)'}" font-family="var(--mono)">${value}</text>
+  </svg>`;
+}
 const RPT_SHORT_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const RP_COLORS=['var(--cyan)','var(--purple)','var(--green)','var(--yellow)','var(--pink)','var(--orange)','#60a5fa','#a78bfa'];
 function svgAreaChart(data,height){
   const width=1000,pad={l:8,r:8,t:14,b:24};
   const w=width-pad.l-pad.r,h=height-pad.t-pad.b;
@@ -6713,7 +6832,7 @@ function svgAreaChart(data,height){
   const dots=data.map((d,i)=>`<circle cx="${x(i)}" cy="${y(d.inc)}" r="2.5" fill="var(--green)"/><circle cx="${x(i)}" cy="${y(d.exp)}" r="2.5" fill="var(--pink)"/>`).join('');
   const hit=data.map((d,i)=>{
     const midY=(y(d.inc)+y(d.exp))/2;
-    return`<circle class="rp-hit" data-pt="${i}" cx="${x(i)}" cy="${midY}" r="16" fill="transparent" style="cursor:pointer;"/>
+    return`<circle class="rpt-hit" data-pt="${i}" cx="${x(i)}" cy="${midY}" r="16" fill="transparent" style="cursor:pointer;"/>
     <line x1="${x(i)}" y1="${pad.t}" x2="${x(i)}" y2="${pad.t+h}" stroke="var(--cyan)" stroke-width="1" opacity="0" data-guide="${i}"/>`;
   }).join('');
   return `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="overflow:visible;">
@@ -6739,8 +6858,8 @@ function svgAreaChart(data,height){
 }
 function attachChartTooltip(containerEl,series){
   const svgEl=containerEl.querySelector('svg');if(!svgEl)return;
-  let tip=containerEl.querySelector('.rp-tooltip');
-  if(!tip){tip=document.createElement('div');tip.className='rp-tooltip';containerEl.appendChild(tip);}
+  let tip=containerEl.querySelector('.rpt-tooltip');
+  if(!tip){tip=document.createElement('div');tip.className='rpt-tooltip';containerEl.appendChild(tip);}
   const showAt=(idx,clientX,clientY)=>{
     const d=series[idx];if(!d)return;
     tip.innerHTML=`<div class="tt-month">${d.label}</div>
@@ -6756,80 +6875,99 @@ function attachChartTooltip(containerEl,series){
     tip.classList.add('show');
   };
   const hide=()=>tip.classList.remove('show');
-  svgEl.querySelectorAll('.rp-hit').forEach(hitEl=>{
+  svgEl.querySelectorAll('.rpt-hit').forEach(hitEl=>{
     const idx=+hitEl.getAttribute('data-pt');
     hitEl.addEventListener('mouseenter',e=>showAt(idx,e.clientX,e.clientY));
     hitEl.addEventListener('mousemove',e=>showAt(idx,e.clientX,e.clientY));
     hitEl.addEventListener('mouseleave',hide);
     hitEl.addEventListener('touchstart',e=>{const t=e.touches[0];showAt(idx,t.clientX,t.clientY);e.preventDefault();e.stopPropagation();},{passive:false});
   });
-  containerEl.addEventListener('touchstart',e=>{if(!e.target.closest('.rp-hit'))hide();},{passive:true});
+  containerEl.addEventListener('touchstart',e=>{if(!e.target.closest('.rpt-hit'))hide();},{passive:true});
 }
-// KPI card with an optional month-over-month delta badge.
-// invertGood=true means a rise in the value is actually bad (e.g. Expense) so
-// the up/down arrow keeps its literal direction but the colour flips.
-function rpKpiCard(label,value,sub,deltaPct,colorVar,icon,invertGood){
-  let deltaHtml='';
-  if(deltaPct!==null&&deltaPct!==undefined&&isFinite(deltaPct)){
-    const dir=deltaPct>0.5?'up':deltaPct<-0.5?'down':'flat';
-    let cls=dir;
-    if(invertGood&&dir!=='flat')cls=dir==='up'?'down':'up';
-    const arrow=dir==='up'?'▲':dir==='down'?'▼':'—';
-    deltaHtml=`<span class="rp-kpi-delta ${cls}">${arrow} ${Math.abs(deltaPct).toFixed(0)}%</span>`;
-  }
-  return `<div class="rp-kpi" style="--kc:${colorVar};">
-    <div class="rp-kpi-top"><div class="rp-kpi-icon">${icon}</div>${deltaHtml}</div>
-    <div class="rp-kpi-label">${label}</div>
-    <div class="rp-kpi-val" style="color:${colorVar};">${value}</div>
-    <div class="rp-kpi-sub">${sub}</div>
-  </div>`;
-}
-// Horizontal segmented proportion bar — replaces the old Collections donut.
-function rpProportionBar(el,segments,emptyMsg){
-  if(!el)return;
-  const segs=segments.filter(s=>s.value>0);
-  const total=segs.reduce((a,s)=>a+s.value,0);
-  if(total<=0){el.innerHTML=`<div class="rp-empty">${emptyMsg}</div>`;return;}
-  const track=segs.map(s=>`<div class="rp-prop-seg" style="width:${(s.value/total*100).toFixed(2)}%;background:${s.color};"></div>`).join('');
-  const legend=segs.map(s=>{
-    const pct=Math.round(s.value/total*100);
-    return`<div class="rp-prop-item"><i style="background:${s.color};"></i>${escapeHtml(s.label)}<b>${fmtExact(s.value)}</b><em>${pct}%</em></div>`;
-  }).join('');
-  el.innerHTML=`<div class="rp-prop-track">${track}</div><div class="rp-prop-legend">${legend}</div>`;
-}
-// Single patient-intake comparison card (replaces the old ring chart).
-function rpIntakeCard(name,val,max,color){
-  const pct=max>0?Math.round(val/max*100):0;
-  return `<div class="rp-intake-card">
-    <div class="rp-intake-name">${name}</div>
-    <div class="rp-intake-val">${val}<span>patient${val===1?'':'s'}</span></div>
-    <div class="rp-intake-track"><div class="rp-intake-fill" style="width:${pct}%;background:${color};"></div></div>
-  </div>`;
-}
-// Ranked horizontal bar list — the single component used for every
-// category breakdown on the Report page (status, agency, slips, center…).
-function rpRankList(el,counts,emptyMsg,maxRows){
+const RPT_COLORS=['var(--cyan)','var(--purple)','var(--green)','var(--yellow)','var(--pink)','var(--orange)','#60a5fa','#a78bfa'];
+function rptDonutCard(el,counts,emptyMsg,centerLabel){
   if(!el)return;
   const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  if(!entries.length){el.innerHTML=`<div class="rp-empty">${emptyMsg}</div>`;return;}
-  const shown=entries.slice(0,maxRows||8);
-  const rest=entries.length-shown.length;
+  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
   const total=entries.reduce((a,[,c])=>a+c,0);
-  const maxV=Math.max(...shown.map(([,v])=>v),1);
-  const rows=shown.map(([label,val],i)=>{
-    const c=RP_COLORS[i%RP_COLORS.length];
-    const widthPct=Math.round(val/maxV*100);
-    const pct=Math.round(val/total*100);
-    return`<div class="rp-rank-row">
-      <div class="rp-rank-badge" style="background:${c};">${i+1}</div>
-      <div class="rp-rank-body">
-        <div class="rp-rank-top"><span class="rp-rank-name">${escapeHtml(label)}</span><span class="rp-rank-val">${val} <span style="color:var(--tm);">(${pct}%)</span></span></div>
-        <div class="rp-rank-track"><div class="rp-rank-fill" style="width:${widthPct}%;background:${c};"></div></div>
-      </div>
+  const segments=entries.map(([label,value],i)=>({label,value,color:RPT_COLORS[i%RPT_COLORS.length]}));
+  const donut=svgDonut(segments,116,16,total,centerLabel);
+  const legend=entries.slice(0,6).map(([label,cnt],i)=>{
+    const pct=Math.round(cnt/total*100);
+    const c=RPT_COLORS[i%RPT_COLORS.length];
+    return`<div class="rpt-dlrow">
+      <span class="dk"><i style="background:${c};"></i>${escapeHtml(label)}</span>
+      <span class="dv"><b>${cnt}</b><em style="background:color-mix(in srgb, ${c} 18%, transparent);color:${c};">${pct}%</em></span>
     </div>`;
   }).join('');
-  const more=rest>0?`<div class="rp-rank-more">+${rest} more</div>`:'';
-  el.innerHTML=`<div class="rp-rank-list">${rows}</div>${more}`;
+  const more=entries.length>6?`<div class="rpt-dlrow"><span class="dk" style="color:var(--tm);">+${entries.length-6} more</span></div>`:'';
+  el.innerHTML=`<div class="rpt-donut-wrap">${donut}<div class="rpt-donut-legend">${legend}${more}</div></div>`;
+}
+// Same donut, but names are arranged radially around the ring (with a short
+// leader line to their segment) instead of a side legend list.
+function rptDonutRadialCard(el,counts,emptyMsg,centerLabel){
+  if(!el)return;
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
+  const total=entries.reduce((a,[,c])=>a+c,0);
+  const shown=entries.slice(0,8);
+  const rest=entries.slice(8);
+  const segments=entries.map(([label,value],i)=>({label,value,color:RPT_COLORS[i%RPT_COLORS.length]}));
+  const W=320,H=286,cx=W/2,cy=H/2,ringSize=118,strokeW=15;
+  const r=(ringSize-strokeW)/2;
+  const c=2*Math.PI*r;
+  let offset=0;
+  const arcEls=segments.map(s=>{
+    const frac=s.value/total;
+    const dash=Math.max(frac*c-1,0);
+    const el2=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${c-dash}" stroke-dashoffset="${-offset}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset+=frac*c;
+    return el2;
+  }).join('');
+  let cum=0;
+  const labelR=r+strokeW/2+38;
+  const labelEls=shown.map(([label,value],i)=>{
+    const frac=value/total;
+    const midFrac=cum+frac/2;
+    cum+=frac;
+    const angleRad=(-90+360*midFrac)*Math.PI/180;
+    const lx=cx+labelR*Math.cos(angleRad);
+    const ly=cy+labelR*Math.sin(angleRad);
+    const dotX=cx+(r+strokeW/2+6)*Math.cos(angleRad);
+    const dotY=cy+(r+strokeW/2+6)*Math.sin(angleRad);
+    const anchor=Math.cos(angleRad)>0.15?'start':Math.cos(angleRad)<-0.15?'end':'middle';
+    const color=RPT_COLORS[i%RPT_COLORS.length];
+    const shortLabel=label.length>13?label.slice(0,12)+'…':label;
+    return`<g>
+      <line x1="${dotX.toFixed(1)}" y1="${dotY.toFixed(1)}" x2="${lx.toFixed(1)}" y2="${ly.toFixed(1)}" stroke="${color}" stroke-width="1" opacity="0.55"/>
+      <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="2.5" fill="${color}"/>
+      <text x="${(lx+(anchor==='start'?6:anchor==='end'?-6:0)).toFixed(1)}" y="${(ly+3).toFixed(1)}" font-size="9.5" text-anchor="${anchor}" fill="var(--tp)">${escapeHtml(shortLabel)} <tspan fill="var(--tm)" font-size="8.5">(${value})</tspan></text>
+    </g>`;
+  }).join('');
+  const more=rest.length?`<div class="rpt-empty" style="padding:2px 0 0;">+${rest.length} more</div>`:'';
+  el.innerHTML=`<div style="display:flex;justify-content:center;">
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
+      ${arcEls}
+      <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${total}</text>
+      <text x="${cx}" y="${cy+15}" text-anchor="middle" font-size="9" fill="var(--tm)" letter-spacing="0.05em">${centerLabel}</text>
+      ${labelEls}
+    </svg>
+  </div>${more}`;
+}
+function rptBarList(el,counts,emptyMsg,maxRows){
+  if(!el)return;
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,maxRows||7);
+  if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
+  const maxV=Math.max(...entries.map(([,v])=>v),1);
+  el.innerHTML=`<div class="rpt-barlist">`+entries.map(([label,val],i)=>{
+    const pct=Math.round(val/maxV*100);
+    const c=RPT_COLORS[i%RPT_COLORS.length];
+    return`<div class="rpt-bar-row">
+      <div class="bhead"><span class="bname">${escapeHtml(label)}</span><span class="bval">${val}</span></div>
+      <div class="rpt-bar-track"><div class="rpt-bar-fill" style="width:${pct}%;background:${c};"></div></div>
+    </div>`;
+  }).join('')+`</div>`;
 }
 // Vita income for a given month — mirrors the Finance page's own figure so
 // the Report page always agrees with it.
@@ -6841,12 +6979,6 @@ function computeCenterIncomeFor(yr,mi){
   const expense=dailyRows.filter(r=>r.type==='expense').reduce((a,r)=>a+(r.amount||0),0);
   return{vitaInc,due,duePts,expense,totalIncome:vitaInc};
 }
-// Percent change of curr vs prev. Returns null when a comparison isn't
-// meaningful (prev is 0) so the caller can skip the delta badge.
-function rpDeltaPct(curr,prev){
-  if(!prev)return null;
-  return((curr-prev)/Math.abs(prev))*100;
-}
 function renderReportPage(){
   const yf=g('report-year-filter')?g('report-year-filter').value:String(new Date().getFullYear());
   const mf=g('report-month-filter')?+g('report-month-filter').value:new Date().getMonth();
@@ -6855,11 +6987,6 @@ function renderReportPage(){
   // ---- FINANCE (Vita income) ----
   const {vitaInc,due,duePts,expense,totalIncome}=computeCenterIncomeFor(yf,mf);
   const net=totalIncome-expense;
-
-  // ---- FINANCE, previous month (for the KPI trend badges) ----
-  let pmi=mf-1,pyr=+yf;if(pmi<0){pmi=11;pyr--;}
-  const prev=computeCenterIncomeFor(pyr,pmi);
-  const prevNet=prev.totalIncome-prev.expense;
 
   // ---- PATIENTS (all 3 sources) ----
   const vitaRows=loadArr(SK10).filter(r=>String(r._year)===yf&&+r._month===mf);
@@ -6870,6 +6997,8 @@ function renderReportPage(){
   // ---- ATTENDANCE (staff only) ----
   const staffNames=new Set(loadUsers().filter(u=>u.role==='staff').map(u=>u.name||u.username));
   const attRows=loadAttendance().filter(r=>staffNames.has(r.name||r.username)&&r.date&&r.date.startsWith(monthKey));
+  const presentCount=attRows.filter(r=>r.status==='Present').length;
+  const leaveCount=attRows.filter(r=>r.status==='Leave').length;
 
   // ---- SALARY ----
   const salRows=loadSalary().filter(r=>r.month===monthKey);
@@ -6878,16 +7007,42 @@ function renderReportPage(){
   const salaryUnpaid=salaryTotal-salaryPaid;
   const advTotal=loadSalaryAdvances().filter(r=>!r.settled).reduce((a,r)=>a+(r.amount||0),0);
 
-  // ═══ KPI cards ═══
+  // ═══ SECTION 1 — Stat strip ═══
   const kpi=g('report-kpi-row');
-  if(kpi)kpi.innerHTML=
-    rpKpiCard('Net Profit',fmtExact(net),MN_EN[mf]+' '+yf,rpDeltaPct(net,prevNet),net>=0?'var(--green)':'var(--pink)','💹')+
-    rpKpiCard('Total Income',fmtExact(totalIncome),'This month',rpDeltaPct(totalIncome,prev.totalIncome),'var(--cyan)','💵')+
-    rpKpiCard('Expense',fmtExact(expense),'This month',rpDeltaPct(expense,prev.expense),'var(--pink)','💸',true)+
-    rpKpiCard('Vita Center Income',fmtExact(vitaInc),'via Finance',rpDeltaPct(vitaInc,prev.vitaInc),'var(--purple)','🏥')+
-    rpKpiCard('Pending Due',fmtExact(due),duePts+' patient(s)',null,'var(--yellow)','⏳');
+  if(kpi)kpi.innerHTML=`
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Net Profit</div><div class="rpt-sstat-value" style="color:${net>=0?'var(--green)':'var(--pink)'};">${fmtExact(net)}</div><div class="rpt-sstat-sub">${MN_EN[mf]} ${yf}</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Total Income</div><div class="rpt-sstat-value">${fmtExact(totalIncome)}</div><div class="rpt-sstat-sub">This month</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Expense</div><div class="rpt-sstat-value">${fmtExact(expense)}</div><div class="rpt-sstat-sub">This month</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Vita Center Income</div><div class="rpt-sstat-value" style="color:var(--cyan);">${fmtExact(vitaInc)}</div><div class="rpt-sstat-sub">via Finance</div></div>
+    <div class="rpt-sstat"><div class="rpt-sstat-label">Pending Due</div><div class="rpt-sstat-value" style="color:var(--yellow);">${fmtExact(due)}</div><div class="rpt-sstat-sub">${duePts} patient(s)</div></div>
+  `;
 
-  // ═══ Cash flow (12 months, interactive) ═══
+  // ═══ SECTION 2 — Patient rings + Collections ═══
+  const ringEl=g('report-patient-rings');
+  if(ringEl){
+    ringEl.innerHTML=`
+      <div class="rpt-ring">${svgRing(vitaRows.length,maxPatients,110,13,'var(--cyan)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Vita Center</b><br>Patient</div></div>
+      <div class="rpt-ring">${svgRing(othersRows.length,maxPatients,110,13,'var(--purple)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Others (Med)</b><br>+ VITA (Slip)</div></div>
+      <div class="rpt-ring">${svgRing(vitaOthersRows.length,maxPatients,110,13,'var(--green)')}<div class="rpt-ring-label"><b style="color:var(--tp);">Vita (Med)</b><br>+ Others (Slip)</div></div>
+    `;
+  }
+  const collEl=g('report-collections');
+  if(collEl){
+    if(totalIncome+due+expense<=0){
+      collEl.innerHTML='<div class="rpt-empty">No income data for '+MN_EN[mf]+' '+yf+'.</div>';
+    }else{
+      const segs=[{label:'Paid',value:totalIncome,color:'var(--green)'},{label:'Due',value:due,color:'var(--yellow)'},{label:'Expense',value:expense,color:'var(--pink)'}].filter(s=>s.value>0);
+      const total=totalIncome+due+expense;
+      const donut=svgDonut(segs,110,14,'','');
+      const legend=segs.map(s=>{
+        const pct=Math.round(s.value/total*100);
+        return`<div class="rpt-dlrow"><span class="dk"><i style="background:${s.color};"></i>${s.label}</span><span class="dv"><b>${fmtExact(s.value)}</b><em style="background:color-mix(in srgb, ${s.color} 18%, transparent);color:${s.color};">${pct}%</em></span></div>`;
+      }).join('');
+      collEl.innerHTML=`<div class="rpt-donut-wrap">${donut}<div class="rpt-donut-legend">${legend}</div></div>`;
+    }
+  }
+
+  // ═══ SECTION 3 — Cash flow (12 months, interactive) ═══
   const trendEl=g('report-finance-trend');
   if(trendEl){
     const months=[];
@@ -6900,58 +7055,35 @@ function renderReportPage(){
     attachChartTooltip(trendEl,series);
   }
 
-  // ═══ Collections (proportion bar) + Patient intake (comparison cards) ═══
-  rpProportionBar(g('report-collections'),[
-    {label:'Paid',value:totalIncome,color:'var(--green)'},
-    {label:'Due',value:due,color:'var(--yellow)'},
-    {label:'Expense',value:expense,color:'var(--pink)'}
-  ],'No income data for '+MN_EN[mf]+' '+yf+'.');
-
-  const ringEl=g('report-patient-rings');
-  if(ringEl){
-    ringEl.innerHTML=
-      rpIntakeCard('Vita Center · Patient',vitaRows.length,maxPatients,'var(--cyan)')+
-      rpIntakeCard('Others (Med) + VITA (Slip)',othersRows.length,maxPatients,'var(--purple)')+
-      rpIntakeCard('Vita (Med) + Others (Slip)',vitaOthersRows.length,maxPatients,'var(--green)');
-  }
-
-  // ═══ Breakdown detail — every category uses the same ranked bar list ═══
+  // ═══ SECTION 4 — Breakdown detail ═══
   // Vita Center: Status, Agency, Slips
   const vitaStatusCounts={};
   vitaRows.forEach(r=>{const st=(r.status||'Unknown').trim()||'Unknown';vitaStatusCounts[st]=(vitaStatusCounts[st]||0)+1;});
-  rpRankList(g('report-vita-status'),vitaStatusCounts,'No data.');
+  rptBarList(g('report-vita-status'),vitaStatusCounts,'No data.');
 
   const vitaAgencyCounts={};
   vitaRows.forEach(r=>{const a=(r.agency||'Unknown').trim()||'Unknown';vitaAgencyCounts[a]=(vitaAgencyCounts[a]||0)+1;});
-  rpRankList(g('report-vita-agency'),vitaAgencyCounts,'No data.',8);
+  rptDonutRadialCard(g('report-vita-agency'),vitaAgencyCounts,'No data.','patients');
 
   const vitaSlipsCounts={};
   vitaRows.forEach(r=>{const sp=(r.slips||'Unknown').trim()||'Unknown';vitaSlipsCounts[sp]=(vitaSlipsCounts[sp]||0)+1;});
-  rpRankList(g('report-vita-slips'),vitaSlipsCounts,'No data.',6);
+  rptBarList(g('report-vita-slips'),vitaSlipsCounts,'No data.',6);
 
   // Vita (Med) + Others (Slip): Center, Agency
   const voCenterCounts={};
   vitaOthersRows.forEach(r=>{const c=(r._center||'Unknown').trim()||'Unknown';voCenterCounts[c]=(voCenterCounts[c]||0)+1;});
-  rpRankList(g('report-vitaothers-center'),voCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.');
+  rptBarList(g('report-vitaothers-center'),voCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.');
 
   const voAgencyCounts={};
   vitaOthersRows.forEach(r=>{const a=(r.agency||'Unknown').trim()||'Unknown';voAgencyCounts[a]=(voAgencyCounts[a]||0)+1;});
-  rpRankList(g('report-vitaothers-agency'),voAgencyCounts,'No data for '+MN_EN[mf]+' '+yf+'.',6);
+  rptBarList(g('report-vitaothers-agency'),voAgencyCounts,'No data for '+MN_EN[mf]+' '+yf+'.',6);
 
   // Others (Med) + VITA (Slip): Center only
   const ocCenterCounts={};
   othersRows.forEach(r=>{const c=(r._center||'Unknown').trim()||'Unknown';ocCenterCounts[c]=(ocCenterCounts[c]||0)+1;});
-  rpRankList(g('report-others-chart'),ocCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.');
+  rptDonutCard(g('report-others-chart'),ocCenterCounts,'No data for '+MN_EN[mf]+' '+yf+'.','patients');
 
-  // ═══ Team — Payroll tiles + Attendance staff list ═══
-  const salEl=g('report-salary');
-  if(salEl){
-    salEl.innerHTML=
-      `<div class="rp-team-tile"><div class="tl">Total Payroll</div><div class="tv">${fmtExact(salaryTotal)}</div></div>
-       <div class="rp-team-tile"><div class="tl">Paid</div><div class="tv" style="color:var(--green);">${fmtExact(salaryPaid)}</div></div>
-       <div class="rp-team-tile"><div class="tl">Unpaid</div><div class="tv" style="color:var(--pink);">${fmtExact(salaryUnpaid)}</div></div>
-       <div class="rp-team-tile"><div class="tl">Pending Advances</div><div class="tv" style="color:var(--yellow);">${fmtExact(advTotal)}</div></div>`;
-  }
+  // ═══ SECTION 5 — Payroll + Attendance ═══
   const attEl=g('report-attendance');
   if(attEl){
     const byStaff={};
@@ -6962,19 +7094,25 @@ function renderReportPage(){
       else if(r.status==='Leave')byStaff[k].leave++;
     });
     const names=Object.keys(byStaff);
-    if(!names.length){attEl.innerHTML='<div class="rp-empty">No attendance data for '+MN_EN[mf]+' '+yf+'.</div>';}
+    if(!names.length){attEl.innerHTML='<div class="rpt-empty">No attendance data for '+MN_EN[mf]+' '+yf+'.</div>';}
     else{
-      attEl.innerHTML=names.map((n,i)=>{
+      attEl.innerHTML=names.map(n=>{
         const d=byStaff[n];
-        const initials=n.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
-        const c=RP_COLORS[i%RP_COLORS.length];
-        return`<div class="rp-staff-row">
-          <div class="rp-staff-avatar" style="background:${c};">${initials}</div>
-          <span class="rp-staff-name">${escapeHtml(n)}</span>
-          <span class="rp-staff-pills"><span class="rp-pill p">${d.present}P</span><span class="rp-pill l">${d.leave}L</span></span>
+        return`<div class="rpt-staff-row">
+          <span class="rpt-staff-name">${escapeHtml(n)}</span>
+          <span class="rpt-staff-pills"><span class="rpt-pill p">${d.present}P</span><span class="rpt-pill l">${d.leave}L</span></span>
         </div>`;
       }).join('');
     }
+  }
+  const salEl=g('report-salary');
+  if(salEl){
+    salEl.innerHTML=`<div class="rpt-payroll">
+      <div class="rpt-payroll-item"><div class="pl">Total Payroll</div><div class="pv">${fmtExact(salaryTotal)}</div></div>
+      <div class="rpt-payroll-item"><div class="pl">Paid</div><div class="pv" style="color:var(--green);">${fmtExact(salaryPaid)}</div></div>
+      <div class="rpt-payroll-item"><div class="pl">Unpaid</div><div class="pv" style="color:var(--pink);">${fmtExact(salaryUnpaid)}</div></div>
+      <div class="rpt-payroll-item"><div class="pl">Pending Advances</div><div class="pv" style="color:var(--yellow);">${fmtExact(advTotal)}</div></div>
+    </div>`;
   }
 }
 function renderAgencyCard(){
