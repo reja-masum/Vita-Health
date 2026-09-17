@@ -414,6 +414,11 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 /* FORMS */
 .dform{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:9px;align-items:end;margin-bottom:6px;}
 .ff{display:flex;flex-direction:column;gap:4px;min-width:0;box-sizing:border-box;}
+.ac-wrap{position:relative;}
+.ac-panel{position:absolute;top:100%;left:0;right:0;z-index:60;background:var(--bg-card);border:1px solid var(--border-bright);border-radius:10px;margin-top:4px;max-height:180px;overflow-y:auto;display:none;box-shadow:0 10px 24px rgba(0,0,0,.45);}
+.ac-panel.show{display:block;}
+.ac-item{padding:8px 12px;font-size:13px;color:var(--tp);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ac-item:hover,.ac-item.hi{background:var(--bg-card2);color:var(--cyan);}
 .ff label{font-size:12px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;}
 .ff input,.ff select,.ff textarea{font-family:var(--font);font-size:13px;background:var(--bg-card2);border:1px solid var(--border-bright);border-radius:var(--rs);padding:8px 10px;color:var(--tp);outline:none;resize:none;width:100%;max-width:100%;box-sizing:border-box;min-width:0;}
 .ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--cyan);}
@@ -453,6 +458,7 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="month"]::-webk
 .bv-grand-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border-bright);font-size:14px;color:var(--tp);}
 .bv-grand-row b{font-family:var(--mono);font-size:19px;color:var(--cyan);}
 .bv-toggle{display:flex;background:var(--bg-card2);border:1px solid var(--border-bright);border-radius:99px;padding:3px;flex-shrink:0;}
+.bv-toggle-row{display:flex;justify-content:center;}
 .bv-toggle-btn{border:none;background:transparent;color:var(--tm);font-family:var(--font);font-size:12px;font-weight:600;padding:7px 14px;border-radius:99px;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s;}
 .bv-toggle-btn.active{background:var(--cyan);color:#0a0d14;}
 .paid-btn{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.25);color:var(--green);border-radius:6px;padding:4px 9px;font-size:12px;cursor:pointer;line-height:1;margin-right:6px;font-family:var(--font);font-weight:500;white-space:nowrap;}
@@ -885,7 +891,12 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
 
       <div class="dt-form dt-form-inc show" id="dt-form-income">
         <div class="ff"><label>Date</label><input type="date" id="di-date" oninput="calcIncomeAmount()"></div>
-        <div class="ff"><label>Agency</label><input type="text" id="di-agency" placeholder="Leave blank for other income" list="income-agency-dl" oninput="calcIncomeAmount()"><datalist id="income-agency-dl"></datalist></div>
+        <div class="ff"><label>Agency</label>
+          <div class="ac-wrap">
+            <input type="text" id="di-agency" placeholder="Leave blank for other income" autocomplete="off" oninput="calcIncomeAmount();acShow('di-agency')" onfocus="acShow('di-agency')" onblur="acHideDelayed('di-agency')">
+            <div class="ac-panel slim-scroll" id="di-agency-ac"></div>
+          </div>
+        </div>
         <div class="ff"><label>Patients</label><input type="number" id="di-patients" value="1" min="0" oninput="calcIncomeAmount()"></div>
         <div class="ff"><label>Amount (৳)</label><input type="text" inputmode="decimal" id="di-amount" value="8,500" data-raw="8500" oninput="onIncomeAmountEdited();formatNumberLive(this);"></div>
         <div class="ff"><label>Payment Status</label>
@@ -1014,7 +1025,12 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
       <div style="font-size:11px;color:var(--tm);margin-bottom:2px;">Per Patient Fee feeds the Income page's auto-amount for this agency, and also drives the Unfit Refund (Per Patient Fee − Test Fee, calculated automatically). VITA Commission is what this agency earns when its patient gets a Vita Slip; Others Commission is what it earns for a Slip from any other center — each agency can have its own rates for both.</div>
       <div class="agency-form-grid">
         <div class="ff"><label>Date</label><input type="date" id="dc-date" style="font-size:15px;"></div>
-        <div class="ff"><label>Agency Name</label><input type="text" id="dc-agency" placeholder="ABC Agency" list="agency-dl"><datalist id="agency-dl"></datalist></div>
+        <div class="ff"><label>Agency Name</label>
+          <div class="ac-wrap">
+            <input type="text" id="dc-agency" placeholder="ABC Agency" autocomplete="off" oninput="acShow('dc-agency')" onfocus="acShow('dc-agency')" onblur="acHideDelayed('dc-agency')">
+            <div class="ac-panel slim-scroll" id="dc-agency-ac"></div>
+          </div>
+        </div>
         <div class="ff"><label>Contact Name</label><input type="text" id="dc-contact-name" placeholder="Contact person"></div>
         <div class="ff"><label>Mobile No.</label><input type="text" id="dc-mobile" placeholder="+880 1XXXXXXXXX"></div>
         <div class="ff"><label>Address</label><input type="text" id="dc-address" placeholder="Address"></div>
@@ -1047,13 +1063,13 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
   <!-- ── SUB-PAGE: Bill Voucher (no storage — generates a printable PDF only) ── -->
   <div id="daily-view-billvoucher" style="display:none;flex-direction:column;gap:14px;">
     <div class="card" style="border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.04);">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;">
-        <div style="font-size:12px;color:var(--tp);" id="bv-intro-text">Create a payment voucher/slip for any bill (Internet, Rent, Utility, etc.) — fill in the details below and generate a printable PDF. <b>Nothing here is saved</b> — once you print/download, the form clears for the next voucher.</div>
+      <div class="bv-toggle-row">
         <div class="bv-toggle" id="bv-toggle">
           <button type="button" class="bv-toggle-btn active" id="bv-toggle-out" onclick="setBvDirection('out')">💸 Payment Out</button>
           <button type="button" class="bv-toggle-btn" id="bv-toggle-in" onclick="setBvDirection('in')">💰 Payment In</button>
         </div>
       </div>
+      <div style="font-size:12px;color:var(--tp);margin-top:12px;" id="bv-intro-text">Create a payment voucher/slip for any bill (Internet, Rent, Utility, etc.) — fill in the details below and generate a printable PDF. <b>Nothing here is saved</b> — once you print/download, the form clears for the next voucher.</div>
     </div>
 
     <div class="card">
@@ -1182,13 +1198,6 @@ table.dt tfoot td{padding:9px 8px;font-size:13px;border-top:1px solid var(--bord
             <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="msel-panel" id="vitaothers-month-filter-panel"></div>
-        </div>
-        <div class="msel" id="vitaothers-center-filter-wrap">
-          <button type="button" class="msel-btn" onclick="toggleMsel('vitaothers-center-filter')">
-            <span class="msel-btn-label" id="vitaothers-center-filter-label">All Centers</span>
-            <svg class="msel-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="msel-panel" id="vitaothers-center-filter-panel"></div>
         </div>
         <div class="msel" id="vitaothers-slip-filter-wrap">
           <button type="button" class="msel-btn" onclick="toggleMsel('vitaothers-slip-filter')">
@@ -2534,19 +2543,43 @@ function clearDateRange(prefix,renderFn){
   if(g(prefix+'-to'))g(prefix+'-to').value='';
   if(typeof renderFn==='function')renderFn();
 }
+// ── Themed autocomplete dropdown (replaces native <datalist>, whose popup/scrollbar
+// can't be restyled and shows as a jarring thick default bar) ──
+const acOptionsCache={};
+function acShow(inputId){
+  const input=g(inputId),panel=g(inputId+'-ac');if(!input||!panel)return;
+  const all=acOptionsCache[inputId]||[];
+  const q=(input.value||'').toLowerCase().trim();
+  const matches=(q?all.filter(o=>o.toLowerCase().includes(q)):all).slice(0,8);
+  if(!matches.length){panel.classList.remove('show');panel.innerHTML='';return;}
+  panel.innerHTML=matches.map(o=>`<div class="ac-item" data-val="${escapeHtml(o)}" onmousedown="event.preventDefault();acPick('${inputId}',this.dataset.val)">${escapeHtml(o)}</div>`).join('');
+  panel.classList.add('show');
+}
+function acPick(inputId,val){
+  const input=g(inputId);if(!input)return;
+  input.value=val;
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+  acHide(inputId);
+}
+function acHide(inputId){const panel=g(inputId+'-ac');if(panel){panel.classList.remove('show');panel.innerHTML='';}}
+function acHideDelayed(inputId){setTimeout(()=>acHide(inputId),150);} // delay so the mousedown pick fires first
 // Fetches JSON with one automatic retry — Google Apps Script Web Apps sometimes cold-start
 // slowly or hiccup transiently, causing a single fetch attempt to fail even though the
 // script itself is fine. Retrying once after a short delay avoids reporting a false failure.
-async function fetchJsonWithRetry(url,retries=1,delayMs=1200){
+async function fetchJsonWithRetry(url,retries=2,delayMs=1200,timeoutMs=7000){
   let lastErr=null;
   for(let attempt=0;attempt<=retries;attempt++){
+    const ctrl=new AbortController();
+    const timer=setTimeout(()=>ctrl.abort(),timeoutMs);
     try{
-      const resp=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now());
+      const resp=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{signal:ctrl.signal});
       if(!resp.ok)throw new Error('HTTP '+resp.status);
       return await resp.json();
     }catch(e){
       lastErr=e;
       if(attempt<retries)await new Promise(r=>setTimeout(r,delayMs));
+    }finally{
+      clearTimeout(timer);
     }
   }
   throw lastErr;
@@ -2974,9 +3007,8 @@ function renderCommissionLog(){
   }).join('');
 }
 function populateAgencyDL(){
-  const dl=g('agency-dl');if(!dl)return;
   const names=[...new Set([...loadArr(SK9).map(r=>r.agency),...loadArr(SK10).map(r=>r.agency)].filter(Boolean))].sort();
-  dl.innerHTML=names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
+  acOptionsCache['dc-agency']=names;
 }
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function exportCommissionCSV(){
@@ -3803,9 +3835,8 @@ function calcIncomeAmount(){
 }
 function onIncomeAmountEdited(){incomeManualAmt=true;}
 function populateIncomeAgencyDL(){
-  const dl=g('income-agency-dl');if(!dl)return;
   const names=[...new Set([...loadArr(SK9).map(r=>r.agency),...loadArr(SK10).map(r=>r.agency)].filter(Boolean))].sort();
-  dl.innerHTML=names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
+  acOptionsCache['di-agency']=names;
 }
 let addLock=false;
 function genId(prefix){return prefix+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);}
@@ -3899,6 +3930,7 @@ function renderDailyTable(){
   const {from:dateFrom,to:dateTo}=dateRangeVals('d-date-filter');
   const kw=(g('d-search')?g('d-search').value:'').trim().toLowerCase();
   const tfArr=mselValues('d-type-filter').map(v=>v.toLowerCase());
+  populateIncomeAgencyDL();
 
   const all=visibleDailyRows(loadArr(SK4));
   const monthRows=all.filter(r=>r.year===yr&&(miArr.length===0||miArr.includes(r.month)));
@@ -4139,7 +4171,6 @@ function mselMatch(id,val){
   for(const s of sel){if(s.toLowerCase()===v)return true;}
   return false;
 }
-mselInit('vitaothers-center-filter',()=>renderVitaOthersPatients());
 mselInit('others-center-filter',()=>renderOthersPatients());
 mselInit('vita-month-filter',()=>renderVitaPatients());
 mselInit('d-month-filter',()=>renderDailyTable());
@@ -4181,10 +4212,6 @@ function populateVitaRemarksFilter(){
   const remarks=[...new Set(rows.map(r=>(r.remarks||'').trim()).filter(Boolean))].sort();
   const hasBlank=rows.some(r=>!(r.remarks||'').trim());
   buildMsel('vita-remarks-filter',hasBlank?[BLANK_LABEL,...remarks]:remarks,'Remarks');
-}
-function populateVitaOthersCenterFilter(){
-  const centers=[...new Set(loadArr(SK12).map(r=>r._center).filter(Boolean))].sort();
-  buildMsel('vitaothers-center-filter',centers,'Centers');
 }
 function populateVitaOthersMonthFilter(){
   buildMsel('vitaothers-month-filter',MN_EN,'Months');
@@ -4254,14 +4281,13 @@ function renderVitaPatients(){
   const empty=loadArr(SK10).length?'No records match filters.':'No data yet — configure Vita Center Sheet URL in Settings, then tap Sync Now.';
   if(!rows.length){tbody.innerHTML=`<tr><td colspan="14" style="text-align:center;padding:28px;color:var(--tm);">${empty}</td></tr>`;return;}
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'var(--green)';if(u==='UNFIT')return'var(--pink)';if(u.includes('HELD'))return'var(--yellow)';if(u==='PROCESSING'||u==='PENDING')return'var(--cyan)';return'var(--ts)';};
-  const missing='<span style="color:var(--yellow);font-style:italic;">— Missing</span>';
   tbody.innerHTML=rows.map((r,i)=>{
     const pdfLink=buildPassportPdfLink(r.passport, r._month, r._year);
     const pdfCell=pdfLink
       ?`<a class="pdf-btn" href="${pdfLink}" target="_blank" rel="noopener">&#128196; PDF</a>`
       :(r.passport?`<span class="pdf-btn no-folder" title="Set Drive Folder ID in Settings">No Folder</span>`:`<span style="color:var(--border-bright);">—</span>`);
-    const remarksCell=(r.remarks||'').trim()?escapeHtml(r.remarks):missing;
-    const slipsCell=(r.slips||'').trim()?escapeHtml(r.slips):missing;
+    const remarksCell=escapeHtml(r.remarks)||'-';
+    const slipsCell=escapeHtml(r.slips)||'-';
     return`<tr>
     <td style="color:var(--tm);">${i+1}</td>
     <td style="white-space:nowrap;">${r.date||'-'}</td>
@@ -4572,11 +4598,10 @@ async function syncOthersNow(){
 // ═══════════════ VITA + OTHERS CENTER (combined multi-tab sheet) ═══════════════
 function renderVitaOthersPatients(){
   const tbody=g('vitaOthersTbody');if(!tbody)return;
-  populateVitaOthersCenterFilter();populateVitaOthersSlipFilter();populateVitaOthersAgencyFilter();populateVitaOthersMonthFilter();populateVitaOthersCommentFilter();
+  populateVitaOthersSlipFilter();populateVitaOthersAgencyFilter();populateVitaOthersMonthFilter();populateVitaOthersCommentFilter();
   const q=(g('vitaOthersSearch')?g('vitaOthersSearch').value:'').toLowerCase().trim();
   const yf=g('vitaothers-year-filter')?g('vitaothers-year-filter').value:'';
   const mf=mselValues('vitaothers-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
-  const cf=mselValues('vitaothers-center-filter');
   const spf=mselValues('vitaothers-slip-filter');
   const agf=mselValues('vitaothers-agency-filter');
   const sf=mselValues('vitaothers-status-filter');
@@ -4585,7 +4610,6 @@ function renderVitaOthersPatients(){
   let rows=loadArr(SK12);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
-  if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
   if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
   if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
   if(cmf.length)rows=rows.filter(r=>mselMatch('vitaothers-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
@@ -4612,9 +4636,8 @@ function renderVitaOthersPatients(){
   </tr>`).join('');
 }
 function exportVitaOthersCSV(){
-  const cf=mselValues('vitaothers-center-filter'),spf=mselValues('vitaothers-slip-filter'),agf=mselValues('vitaothers-agency-filter'),cmf=mselValues('vitaothers-comment-filter');
+  const spf=mselValues('vitaothers-slip-filter'),agf=mselValues('vitaothers-agency-filter'),cmf=mselValues('vitaothers-comment-filter');
   let rows=loadArr(SK12);
-  if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
   if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
   if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
   if(cmf.length)rows=rows.filter(r=>mselMatch('vitaothers-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
@@ -4626,7 +4649,6 @@ function getFilteredVitaOthersRows(){
   const q=(g('vitaOthersSearch')?g('vitaOthersSearch').value:'').toLowerCase().trim();
   const yf=g('vitaothers-year-filter')?g('vitaothers-year-filter').value:'';
   const mf=mselValues('vitaothers-month-filter').map(n=>MN_EN.indexOf(n)).filter(i=>i>=0);
-  const cf=mselValues('vitaothers-center-filter');
   const spf=mselValues('vitaothers-slip-filter');
   const agf=mselValues('vitaothers-agency-filter');
   const sf=mselValues('vitaothers-status-filter');
@@ -4635,22 +4657,20 @@ function getFilteredVitaOthersRows(){
   let rows=loadArr(SK12);
   if(yf)rows=rows.filter(r=>r._year===yf);
   if(mf.length)rows=rows.filter(r=>mf.includes(+r._month));
-  if(cf.length)rows=rows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
   if(spf.length)rows=rows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
   if(agf.length)rows=rows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
   if(cmf.length)rows=rows.filter(r=>mselMatch('vitaothers-comment-filter',(r.comment||'').trim()||BLANK_LABEL));
   if(dfFrom||dfTo)rows=rows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
   rows=rows.filter(r=>vitaStatusMatch(r,sf));
   if(q)rows=rows.filter(r=>[r.sl,r.date,r.id,r.name,r.passport,r.slip,r.agency,r.status,r.comment,r._center].some(v=>String(v||'').toLowerCase().includes(q)));
-  return{rows,yf,mf,cf,spf,agf,sf,cmf,dfFrom,dfTo,q};
+  return{rows,yf,mf,spf,agf,sf,cmf,dfFrom,dfTo,q};
 }
 function generateVitaOthersPatientsPDF(){
-  const {rows,yf,mf,cf,spf,agf,sf,cmf,dfFrom,dfTo,q}=getFilteredVitaOthersRows();
+  const {rows,yf,mf,spf,agf,sf,cmf,dfFrom,dfTo,q}=getFilteredVitaOthersRows();
   if(!rows.length){toast('No records match the current filters');return;}
   const labelParts=[];
   labelParts.push(yf?yf:'All Years');
   labelParts.push(mf.length?mf.map(i=>MN_EN[i]).join(', '):'All Months');
-  if(cf.length)labelParts.push('Center: '+cf.join(', '));
   if(spf.length)labelParts.push('Slip: '+spf.join(', '));
   if(agf.length)labelParts.push('Agency: '+agf.join(', '));
   if(sf.length)labelParts.push('Status: '+sf.join(', '));
@@ -4659,12 +4679,11 @@ function generateVitaOthersPatientsPDF(){
   if(q)labelParts.push('Search: "'+q+'"');
   const label=labelParts.join(' · ');
   const sc=s=>{const u=(s||'').toUpperCase().trim().replace(/\s+/g,'');if(u==='FIT'||u.startsWith('FIT&'))return'#0a8f4a';if(u==='UNFIT')return'#c0246b';if(u.includes('HELD'))return'#b8860b';if(u==='PROCESSING'||u==='PENDING')return'#0891b2';return'#555';};
-  // Total Patients reflects the full period/center/search selection, ignoring the
+  // Total Patients reflects the full period/search selection, ignoring the
   // status filter (see Vita/Others PDF fix — status breakdown stays separate).
   let totalRows=loadArr(SK12);
   if(yf)totalRows=totalRows.filter(r=>r._year===yf);
   if(mf.length)totalRows=totalRows.filter(r=>mf.includes(+r._month));
-  if(cf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-center-filter',r._center));
   if(spf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-slip-filter',r.slip));
   if(agf.length)totalRows=totalRows.filter(r=>mselMatch('vitaothers-agency-filter',r.agency));
   if(dfFrom||dfTo)totalRows=totalRows.filter(r=>inDateRange(r.date,dfFrom,dfTo));
@@ -6794,11 +6813,15 @@ function svgDonut(segments,size,strokeW,centerVal,centerLabel){
     offset+=frac*c;
     return el;
   }).join('');
+  // Font sizes scale with the donut's own size so bigger call sites (e.g. a
+  // wider report card) get proportionally bigger center text, not cramped text.
+  const centerFontSize=(size*0.164).toFixed(1);
+  const labelFontSize=(size*0.078).toFixed(1);
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0;">
     <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
     ${circles}
-    <text x="${size/2}" y="${size/2-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${centerVal}</text>
-    <text x="${size/2}" y="${size/2+15}" text-anchor="middle" font-size="9" fill="var(--tm)" letter-spacing="0.05em">${centerLabel}</text>
+    <text x="${size/2}" y="${size/2-3}" text-anchor="middle" font-size="${centerFontSize}" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${centerVal}</text>
+    <text x="${size/2}" y="${size/2+15}" text-anchor="middle" font-size="${labelFontSize}" fill="var(--tm)" letter-spacing="0.05em">${centerLabel}</text>
   </svg>`;
 }
 function svgRing(value,max,size,strokeW,color,valueColor){
@@ -6891,7 +6914,7 @@ function rptDonutCard(el,counts,emptyMsg,centerLabel){
   if(!entries.length){el.innerHTML=`<div class="rpt-empty">${emptyMsg}</div>`;return;}
   const total=entries.reduce((a,[,c])=>a+c,0);
   const segments=entries.map(([label,value],i)=>({label,value,color:RPT_COLORS[i%RPT_COLORS.length]}));
-  const donut=svgDonut(segments,116,16,total,centerLabel);
+  const donut=svgDonut(segments,176,22,total,centerLabel);
   const legend=entries.slice(0,6).map(([label,cnt],i)=>{
     const pct=Math.round(cnt/total*100);
     const c=RPT_COLORS[i%RPT_COLORS.length];
@@ -6946,7 +6969,7 @@ function rptDonutRadialCard(el,counts,emptyMsg,centerLabel){
   }).join('');
   const more=rest.length?`<div class="rpt-empty" style="padding:2px 0 0;">+${rest.length} more</div>`:'';
   el.innerHTML=`<div style="display:flex;justify-content:center;">
-    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;">
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:460px;height:auto;">
       <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-card2)" stroke-width="${strokeW}"/>
       ${arcEls}
       <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="19" font-weight="800" fill="var(--tp)" font-family="var(--mono)">${total}</text>
@@ -7353,21 +7376,31 @@ function initApp(){
       const hasVita=s.vitaScriptUrl||(s.vitaUrls&&s.vitaUrls.length);
       const hasOthers=s.othersScriptUrl||(s.othersUrls&&s.othersUrls.length);
       const hasVitaOthers=s.vitaOthersScriptUrl||(s.vitaOthersUrls&&s.vitaOthersUrls.length);
+      // Render immediately from whatever is already in localStorage — the person
+      // should never be staring at a blank screen waiting on the network. The
+      // sync below then runs in the background and silently re-renders once it
+      // lands, so the screen is interactive in well under a second either way.
+      loadOtherExps();loadMonthData();updateYearSummary();renderCommissionLog();renderAgencyCard();
       if(hasDaily||hasVita||hasOthers||hasVitaOthers){
+        setSyncStatus('busy');
         Promise.all([
           hasDaily?syncPull():Promise.resolve(),
           hasVita?vitaPull():Promise.resolve(),
           hasOthers?othersPull():Promise.resolve(),
           hasVitaOthers?vitaOthersPull():Promise.resolve()
-        ]).then(()=>{
+        ]).then(results=>{
           loadOtherExps();loadMonthData();updateYearSummary();renderCommissionLog();renderAgencyCard();
+          // Only flag a failure if a source that's actually configured came back
+          // false — an unconfigured source resolves to Promise.resolve() (undefined),
+          // which must not be mistaken for a failed sync.
+          const anyFailed=[hasDaily,hasVita,hasOthers,hasVitaOthers].some((configured,i)=>configured&&results[i]===false);
+          setSyncStatus(anyFailed?'error':'ok');
           startAutoSync();
-        });
+        }).catch(()=>{setSyncStatus('error');startAutoSync();});
       } else {
-        loadOtherExps();loadMonthData();updateYearSummary();renderAgencyCard();
+        setSyncStatus('none');
       }
     }
-    setSyncStatus(s.scriptUrl?'ok':'none');
     renderNotepad();
     renderCommissionLog();
   }
